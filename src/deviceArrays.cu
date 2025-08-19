@@ -102,14 +102,14 @@ template<>
 void CuArray<float>::mult(
     const CuArray<float>& other,
     CuArray<float>* result,
-    CublasHandle* handle,
+    Handle* handle,
     float alpha,
     float beta,
     bool transposeA,
     bool transposeB
 ) const {
     
-    CublasHandle* h = handle ? handle : new CublasHandle();
+    Handle* h = handle ? handle : new Handle();
 
     cublasSgemm(h->handle,
         transposeA ? CUBLAS_OP_T : CUBLAS_OP_N, transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
@@ -130,13 +130,13 @@ template<>
 void CuArray<double>::mult(
     const CuArray<double>& other,
     CuArray<double>* result,
-    CublasHandle* handle,
+    Handle* handle,
     double alpha,
     double beta,
     bool transposeA,
     bool transposeB
 ) const {
-    CublasHandle* h = handle ? handle : new CublasHandle();
+    Handle* h = handle ? handle : new Handle();
     
     cublasDgemm(h->handle,
         transposeA ? CUBLAS_OP_T : CUBLAS_OP_N, transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
@@ -157,7 +157,7 @@ template<>
 void CuArray<int>::mult(
     const CuArray<float>& other,
     CuArray<float>* result,
-    CublasHandle* handle,
+    Handle* handle,
     float alpha,
     float beta,
     bool transposeA,
@@ -170,7 +170,7 @@ template<>
 void CuArray<int>::mult(
     const CuArray<double>& other,
     CuArray<double>* result,
-    CublasHandle* handle,
+    Handle* handle,
     double alpha,
     double beta,
     bool transposeA,
@@ -188,24 +188,27 @@ void checkCudaErrors(cudaError_t err, const char* file, int line) {
     }
 }
 
-
-// CublasHandle Definitions
-CublasHandle::CublasHandle() {
+Handle::Handle() {
+    // Create the CUBLAS handle
     if (cublasCreate(&handle) != CUBLAS_STATUS_SUCCESS) {
         throw std::runtime_error("Failed to create cuBLAS handle");
     }
-}
-
-CublasHandle::~CublasHandle() {
-    cublasDestroy(handle);
-}
-
-cudaStream_t CublasHandle::getStream() const {
-    cudaStream_t stream;
-    if (cublasGetStream(handle, &stream) != CUBLAS_STATUS_SUCCESS) {
-        throw std::runtime_error("Failed to get cuBLAS stream");
+    // Create a new stream and set it for the handle
+    if (cudaStreamCreate(&stream) != cudaSuccess) {
+        cublasDestroy(handle);
+        throw std::runtime_error("Failed to create CUDA stream");
     }
-    return stream;
+    if (cublasSetStream(handle, stream) != CUBLAS_STATUS_SUCCESS) {
+        cublasDestroy(handle);
+        cudaStreamDestroy(stream);
+        throw std::runtime_error("Failed to set CUBLAS stream");
+    }
+}
+
+// Corrected destructor to clean up both the handle and the stream
+Handle::~Handle() {
+    cublasDestroy(handle);
+    cudaStreamDestroy(stream);
 }
 
 // Disallow mixed-type multiplication for float/double
@@ -213,7 +216,7 @@ template<>
 void CuArray<float>::mult(
     const CuArray<double>& other,
     CuArray<double>* result,
-    CublasHandle* handle,
+    Handle* handle,
     double alpha,
     double beta,
     bool transposeA,
@@ -226,7 +229,7 @@ template<>
 void CuArray<double>::mult(
     const CuArray<float>& other,
     CuArray<float>* result,
-    CublasHandle* handle,
+    Handle* handle,
     float alpha,
     float beta,
     bool transposeA,
@@ -261,9 +264,9 @@ template class CuArray<double>;
 // If you also use mult() with mixed types (float vs double or int), explicitly instantiate those specializations:
 // For example:
 template void CuArray<float>::mult(
-    const CuArray<float>&, CuArray<float>*, CublasHandle*, float, float, bool, bool
+    const CuArray<float>&, CuArray<float>*, Handle*, float, float, bool, bool
 ) const;
 
 template void CuArray<double>::mult(
-    const CuArray<double>&, CuArray<double>*, CublasHandle*, double, double, bool, bool
+    const CuArray<double>&, CuArray<double>*, Handle*, double, double, bool, bool
 ) const;

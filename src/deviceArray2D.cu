@@ -5,7 +5,7 @@ template <>
 CuArray2D<float> CuArray2D<float>::mult(
     const CuArray2D<float>& other,
     CuArray2D<float>* result,
-    CublasHandle* handle,
+    Handle* handle,
     float alpha,
     float beta,
     bool transposeA,
@@ -30,7 +30,7 @@ template <>
 CuArray2D<double> CuArray2D<double>::mult(
     const CuArray2D<double>& other,
     CuArray2D<double>* result,
-    CublasHandle* handle,
+    Handle* handle,
     double alpha,
     double beta,
     bool transposeA,
@@ -53,7 +53,7 @@ template <>
 CuArray1D<float> CuArray2D<float>::mult(
     const CuArray1D<float>& other,
     CuArray1D<float>* result,
-    CublasHandle* handle,
+    Handle* handle,
     float alpha,
     float beta,
     bool transpose
@@ -62,7 +62,7 @@ CuArray1D<float> CuArray2D<float>::mult(
 
     CuArray1D<float>* resPtr = result ? result: new CuArray1D<float>(other._cols);
     
-    CublasHandle* h = handle ? handle : new CublasHandle();
+    Handle* h = handle ? handle : new Handle();
 
     cublasSgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, &alpha, this->data(), this->getLD(), other.data(), other.getLD(), &beta, resPtr->data(), resPtr->getLD());
 
@@ -80,11 +80,21 @@ CuArray1D<float> CuArray2D<float>::mult(
     return *resPtr;
 }
 
+/**
+ * Multiplies a 2D array with a 1D array, returning a new 1D array.
+ * @param other The 1D array to multiply with.
+ * @param result Optional pointer to an existing 1D array to store the result.
+ * @param handle Optional CublasHandle for managing the cuBLAS context.
+ * @param alpha Scalar multiplier for the result.   
+ *  @param beta Scalar multiplier for the existing values in the result array.
+ * @param transpose If true, the 2D array is transposed before multiplication.
+ * @return A new 1D array containing the result of the multiplication.
+ */
 template <>
 CuArray1D<double> CuArray2D<double>::mult(
     const CuArray1D<double>& other,
     CuArray1D<double>* result,
-    CublasHandle* handle,
+    Handle* handle,
     double alpha,
     double beta,
     bool transpose
@@ -92,7 +102,7 @@ CuArray1D<double> CuArray2D<double>::mult(
 
     CuArray1D<double>* resPtr = result ? result: new CuArray1D<double>(other._cols);
 
-    CublasHandle* h = handle ? handle : new CublasHandle();
+    Handle* h = handle ? handle : new Handle();
     
     cublasDgemv(
         h->handle,
@@ -251,6 +261,169 @@ void CuArray2D<T>::get(std::ostream& output_stream, cudaStream_t stream) const {
         helper.writeNextChunkToFile();
         helper.updateProgress();
     }
+}
+
+
+template <>
+CuArray2D<float> CuArray2D<float>::plus(
+    const CuArray2D<float>& x, 
+    CuArray2D<float>* result,
+    float alpha,
+    float beta,
+    bool transposeA,
+    bool transposeB,
+    Handle* handle
+) {
+    if (this->_rows != x._rows || this->_cols != x._cols) {
+        throw std::invalid_argument("Matrix dimensions do not match for add.");
+    }
+    
+    // Determine the result pointer, creating a new one if necessary
+    CuArray2D<float>* resPtr = result ? result : new CuArray2D<float>(this->_rows, this->_cols);
+    
+    Handle* h = handle ? handle : new Handle();
+
+    cublasSgeam(
+        h->handle, 
+        transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
+        transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
+        this->_rows, this->_cols, 
+        &alpha, x.data(), x.getLD(),
+        &beta, this->data(), this->getLD(),
+        resPtr->data(), resPtr->getLD()
+    );
+
+    if (!handle) {
+        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
+        delete h;
+    }
+    
+    if (!result) {
+        CuArray2D<float> temp = *resPtr;
+        delete resPtr;
+        return temp;
+    }
+    
+    return *resPtr;
+}
+
+template <>
+CuArray2D<double> CuArray2D<double>::plus(
+    const CuArray2D<double>& x, 
+    CuArray2D<double>* result,
+    double alpha,
+    double beta,
+    bool transposeA,
+    bool transposeB,
+    Handle* handle
+) {
+    if (this->_rows != x._rows || this->_cols != x._cols) {
+        throw std::invalid_argument("Matrix dimensions do not match for add.");
+    }
+
+    // Determine the result pointer, creating a new one if necessary
+    CuArray2D<double>* resPtr = result ? result : new CuArray2D<double>(this->_rows, this->_cols);
+    
+    Handle* h = handle ? handle : new Handle();
+
+    cublasDgeam(
+        h->handle, 
+        transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
+        transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
+        this->_rows, this->_cols, 
+        &alpha, x.data(), x.getLD(),
+        &beta, this->data(), this->getLD(),
+        resPtr->data(), resPtr->getLD()
+    );
+    
+    if (!handle) {
+        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
+        delete h;
+    }
+    
+    if (!result) {
+        CuArray2D<double> temp = *resPtr;
+        delete resPtr;
+        return temp;
+    }
+    
+    return *resPtr;
+}
+
+template <>
+CuArray2D<float> CuArray2D<float>::minus(
+    const CuArray2D<float>& x,
+    CuArray2D<float>* result,
+    float alpha,
+    float beta,
+    bool transposeA,
+    bool transposeB,
+    Handle* handle
+) {
+    return this->plus(x, result, -alpha, beta, transposeA, transposeB, handle);
+}
+
+template <>
+CuArray2D<double> CuArray2D<double>::minus(
+    const CuArray2D<double>& x,
+    CuArray2D<double>* result,
+    double alpha,
+    double beta,
+    bool transposeA,
+    bool transposeB,
+    Handle* handle
+) {
+    return this->plus(x, result, -alpha, beta, transposeA, transposeB, handle);
+}
+
+template <typename T>
+__global__ void scaleKernel(T* matrix, size_t rows, size_t cols, size_t ld, T alpha) {
+    size_t col = blockIdx.x * blockDim.x + threadIdx.x;
+    size_t row = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (row < rows && col < cols) matrix[row + col * ld] *= alpha;
+    
+}
+
+template <typename T>
+void CuArray2D<T>::_scale_impl(T alpha, Handle* handle) {
+    if (this->_rows == 0 || this->_cols == 0) {
+        return;
+    }
+    
+    Handle* h = handle;
+    if (!h) {
+        h = new Handle();
+    }
+
+    dim3 threadsPerBlock(32, 32);
+    dim3 numBlocks(
+        (this->_cols + threadsPerBlock.x - 1) / threadsPerBlock.x,
+        (this->_rows + threadsPerBlock.y - 1) / threadsPerBlock.y
+    );
+
+    scaleKernel<<<numBlocks, threadsPerBlock, 0, h->stream>>>(
+        this->data(),
+        this->_rows,
+        this->_cols,
+        this->getLD(),
+        alpha
+    );
+
+    if (!handle) {
+        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
+        delete h;
+    }
+}
+
+template <>
+void CuArray2D<float>::mult(float alpha, Handle* handle) {
+    this->_scale_impl(alpha, handle);
+}
+
+template <>
+void CuArray2D<double>::mult(double alpha, Handle* handle) {
+    this->_scale_impl(alpha, handle);
 }
 
 

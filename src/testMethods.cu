@@ -7,8 +7,9 @@
 #include <fstream>
 #include <cstdio>
 #include <cmath>
+#include <stdexcept>
 
-#include "deviceArrays.h"  // <- fixed stray quote
+#include "deviceArrays.h"  // Assuming this file exists and is correct
 
 // ---------- Utilities ----------
 
@@ -250,14 +251,13 @@ void runMulTests()
     CHECK_CUDA_ERROR(cudaDeviceSynchronize());
     verifyVectors(hy_expected, hy, "CuArray2D * CuArray1D (gemv)");
 
-    // Also test 1D.mult with A on RHS (your 1D API supports mult(A, ...))
-    CuArray1D<T> dy2 = CuArray1D<T>(m);
-    dy2 = dA.mult(dx); // overload returning a new CuArray1D<T>
+    // Fix: Remove the redundant instantiation and directly assign
+    CuArray1D<T> dy2 = dA.mult(dx);
     std::vector<T> hy2(m);
     dy2.get(hy2.data());
     CHECK_CUDA_ERROR(cudaDeviceSynchronize());
     verifyVectors(hy_expected, hy2, "CuArray2D.mult(vec) (gemv)");
-
+    
     // Vector-Vector dot: use operator*
     std::vector<T> hv1 = { T(1), T(2), T(3) };
     std::vector<T> hv2 = { T(4), T(5), T(6) };

@@ -23,7 +23,7 @@ template <>
 CuArray1D<float> CuArray1D<float>::mult(
     const CuArray2D<float>& other,
     CuArray1D<float>* result,
-    CublasHandle* handle,
+    Handle* handle,
     float alpha,
     float beta,
     bool transpose
@@ -46,7 +46,7 @@ template <>
 CuArray1D<double> CuArray1D<double>::mult(
     const CuArray2D<double>& other,
     CuArray1D<double>* result,
-    CublasHandle* handle,
+    Handle* handle,
     double alpha,
     double beta,
     bool transpose
@@ -68,13 +68,13 @@ CuArray1D<double> CuArray1D<double>::mult(
 template <>
 float CuArray1D<float>::mult(
     const CuArray1D<float>& other,
-    CublasHandle* handle
+    Handle* handle
 ) const {
     if (this->_cols != other._cols)
         throw std::invalid_argument("Vector lengths do not match for dot product.");
     
     
-    CublasHandle* h = handle ? handle : new CublasHandle();
+    Handle* h = handle ? handle : new Handle();
     float resultHost = 0.0f;
     
     cublasSdot(h->handle, this->_cols, this->data(), this->getLD(), other.data(), other.getLD(), &resultHost);
@@ -91,12 +91,12 @@ float CuArray1D<float>::mult(
 template <>
 double CuArray1D<double>::mult(
     const CuArray1D<double>& other,
-    CublasHandle* handle
+    Handle* handle
 ) const {
     if (this->_cols != other._cols)
         throw std::invalid_argument("Vector lengths do not match for dot product.");
     
-    CublasHandle* h = handle ? handle : new CublasHandle();
+    Handle* h = handle ? handle : new Handle();
     double resultHost = 0.0;
     
     cublasDdot(h->handle, this->_cols, this->data(), this->getLD(), other.data(), other.getLD(), &resultHost);
@@ -233,6 +233,155 @@ void CuArray1D<T>::get(std::ostream& output_stream, cudaStream_t stream) const {
         helper.updateProgress();
     }
 }
+
+template <>
+void CuArray1D<float>::add(const CuArray1D<float>& x, float alpha, Handle* handle) {
+    if (this->_cols != x._cols) 
+        throw std::invalid_argument("Vector lengths do not match for add.");
+    
+    Handle* h = handle ? handle : new Handle();
+    
+    cublasSaxpy(h->handle, this->_cols, &alpha, x.data(), x.getLD(), this->data(), this->getLD());
+    
+    if (!handle) {
+        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
+        delete h;
+    }
+}
+
+template <>
+void CuArray1D<double>::add(const CuArray1D<double>& x, double alpha, Handle* handle) {
+    if (this->_cols != x._cols)
+        throw std::invalid_argument("Vector lengths do not match for add.");
+        
+    Handle* h = handle ? handle : new Handle();
+    
+    cublasDaxpy(h->handle, this->_cols, &alpha, x.data(), x.getLD(), this->data(), this->getLD());
+    
+    if (!handle) {
+        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
+        delete h;
+    }
+}
+
+template <>
+void CuArray1D<float>::sub(const CuArray1D<float>& x, float alpha, Handle* handle) {
+    this->add(x, -alpha, handle);
+}
+
+template <>
+void CuArray1D<double>::sub(const CuArray1D<double>& x, double alpha, Handle* handle) {
+    this->add(x, -alpha, handle);
+}
+
+template <>
+void CuArray1D<float>::mult(float alpha, Handle* handle) {
+    if (this->_cols == 0) {
+        return;
+    }
+    
+    Handle* h = handle ? handle : new Handle();
+    
+    cublasSscal(h->handle, this->_cols, &alpha, this->data(), this->getLD());
+    
+    if (!handle) {
+        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
+        delete h;
+    }
+}
+
+template <>
+void CuArray1D<double>::mult(double alpha, Handle* handle) {
+    if (this->_cols == 0) {
+        return;
+    }
+    
+    Handle* h = handle ? handle : new Handle();
+    
+    cublasDscal(h->handle, this->_cols, &alpha, this->data(), this->getLD());
+    
+    if (!handle) {
+        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
+        delete h;
+    }
+}
+
+
+extern "C" __global__ void setup_kernel_float(curandState* state, unsigned long long seed, size_t size, size_t stride) {
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    if (id < size) {
+        curand_init(seed, id, 0, &state[id * stride]);
+    }
+}
+
+extern "C" __global__ void setup_kernel_double(curandState* state, unsigned long long seed, size_t size, size_t stride) {
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    if (id < size) {
+        curand_init(seed, id, 0, &state[id * stride]);
+    }
+}
+
+__global__ void fillRandomKernel_float(float* array, size_t size, size_t stride, curandState* state) {
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    if (id < size) {
+        array[id * stride] = curand_uniform(&state[id * stride]);
+    }
+}
+
+__global__ void fillRandomKernel_double(double* array, size_t size, size_t stride, curandState* state) {
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    if (id < size) {
+        array[id * stride] = curand_uniform_double(&state[id * stride]);
+    }
+}
+
+template <>
+void CuArray1D<float>::fillRandom(Handle* handle) {
+    
+    Handle* h = handle ? handle : new Handle();
+    
+    dim3 threadsPerBlock(256);
+    dim3 numBlocks((this->_cols + threadsPerBlock.x - 1) / threadsPerBlock.x);
+
+    curandState* devStates;
+    CHECK_CUDA_ERROR(cudaMalloc(&devStates, this->_cols * sizeof(curandState)));
+
+    setup_kernel_float<<<numBlocks, threadsPerBlock, 0, h->stream>>>(devStates, 0, this->size(), this->getLD());
+
+    fillRandomKernel_float<<<numBlocks, threadsPerBlock, 0, h->stream>>>(this->data(), this->_cols, this->getLD(), devStates);
+    
+    CHECK_CUDA_ERROR(cudaFree(devStates));
+    
+    if (!handle) {
+        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
+        delete h;
+    }
+}
+
+template <>
+void CuArray1D<double>::fillRandom(Handle* handle) {
+    
+    Handle* h = handle ? handle : new Handle();
+
+    dim3 threadsPerBlock(256);
+    dim3 numBlocks((this->_cols + threadsPerBlock.x - 1) / threadsPerBlock.x);
+
+    curandState* devStates;
+    CHECK_CUDA_ERROR(cudaMalloc(&devStates, this->_cols * sizeof(curandState)));
+
+    setup_kernel_double<<<numBlocks, threadsPerBlock, 0, h->stream>>>(devStates, 0, this->size(), this->getLD());
+
+    fillRandomKernel_double<<<numBlocks, threadsPerBlock, 0, h->stream>>>(this->data(), this->size(), this->getLD(), devStates);
+    
+    // Free the device states
+    CHECK_CUDA_ERROR(cudaFree(devStates));
+
+    if (!handle) {
+        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
+        delete h;
+    }
+}
+
 
 template class CuArray1D<int>;
 template class CuArray1D<float>;
