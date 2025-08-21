@@ -6,6 +6,7 @@
 template<typename T>
 CuArray1D<T> unpreconditionedBiCGSTAB(
     const CuArray2D<T>& A, 
+    const int* diags,
     const CuArray1D<T>& b, 
     CuArray1D<T>* x = nullptr, 
     size_t maxIterations = b.size(), 
@@ -20,7 +21,7 @@ CuArray1D<T> unpreconditionedBiCGSTAB(
     CuArray1D<T> r(b.size());
     r.set(b);
 
-    A.mult(result, &r, &handle, -1.0, 1.0); // r = b - A * x
+    A.diagMult(diags, *x, &r, &handle, -1, 1); // r = b - A * x
 
     CuArray1D<T> r_tilde(r.size());
     r_tilde.fillRandom(&handle); // r_tilde is a random vector
@@ -36,7 +37,7 @@ CuArray1D<T> unpreconditionedBiCGSTAB(
     CuArray1D<T> h(r.size());
 
     for(int i = 0; i < maxIterations; i++) {
-        A.mult(p, &v, &handle, 1.0, 0.0); // v = A * p
+        A.diagMult(diags, p, &v, &handle, 1.0, 0.0); // v = A * p
         double alpha = rho / r_tilde.mult(v);
         h.set(result);
         h.add(p, alpha, &handle); // h = x + alpha * p
@@ -46,7 +47,7 @@ CuArray1D<T> unpreconditionedBiCGSTAB(
             result.set(h);
             break;
         }
-        A.mult(s, &t, &handle, 1.0, 0.0); // t = A * s
+        A.diagMult(diags, s, &t, &handle, 1.0, 0.0); // t = A * s
         double omega = t.mult(s) / t.mult(t);
         result.set(h);
         result.add(s, omega, &handle); // x = h + omega * s

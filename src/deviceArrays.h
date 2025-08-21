@@ -96,8 +96,8 @@ protected:
     size_t _ld;
     CuArray(size_t rows, size_t cols, size_t ld);
 
-    virtual void mult(const CuArray<float>& other, CuArray<float>* result, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transposeA = false, bool transposeB = false) const;
-    virtual void mult(const CuArray<double>& other, CuArray<double>* result, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transposeA = false, bool transposeB = false) const;
+    void mult(const CuArray<float>& other, CuArray<float>* result, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transposeA = false, bool transposeB = false) const;
+    void mult(const CuArray<double>& other, CuArray<double>* result, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transposeA = false, bool transposeB = false) const;
 public:
     virtual ~CuArray();
     virtual size_t size() const = 0;
@@ -131,8 +131,7 @@ public:
 
 template <typename T>
 class CuArray2D : public CuArray<T> {
-    using CuArray<float>::mult; // Allow access to mult from CuArray<T>
-    using CuArray<double>::mult; // Allow access to mult from CuArray<T>
+    using CuArray<T>::mult;
 private:
     void _scale_impl(T alpha, Handle* handle);
     
@@ -168,13 +167,29 @@ public:
     void mult(float alpha, Handle* handle = nullptr);
     void mult(double alpha, Handle* handle = nullptr);
 
+    CuArray1D<float> bandedMult(const CuArray1D<float>& other, CuArray1D<float>* result = nullptr, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, int kl = 0, int ku = 0, bool transpose = false) const;
+    CuArray1D<double> bandedMult(const CuArray1D<double>& other, CuArray1D<double>* result = nullptr, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, int kl = 0, int ku = 0, bool transpose = false) const;
+
+    /**
+     * Multiply a sparse diagonal matrix (packed diagonals) with a 1D vector.
+     *
+     * This matrix must have at most 64 rows, representing a sparse matrix with up to 64 non zero diagonals.
+     * 
+     * @param diags Array of diagonal indices (negative=sub-diagonal, 0=main, positive=super-diagonal).  Each row of this matrix is treated as a diagonal with the coresponding index.
+     * @param x Input vector.
+     * @param result Optional pointer to store the result. If nullptr, a new CuArray1D is returned.
+     * @param handle Optional Handle for managing CUDA streams/context.
+     * @param stride Stride for the input vector x.
+     * @return A new CuArray1D containing the result of the multiplication.
+     */
+    CuArray1D<double> diagMult(const int* diags, const CuArray1D<double>& x, CuArray1D<double>* result = nullptr, Handle* handle = nullptr, const double alpha = 1.0, const double beta = 0.0) const;
+    CuArray1D<float> diagMult(const int* diags, const CuArray1D<float>& x, CuArray1D<float>* result = nullptr, Handle* handle = nullptr, const float alpha = 1.0, const float beta = 0.0) const;
+
 };
 
 template <typename T>
 class CuArray1D : public CuArray<T> {
-    using CuArray<float>::mult; // Allow access to mult from CuArray<T>    
-    using CuArray<double>::mult; // Allow access to mult from CuArray<T>
-
+    using CuArray<T>::mult;
 public:
     explicit CuArray1D(size_t length);
     CuArray1D(const CuArray1D<T>& superArray, size_t offset, size_t length, size_t stride = 1);
@@ -293,6 +308,5 @@ std::istream& operator>>(std::istream& is, CuArray2D<T>& arr) {
     arr.set(hostData.data());
     return is;
 }
-
 
 #endif // DEVICEARRAYS_H
