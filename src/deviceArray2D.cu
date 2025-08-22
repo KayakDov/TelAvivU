@@ -671,11 +671,12 @@ __global__ void diagMatVecFloatKernel(
 /**
  * Multiplies a sparse diagonal matrix (stored in packed diagonal format) with a 1D vector.
  * 
+ * @param diags Array of diagonal indices (negative=sub-diagonal, 0=main, positive=super-diagonal)
  * @param x Input vector.
  * @param result Optional pointer to an existing 1D array to store the result.
  * @param handle Optional Cuda handle for stream/context management.
- * @param diags Array of diagonal indices (negative=sub-diagonal, 0=main, positive=super-diagonal)
- * @param stride Stride for input vector x
+ * @param alpha Scalar multiplier for the matrix-vector product.
+ * @param beta Scalar multiplier for the existing values in the result array.
  * @return A new CuArray1D containing the result.
  */
 template <>
@@ -780,8 +781,6 @@ CuArray1D<float> CuArray2D<float>::diagMult(
 
     return *resPtr;
 }
-
-
 
 
 template class CuArray2D<int>;

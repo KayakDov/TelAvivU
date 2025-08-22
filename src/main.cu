@@ -1,6 +1,7 @@
 #include <iostream>
 #include "deviceArrays.h"
 #include "testMethods.cu"
+#include "algorithms.cu"
 
 using namespace std;
 
@@ -10,6 +11,7 @@ int main(int argc, char const *argv[])
     checkForDevice();
     
     CuArray2D<float> A(3, 3);
+    CuArray1D<float> b(3);
     CuArray1D<float> x(3);
 
     float dataA[] = {1.0f, 2.0f, 3.0f,
@@ -19,14 +21,20 @@ int main(int argc, char const *argv[])
 
     cout << "A:\n" << A << endl;
 
-    float dataX[] = {1.0f, 2.0f, 3.0f};
-    x.set(dataX);
+    float data_b[] = {1.0f, 2.0f, 3.0f};
+    b.set(data_b);
+
+    cout << "b:\n" << b << endl;
+
+    const int diags[] = {-1, 0, 1};
+    
+    unpreconditionedBiCGSTAB(A, diags, b, &x, 20, 1e-6f);
 
     cout << "x:\n" << x << endl;
 
-    const int diags[] = {-1, 0, 1};
+
     // A.diagMult(diags, x);
-    cout << "\nproduct:\n" << A.diagMult(diags, x) << endl;
+    // cout << "\nproduct:\n" << A.diagMult(diags, b) << endl;
     
     return 0;
 }
