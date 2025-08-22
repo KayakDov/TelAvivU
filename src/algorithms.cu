@@ -1,8 +1,19 @@
 #include "deviceArrays.h"
 #include <cmath>
 
-//TODO: test random number generation, test this method here, write multipliation for sparse matrices
-
+/**
+ * Unpreconditioned BiCGSTAB algorithm to solve the linear system Ax = b.
+ * @param A The coefficient matrix (CuArray2D).
+ * @param diags The diagonals of the matrix A.
+ * @param b The right-hand side vector (CuArray1D).
+ * @param preAlocated Optional pre-allocated memory for intermediate computations (CuArray2D).  
+ * There should be 7 columns and b.size() rows.
+ * @param maxIterations Maximum number of iterations to perform. Default is
+ * the size of vector b.
+ * @param tolerance Convergence tolerance. Default is 1e-6 for float and 1e-12 for double.
+ * @return The solution vector x (CuArray1D).
+ * @throws std::runtime_error if T is not float or double.
+ */
 template<typename T>
 CuArray1D<T> unpreconditionedBiCGSTAB(
     const CuArray2D<T>& A, 
@@ -10,39 +21,37 @@ CuArray1D<T> unpreconditionedBiCGSTAB(
     const CuArray1D<T>& b, 
     CuArray1D<T>* x = nullptr, 
     size_t maxIterations = -1, 
-    T tolerance = std::is_same<T,double>::value ? T(1e-12) : T(1e-6)
+    T tolerance = std::is_same<T,double>::value ? T(1e-12) : T(1e-6),
+    CuArray2D<T>* preAlocated = nullptr
 ){
     if(maxIterations == (size_t)-1) maxIterations = b.size();
     static_assert(std::is_same<T,float>::value || std::is_same<T,double>::value,
               "Algorithms.cu unpreconditionedBiCGSTAB: T must be float or double");
     Handle handle;
 
-    CuArray1D<T> result = x ? *x : CuArray1D<T>(b.size());
+    const CuArray2D<T>& pa = preAlocated ? *preAlocated : CuArray2D<T>(b.size(), 7);
+    CuArray1D<T> r(pa, 0, IndexType::Column);
+    CuArray1D<T> r_tilde(pa, 1, IndexType::Column);
+    CuArray1D<T> p(pa, 2, IndexType::Column);
+    CuArray1D<T> v(pa, 3, IndexType::Column);
+    CuArray1D<T> s(pa, 4, IndexType::Column);
+    CuArray1D<T> t(pa, 5, IndexType::Column);
+    CuArray1D<T> h(pa, 6, IndexType::Column);
 
-    CuArray1D<T> r(b.size());
+
+    CuArray1D<T> result = x ? *x : CuArray1D<T>(b.size());    
     
     r.set(b);
-    A.diagMult(diags, *x, &r, &handle, T(-1), T(1)); // r = b - A * x
+    A.diagMult(diags, result, &r, &handle, T(-1), T(1)); // r = b - A * x
 
-    CuArray1D<T> r_tilde(r.size());
+    
     r_tilde.fillRandom(&handle); // r_tilde is a random vector
-
-    // std::cout << "initial x: " << result << std::endl;
-    // std::cout << "Initial r: " << r << std::endl;
-    // std::cout << "Initial r_tilde: " << r_tilde << std::endl;
-    // std::cout << "Initial b: " << b << std::endl;
-    // std::cout << "Initial residual: " << r.mult(r) << std::endl;
-    // std::cout << "Initial r_tilde: " << r_tilde.mult(r_tilde) << std::endl;
 
     T rho = r_tilde.mult(r);
 
-    CuArray1D<T> p(r.size());
+    
     p.set(r);
-
-    CuArray1D<T> v(r.size());//TODO: allow for prealocated memory to pass as a pararamater.  Allow for all the variables to use the same block, maybe a 2d matrix.
-    CuArray1D<T> s(r.size());
-    CuArray1D<T> t(r.size());
-    CuArray1D<T> h(r.size());
+    
 
     for(int i = 0; i < maxIterations; i++) {
         A.diagMult(diags, p, &v, &handle, T(1), T(0)); // v = A * p
@@ -70,7 +79,7 @@ CuArray1D<T> unpreconditionedBiCGSTAB(
         p.add(r, T(1), &handle); // p = r + beta * p
         p.sub(v, beta * omega, &handle); // p = p - beta * omega * v        
     }
-
+    
     return result;
 }
 
