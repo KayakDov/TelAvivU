@@ -15,6 +15,8 @@
 #include <cublas_v2.h> // For cuBLAS
 #include <curand_kernel.h> // For cuRAND
 #include <iomanip> // For formatted output
+#include <typeinfo>
+#include <stdexcept>
 
 template <typename T> class CuArray;
 template <typename T> class CuArray1D;
@@ -47,10 +49,10 @@ public:
     StreamHelper(size_t rows, size_t cols);
     virtual ~StreamHelper();
     bool hasNext() const;
-    size_t getNextChunkColNumber() const;
-    T* getHostBuffer();
+    size_t getChunkWidth() const;
     void updateProgress();
     size_t getColsProcessed() const;
+    std::vector<T>& getBuffer();
 };
 
 template <typename T>
@@ -183,7 +185,7 @@ public:
      * @param stride Stride for the input vector x.
      * @return A new CuArray1D containing the result of the multiplication.
      */
-    CuArray1D<T> diagMult(const int* diags, const CuArray1D<T>& x, CuArray1D<T>* result = nullptr, Handle* handle = nullptr, const T alpha = 1.0, const T beta = 0.0) const;
+    CuArray1D<T> diagMult(const CuArray1D<int>& diags, const CuArray1D<T>& x, CuArray1D<T>* result = nullptr, Handle* handle = nullptr, const T alpha = 1.0, const T beta = 0.0) const;
 
 };
 
@@ -236,8 +238,6 @@ public:
  */
 template <typename T>
 std::istream& operator>>(std::istream& is, CuArray1D<T>& arr) {
-
-    
 
     std::vector<T> hostData(arr.size());
     for (size_t i = 0; i < hostData.size(); ++i) {
@@ -336,6 +336,15 @@ std::istream& operator>>(std::istream& is, CuArray2D<T>& arr) {
 
     arr.set(hostData.data());
     return is;
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const CuArray<T>& arr) {
+    
+    if (auto ptr1d = dynamic_cast<const CuArray1D<T>*>(&arr)) return os << *ptr1d;
+    else if (auto ptr2d = dynamic_cast<const CuArray2D<T>*>(&arr)) return os << *ptr2d;
+    else throw std::runtime_error("Unable to detect the type of array, 1d or 2d.");
+    return os;
 }
 
 

@@ -32,18 +32,18 @@ bool StreamHelper<T>::hasNext() const {
 }
 
 template <typename T>
-size_t StreamHelper<T>::getNextChunkColNumber() const {
+size_t StreamHelper<T>::getChunkWidth() const {
     return std::min(_maxColsPerChunk, _totalCols - _colsProcessed);
 }
 
 template <typename T>
-T* StreamHelper<T>::getHostBuffer() {
-    return _hostBuffer.data();
+std::vector<T>&  StreamHelper<T>::getBuffer() {
+    return _hostBuffer;
 }
 
 template <typename T>
 void StreamHelper<T>::updateProgress() {
-    _colsProcessed += getNextChunkColNumber();
+    _colsProcessed += getChunkWidth();
 }
 
 template <typename T>
@@ -58,11 +58,12 @@ StreamSet<T>::StreamSet(size_t rows, size_t cols, std::istream& input_stream)
 
 template <typename T>
 void StreamSet<T>::readChunk() {
-    size_t current_chunk_bytes = this->getNextChunkColNumber() * this->_rows * sizeof(T);
-    if (current_chunk_bytes > 0) {
-        this->_input_stream.read(reinterpret_cast<char*>(this->_hostBuffer.data()), current_chunk_bytes);
-        if (!this->_input_stream) throw std::runtime_error("Stream read error or premature end of stream.");
-    }
+    size_t current_chunk_bytes = this->getChunkWidth() * this->_rows * sizeof(T);
+    
+    this->_input_stream.read(reinterpret_cast<char*>(this->_hostBuffer.data()), current_chunk_bytes);
+
+    if (!this->_input_stream) throw std::runtime_error("Stream read error or premature end of stream.");
+    
 }
 
 // --- GetToFile Definitions ---
@@ -72,7 +73,7 @@ StreamGet<T>::StreamGet(size_t rows, size_t cols, std::ostream& output_stream)
 
 template <typename T>
 void StreamGet<T>::writeChunk() {
-    size_t current_chunk_bytes = this->getNextChunkColNumber() * this->_rows * sizeof(T);
+    size_t current_chunk_bytes = this->getChunkWidth() * this->_rows * sizeof(T);
     if (current_chunk_bytes > 0) {
         this->_output_stream.write(reinterpret_cast<const char*>(this->_hostBuffer.data()), current_chunk_bytes);
         if (!this->_output_stream) throw std::runtime_error("Stream write error.");

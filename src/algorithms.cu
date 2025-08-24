@@ -17,7 +17,7 @@
 template<typename T>
 CuArray1D<T> unpreconditionedBiCGSTAB(
     const CuArray2D<T>& A, 
-    const int* diags,
+    const CuArray1D<int>& diags,
     const CuArray1D<T>& b, 
     CuArray1D<T>* x = nullptr, 
     size_t maxIterations = -1, 

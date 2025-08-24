@@ -229,10 +229,10 @@ void CuArray2D<T>::set(std::istream& input_stream, cudaStream_t cuStream) {
             0,
             helper.getColsProcessed(),
             this->_rows,
-            helper.getNextChunkColNumber()
+            helper.getChunkWidth()
         );
 
-        subArray.set(helper.getHostBuffer(), cuStream);
+        subArray.set(helper.getBuffer().data(), cuStream);
 
         CHECK_CUDA_ERROR(cudaDeviceSynchronize());//TODO: this might be avoidable with multi threading
 
@@ -251,10 +251,10 @@ void CuArray2D<T>::get(std::ostream& output_stream, cudaStream_t stream) const {
             0,
             helper.getColsProcessed(),
             this->_rows,
-            helper.getNextChunkColNumber()
+            helper.getChunkWidth()
         );
 
-        subArray.get(helper.getHostBuffer(), stream);
+        subArray.get(helper.getBuffer().data(), stream);
         CHECK_CUDA_ERROR(cudaDeviceSynchronize());//TODO: this might be avoidable with multi threading
 
         helper.writeChunk();
@@ -625,7 +625,7 @@ __global__ void diagMatVecKernel(
  */
 template <typename T>
 CuArray1D<T> CuArray2D<T>::diagMult(
-    const int* diags,
+    const CuArray1D<int>& diags,
     const CuArray1D<T>& x,
     CuArray1D<T>* result,
     Handle* handle,
@@ -638,14 +638,11 @@ CuArray1D<T> CuArray2D<T>::diagMult(
     CuArray1D<T>* resPtr = result ? result : new CuArray1D<T>(this->_cols);
     Handle* h = handle ? handle : new Handle();
 
-    CuArray1D<int> d_diags(this->_rows);
-    d_diags.set(diags, h->stream);
-    
     int sharedMemSize = sizeof(T) * this->_rows;
     
     diagMatVecKernel<<<this->_cols, (this->_cols + 1) / 2, sharedMemSize, h->stream>>>(
         this->data(), this->_cols, this->getLD(),
-        d_diags.data(), this->_rows,
+        diags.data(), this->_rows,
         x.data(), x.getLD(),
         resPtr->data(),
         resPtr->getLD(),

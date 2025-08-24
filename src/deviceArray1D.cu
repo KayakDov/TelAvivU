@@ -212,9 +212,9 @@ void CuArray1D<T>::set(std::istream& input_stream, cudaStream_t stream) {
         CuArray1D<T> subArray(
             *this,
             helper.getColsProcessed(),
-            helper.getNextChunkColNumber()
+            helper.getChunkWidth()
         );
-        subArray.set(helper.getHostBuffer(), stream);
+        subArray.set(helper.getBuffer().data(), stream);
         helper.updateProgress();
     }
 }
@@ -226,9 +226,9 @@ void CuArray1D<T>::get(std::ostream& output_stream, cudaStream_t stream) const {
         CuArray1D<T> subArray(
             *this,
             helper.getColsProcessed(),
-            helper.getNextChunkColNumber()
+            helper.getChunkWidth()
         );
-        subArray.get(helper.getHostBuffer(), stream);
+        subArray.get(helper.getBuffer().data(), stream);
         helper.writeChunk();
         helper.updateProgress();
     }
