@@ -18,9 +18,9 @@
 #include <typeinfo>
 #include <stdexcept>
 
-template <typename T> class CuArray;
-template <typename T> class CuArray1D;
-template <typename T> class CuArray2D;
+template <typename T> class gpuArray;
+template <typename T> class Vec;
+template <typename T> class Mat;
 template <typename T> class StreamHelper;
 template <typename T> class StreamSet;
 template <typename T> class StreamGet;
@@ -96,25 +96,25 @@ private:
 
 
 template <typename T>
-class CuArray {
+class gpuArray {
 public:
     const size_t _rows;
     const size_t _cols;
 protected:
     std::shared_ptr<void> _ptr;
     size_t _ld;
-    CuArray(size_t rows, size_t cols, size_t ld);
+    gpuArray(size_t rows, size_t cols, size_t ld);
 
-    virtual void mult(const CuArray<float>& other, CuArray<float>* result, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transposeA = false, bool transposeB = false) const;
-    virtual void mult(const CuArray<double>& other, CuArray<double>* result, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transposeA = false, bool transposeB = false) const;
+    virtual void mult(const gpuArray<float>& other, gpuArray<float>* result, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transposeA = false, bool transposeB = false) const;
+    virtual void mult(const gpuArray<double>& other, gpuArray<double>* result, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transposeA = false, bool transposeB = false) const;
 public:
-    virtual ~CuArray();
+    virtual ~gpuArray();
     virtual size_t size() const = 0;
     virtual size_t bytes() const = 0;
     virtual void set(const T* hostData, cudaStream_t stream = 0) = 0;
     virtual void get(T* hostData, cudaStream_t stream = 0) const = 0;
-    virtual void set(const CuArray<T>& src, cudaStream_t stream = 0) = 0;
-    virtual void get(CuArray<T>& dst, cudaStream_t stream = 0) const = 0;
+    virtual void set(const gpuArray<T>& src, cudaStream_t stream = 0) = 0;
+    virtual void get(gpuArray<T>& dst, cudaStream_t stream = 0) const = 0;
     virtual void set(std::istream& input_stream, bool isText = false, bool isColMjr = true, cudaStream_t stream = 0) = 0;
     virtual void get(std::ostream& output_stream, bool isText = false, bool isColMjr = true, cudaStream_t stream = 0) const = 0;
     T* data();
@@ -122,10 +122,10 @@ public:
     size_t getLD() const;
     std::shared_ptr<void> getPtr() const;
 
-    CuArray<T>& operator=(const CuArray<T>& other) {
+    gpuArray<T>& operator=(const gpuArray<T>& other) {
         if (this != &other) {
             if (_rows != other._rows || _cols != other._cols)
-                throw std::runtime_error("CuArray assignment: row/col dimensions do not match");
+                throw std::runtime_error("gpuArray assignment: row/col dimensions do not match");
             
             _ptr = other._ptr;
             _ld = other._ld;
@@ -134,50 +134,54 @@ public:
     }
 
 
-    CuArray(const CuArray<T>& other) = default;
+    gpuArray(const gpuArray<T>& other) = default;
     
 };
 
 template <typename T>
-class CuArray2D : public CuArray<T> {
-    using CuArray<T>::mult;
+class Singleton;
+
+
+template <typename T>
+class Mat : public gpuArray<T> {
+    using gpuArray<T>::mult;
 private:
     void _scale_impl(T alpha, Handle* handle);
     
 public:
-    CuArray2D(size_t rows, size_t cols);
-    CuArray2D(const CuArray2D<T>& superArray, size_t startRow, size_t startCol, size_t height, size_t width);
+    Mat(size_t rows, size_t cols);
+    Mat(const Mat<T>& superArray, size_t startRow, size_t startCol, size_t height, size_t width);
     size_t size() const override;
     size_t bytes() const override;
     void set(const T* src, cudaStream_t stream = 0) override;
     void get(T* dst, cudaStream_t stream = 0) const override;
-    void set(const CuArray<T>& src, cudaStream_t stream = 0) override;
-    void get(CuArray<T>& dst, cudaStream_t stream = 0) const override;
+    void set(const gpuArray<T>& src, cudaStream_t stream = 0) override;
+    void get(gpuArray<T>& dst, cudaStream_t stream = 0) const override;
     void set(std::istream& input_stream, bool isText= false, bool readColMjr = true, cudaStream_t stream = 0);
     void get(std::ostream& output_stream, bool isText = false, bool printColMjr = true, cudaStream_t stream = 0) const;
     
-    CuArray2D<float> mult(const CuArray2D<float>& other, CuArray2D<float>* result = nullptr, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transposeA = false, bool transposeB = false) const;
-    CuArray2D<double> mult(const CuArray2D<double>& other, CuArray2D<double>* result = nullptr, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transposeA = false, bool transposeB = false) const;
+    Mat<float> mult(const Mat<float>& other, Mat<float>* result = nullptr, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transposeA = false, bool transposeB = false) const;
+    Mat<double> mult(const Mat<double>& other, Mat<double>* result = nullptr, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transposeA = false, bool transposeB = false) const;
 
-    CuArray1D<float> mult(const CuArray1D<float>& other, CuArray1D<float>* result = nullptr, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transpose = false) const;
-    CuArray1D<double> mult(const CuArray1D<double>& other, CuArray1D<double>* result = nullptr, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transpose = false) const;
+    Vec<float> mult(const Vec<float>& other, Vec<float>* result = nullptr, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transpose = false) const;
+    Vec<double> mult(const Vec<double>& other, Vec<double>* result = nullptr, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transpose = false) const;
     
-    CuArray1D<float> operator*(const CuArray1D<float>& other) const;
-    CuArray1D<double> operator*(const CuArray1D<double>& other) const;
+    Vec<float> operator*(const Vec<float>& other) const;
+    Vec<double> operator*(const Vec<double>& other) const;
 
-    CuArray2D<float> operator*(const CuArray2D<float>& other) const;
-    CuArray2D<double> operator*(const CuArray2D<double>& other) const;
+    Mat<float> operator*(const Mat<float>& other) const;
+    Mat<double> operator*(const Mat<double>& other) const;
     
-    CuArray2D<float> plus(const CuArray2D<float>& x, CuArray2D<float>* result = nullptr, float alpha = 1.0f, float beta = 1.0f, bool transposeA = false, bool transposeB = false, Handle* handle = nullptr);
-    CuArray2D<double> plus(const CuArray2D<double>& x, CuArray2D<double>* result = nullptr, double alpha = 1.0, double beta = 1.0, bool transposeA = false, bool transposeB = false, Handle* handle = nullptr);
-    CuArray2D<float> minus(const CuArray2D<float>& x, CuArray2D<float>* result = nullptr, float alpha = 1.0f, float beta = 1.0f, bool transposeA = false, bool transposeB = false, Handle* handle = nullptr);
-    CuArray2D<double> minus(const CuArray2D<double>& x, CuArray2D<double>* result = nullptr, double alpha = 1.0, double beta = 1.0, bool transposeA = false, bool transposeB = false, Handle* handle = nullptr);
+    Mat<float> plus(const Mat<float>& x, Mat<float>* result = nullptr, float alpha = 1.0f, float beta = 1.0f, bool transposeA = false, bool transposeB = false, Handle* handle = nullptr);
+    Mat<double> plus(const Mat<double>& x, Mat<double>* result = nullptr, double alpha = 1.0, double beta = 1.0, bool transposeA = false, bool transposeB = false, Handle* handle = nullptr);
+    Mat<float> minus(const Mat<float>& x, Mat<float>* result = nullptr, float alpha = 1.0f, float beta = 1.0f, bool transposeA = false, bool transposeB = false, Handle* handle = nullptr);
+    Mat<double> minus(const Mat<double>& x, Mat<double>* result = nullptr, double alpha = 1.0, double beta = 1.0, bool transposeA = false, bool transposeB = false, Handle* handle = nullptr);
 
     void mult(float alpha, Handle* handle = nullptr);
     void mult(double alpha, Handle* handle = nullptr);
 
-    CuArray1D<float> bandedMult(const CuArray1D<float>& other, CuArray1D<float>* result = nullptr, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, int kl = 0, int ku = 0, bool transpose = false) const;
-    CuArray1D<double> bandedMult(const CuArray1D<double>& other, CuArray1D<double>* result = nullptr, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, int kl = 0, int ku = 0, bool transpose = false) const;
+    Vec<float> bandedMult(const Vec<float>& other, Vec<float>* result = nullptr, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, int kl = 0, int ku = 0, bool transpose = false) const;
+    Vec<double> bandedMult(const Vec<double>& other, Vec<double>* result = nullptr, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, int kl = 0, int ku = 0, bool transpose = false) const;
 
     /**
      * Multiply a sparse diagonal matrix (packed diagonals) with a 1D vector.
@@ -186,69 +190,87 @@ public:
      * 
      * @param diags Array of diagonal indices (negative=sub-diagonal, 0=main, positive=super-diagonal).  Each row of this matrix is treated as a diagonal with the coresponding index.
      * @param x Input vector.
-     * @param result Optional pointer to store the result. If nullptr, a new CuArray1D is returned.
+     * @param result Optional pointer to store the result. If nullptr, a new gpuArray1D is returned.
      * @param handle Optional Handle for managing CUDA streams/context.
      * @param stride Stride for the input vector x.
-     * @return A new CuArray1D containing the result of the multiplication.
+     * @return A new gpuArray1D containing the result of the multiplication.
      */
-    CuArray1D<T> diagMult(const CuArray1D<int>& diags, const CuArray1D<T>& x, CuArray1D<T>* result = nullptr, Handle* handle = nullptr, const T alpha = 1.0, const T beta = 0.0) const;
+    Vec<T> diagMult(const Vec<int>& diags, const Vec<T>& x, Vec<T>* result = nullptr, Handle* handle = nullptr, const T alpha = 1.0, const T beta = 0.0) const;
 
 
-    void transpose(CuArray2D<T>& result, Handle* handle = nullptr) const;
-    void transpose(Handle* handle = nullptr, CuArray2D<T>* preAlocatedMem = nullptr);
+    void transpose(Mat<T>& result, Handle* handle = nullptr) const;
+    void transpose(Handle* handle = nullptr, Mat<T>* preAlocatedMem = nullptr);
     
 
 };
 
 template <typename T>
-class CuArray1D : public CuArray<T> {
-    using CuArray<T>::mult;
+class Vec : public gpuArray<T> {
+    using gpuArray<T>::mult;
+protected:
+    Vec(size_t cols, size_t rows, size_t ld);
 public:
-    explicit CuArray1D(size_t length);
-    CuArray1D(const CuArray1D<T>& superArray, size_t offset, size_t length, size_t stride = 1);
-    CuArray1D(const CuArray2D<T>& extractFrom, int index, IndexType indexType);
+    explicit Vec(size_t length);
+    Vec(const Vec<T>& superArray, size_t offset, size_t length, size_t stride = 1);
+    Vec(const Mat<T>& extractFrom, int index, IndexType indexType);
     size_t size() const override;
     size_t bytes() const override;
     void set(const T* hostData, cudaStream_t stream = 0) override;
     void get(T* hostData, cudaStream_t stream = 0) const override;
-    void set(const CuArray<T>& src, cudaStream_t stream = 0) override;
-    void get(CuArray<T>& dst, cudaStream_t stream = 0) const override;
+    void set(const gpuArray<T>& src, cudaStream_t stream = 0) override;
+    void get(gpuArray<T>& dst, cudaStream_t stream = 0) const override;
     void set(std::istream& input_stream, bool isText = false, bool isColMjr = true, cudaStream_t stream = 0) override;
     void get(std::ostream& output_stream, bool isText = false, bool isColMjr = true, cudaStream_t stream = 0) const override;
 
-    CuArray1D<float> mult(const CuArray2D<float>& other, CuArray1D<float>* result = nullptr, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transpose = false) const;
-    CuArray1D<double> mult(const CuArray2D<double>& other, CuArray1D<double>* result = nullptr, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transpose = false) const;
+    Vec<float> mult(const Mat<float>& other, Vec<float>* result = nullptr, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transpose = false) const;
+    Vec<double> mult(const Mat<double>& other, Vec<double>* result = nullptr, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transpose = false) const;
 
-    float mult(const CuArray1D<float>& other, Handle* handle = nullptr) const;
-    double mult(const CuArray1D<double>& other, Handle* handle = nullptr) const;
+    float mult(const Vec<float>& other, Singleton<float>* result = nullptr, Handle* handle = nullptr) const;
+    double mult(const Vec<double>& other, Singleton<double>* result = nullptr, Handle* handle = nullptr) const;
 
-    CuArray1D<float> operator*(const CuArray2D<float>& other) const;
-    CuArray1D<double> operator*(const CuArray2D<double>& other) const;
-    float operator*(const CuArray1D<float>& other) const;
-    double operator*(const CuArray1D<double>& other) const;
+    Vec<float> operator*(const Mat<float>& other) const;
+    Vec<double> operator*(const Mat<double>& other) const;
+    float operator*(const Vec<float>& other) const;
+    double operator*(const Vec<double>& other) const;
 
-    void add(const CuArray1D<float>& x, float alpha = 1.0f, Handle* handle = nullptr);
-    void sub(const CuArray1D<float>& x, float alpha = 1.0f,Handle* handle = nullptr);
+    void add(const Vec<float>& x, float alpha = 1.0f, Handle* handle = nullptr);
+    void sub(const Vec<float>& x, float alpha = 1.0f, Handle* handle = nullptr);
 
-    void add(const CuArray1D<double>& x, double alpha = 1.0, Handle* handle = nullptr);
-    void sub(const CuArray1D<double>& x, double alpha = 1.0, Handle* handle = nullptr);
+    void add(const Vec<double>& x, double alpha = 1.0, Handle* handle = nullptr);
+    void sub(const Vec<double>& x, double alpha = 1.0, Handle* handle = nullptr);
 
     void mult(float alpha, Handle* handle = nullptr);
     void mult(double alpha, Handle* handle = nullptr);
 
     void fillRandom(Handle* handle = nullptr);
+
+    void EBEPow(const Singleton<T>& t, T n, cudaStream_t stream = 0);
+
 };
 
+template <typename T>
+class Singleton : public Vec<T> {
+    
+public:
+    using Vec<T>::get;
+    using Vec<T>::set;
 
+    Singleton();
+    Singleton(const Vec<T>& superVector, int index);
+    Singleton(const Mat<T>& superMatrix, int row, int col);
+
+    T get(cudaStream_t stream = nullptr) const;
+    void set(const T val, cudaStream_t stream = nullptr);
+};
 /**
- * @brief Input formatted data (space-separated values) into CuArray1D<T> from a stream.
+ * @brief Input formatted data (space-separated values) into gpuArray1D<T> from a stream.
  * @tparam T Element type
  * @param is Input stream
  * @param arr Array to fill
  * @return Input stream
  */
 template <typename T>
-std::istream& operator>>(std::istream& is, CuArray1D<T>& arr) {
+std::istream& operator>>(std::istream& is, Vec<T>& arr) {
 
     std::vector<T> hostData(arr.size());
     for (size_t i = 0; i < hostData.size(); ++i) {
@@ -263,14 +285,14 @@ std::istream& operator>>(std::istream& is, CuArray1D<T>& arr) {
 }
 
 /**
- * @brief Prints a CuArray1D<T> to a stream.
+ * @brief Prints a gpuArray1D<T> to a stream.
  * @tparam T Element type
  * @param os Output stream
- * @param arr The CuArray1D to print
+ * @param arr The gpuArray1D to print
  * @return Output stream
  */
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const CuArray1D<T>& arr) {
+std::ostream& operator<<(std::ostream& os, const Vec<T>& arr) {
     std::vector<T> hostData(arr.size());
     arr.get(hostData.data());
     
@@ -287,7 +309,7 @@ std::ostream& operator<<(std::ostream& os, const CuArray1D<T>& arr) {
 }
 
 /**
- * @brief Prints a CuArray2D<T> to a stream with improved formatting.
+ * @brief Prints a gpuArray2D<T> to a stream with improved formatting.
  *
  * This operator assumes a column-major memory layout and prints the matrix
  * row by row for a more readable output. It uses iomanip to format the
@@ -295,11 +317,11 @@ std::ostream& operator<<(std::ostream& os, const CuArray1D<T>& arr) {
  *
  * @tparam T Element type
  * @param os Output stream
- * @param arr The CuArray2D to print
+ * @param arr The gpuArray2D to print
  * @return Output stream
  */
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const CuArray2D<T>& arr) {
+std::ostream& operator<<(std::ostream& os, const Mat<T>& arr) {
     cudaDeviceSynchronize();
     std::vector<T> hostData(arr.size());
     arr.get(hostData.data());
@@ -319,7 +341,7 @@ std::ostream& operator<<(std::ostream& os, const CuArray2D<T>& arr) {
 
 
 /**
- * @brief Reads formatted data (column by column) into CuArray2D<T> from a stream.
+ * @brief Reads formatted data (column by column) into gpuArray2D<T> from a stream.
  *
  * This operator assumes the input stream is formatted in column-major order,
  * meaning it will read all elements of the first column, then the second, and so on.
@@ -330,7 +352,7 @@ std::ostream& operator<<(std::ostream& os, const CuArray2D<T>& arr) {
  * @return Input stream
  */
 template <typename T>
-std::istream& operator>>(std::istream& is, CuArray2D<T>& arr) {
+std::istream& operator>>(std::istream& is, Mat<T>& arr) {
     std::vector<T> hostData(arr.size());
     size_t ld = arr.getLD();
 
@@ -350,10 +372,10 @@ std::istream& operator>>(std::istream& is, CuArray2D<T>& arr) {
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const CuArray<T>& arr) {
+std::ostream& operator<<(std::ostream& os, const gpuArray<T>& arr) {
     
-    if (auto ptr1d = dynamic_cast<const CuArray1D<T>*>(&arr)) return os << *ptr1d;
-    else if (auto ptr2d = dynamic_cast<const CuArray2D<T>*>(&arr)) return os << *ptr2d;
+    if (auto ptr1d = dynamic_cast<const Vec<T>*>(&arr)) return os << *ptr1d;
+    else if (auto ptr2d = dynamic_cast<const Mat<T>*>(&arr)) return os << *ptr2d;
     else throw std::runtime_error("Unable to detect the type of array, 1d or 2d.");
     return os;
 }

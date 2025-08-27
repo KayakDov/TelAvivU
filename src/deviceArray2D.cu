@@ -2,9 +2,9 @@
 
 
 template <>
-CuArray2D<float> CuArray2D<float>::mult(
-    const CuArray2D<float>& other,
-    CuArray2D<float>* result,
+Mat<float> Mat<float>::mult(
+    const Mat<float>& other,
+    Mat<float>* result,
     Handle* handle,
     float alpha,
     float beta,
@@ -12,12 +12,12 @@ CuArray2D<float> CuArray2D<float>::mult(
     bool transposeB
 ) const {
     
-    CuArray2D<float>* resPtr = result ? result: new CuArray2D<float>(this->_rows, other._cols);
+    Mat<float>* resPtr = result ? result: new Mat<float>(this->_rows, other._cols);
     
-    CuArray<float>::mult(other, resPtr, handle, alpha, beta, transposeA, transposeB);
+    gpuArray<float>::mult(other, resPtr, handle, alpha, beta, transposeA, transposeB);
 
     if (!result) {
-        CuArray2D<float> temp = *resPtr;
+        Mat<float> temp = *resPtr;
         delete resPtr;
         return temp;
     }
@@ -26,21 +26,21 @@ CuArray2D<float> CuArray2D<float>::mult(
 }
 
 template <>
-CuArray2D<double> CuArray2D<double>::mult(
-    const CuArray2D<double>& other,
-    CuArray2D<double>* result,
+Mat<double> Mat<double>::mult(
+    const Mat<double>& other,
+    Mat<double>* result,
     Handle* handle,
     double alpha,
     double beta,
     bool transposeA,
     bool transposeB
 ) const {
-    CuArray2D<double>* resPtr = result ? result: new CuArray2D<double>(this->_rows, other._cols);
+    Mat<double>* resPtr = result ? result: new Mat<double>(this->_rows, other._cols);
     
-    CuArray<double>::mult(other, resPtr, handle, alpha, beta, transposeA, transposeB);
+    gpuArray<double>::mult(other, resPtr, handle, alpha, beta, transposeA, transposeB);
     
     if (!result) {
-        CuArray2D<double> temp = *resPtr;
+        Mat<double> temp = *resPtr;
         delete resPtr;
         return temp;
     }
@@ -49,9 +49,9 @@ CuArray2D<double> CuArray2D<double>::mult(
 }
 
 template <>
-CuArray1D<float> CuArray2D<float>::mult(
-    const CuArray1D<float>& other,
-    CuArray1D<float>* result,
+Vec<float> Mat<float>::mult(
+    const Vec<float>& other,
+    Vec<float>* result,
     Handle* handle,
     float alpha,
     float beta,
@@ -59,14 +59,14 @@ CuArray1D<float> CuArray2D<float>::mult(
     
 ) const {
 
-    CuArray1D<float>* resPtr = result ? result: new CuArray1D<float>(other._cols);
+    Vec<float>* resPtr = result ? result: new Vec<float>(other._cols);
     
     Handle* h = handle ? handle : new Handle();
 
     cublasSgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, &alpha, this->data(), this->getLD(), other.data(), other.getLD(), &beta, resPtr->data(), resPtr->getLD());
 
     if (!result) {
-        CuArray1D<float> temp = *resPtr;
+        Vec<float> temp = *resPtr;
         delete resPtr;
         return temp;
     }
@@ -90,16 +90,16 @@ CuArray1D<float> CuArray2D<float>::mult(
  * @return A new 1D array containing the result of the multiplication.
  */
 template <>
-CuArray1D<double> CuArray2D<double>::mult(
-    const CuArray1D<double>& other,
-    CuArray1D<double>* result,
+Vec<double> Mat<double>::mult(
+    const Vec<double>& other,
+    Vec<double>* result,
     Handle* handle,
     double alpha,
     double beta,
     bool transpose
 ) const {
 
-    CuArray1D<double>* resPtr = result ? result: new CuArray1D<double>(other._cols);
+    Vec<double>* resPtr = result ? result: new Vec<double>(other._cols);
 
     Handle* h = handle ? handle : new Handle();
     
@@ -115,7 +115,7 @@ CuArray1D<double> CuArray2D<double>::mult(
     );
 
     if (!result) {
-        CuArray1D<double> temp = *resPtr;
+        Vec<double> temp = *resPtr;
         delete resPtr;
         return temp;
     }
@@ -129,24 +129,24 @@ CuArray1D<double> CuArray2D<double>::mult(
 }
 
 template <>
-CuArray2D<float> CuArray2D<float>::operator*(const CuArray2D<float>& other) const {
+Mat<float> Mat<float>::operator*(const Mat<float>& other) const {
     return this->mult(other);
 }
 template <>
-CuArray2D<double> CuArray2D<double>::operator*(const CuArray2D<double>& other) const {
+Mat<double> Mat<double>::operator*(const Mat<double>& other) const {
     return this->mult(other);
 }
 template <>
-CuArray1D<float> CuArray2D<float>::operator*(const CuArray1D<float>& other) const {
+Vec<float> Mat<float>::operator*(const Vec<float>& other) const {
     return this->mult(other);
 }
 template <>
-CuArray1D<double> CuArray2D<double>::operator*(const CuArray1D<double>& other) const {
+Vec<double> Mat<double>::operator*(const Vec<double>& other) const {
     return this->mult(other);
 }
 
 template <typename T>
-CuArray2D<T>::CuArray2D(size_t rows, size_t cols): CuArray<T>(rows, cols, 0) {
+Mat<T>::Mat(size_t rows, size_t cols): gpuArray<T>(rows, cols, 0) {
     void* rawPtr = nullptr;
     size_t pitch = 0;
     cudaError_t err = cudaMallocPitch(&rawPtr, &pitch, rows * sizeof(T), cols);
@@ -158,8 +158,8 @@ CuArray2D<T>::CuArray2D(size_t rows, size_t cols): CuArray<T>(rows, cols, 0) {
 }
 
 template <typename T>
-CuArray2D<T>::CuArray2D(const CuArray2D<T>& superArray, size_t startRow, size_t startCol, size_t height, size_t width)
-    : CuArray<T>(height, width, superArray.getLD()) {
+Mat<T>::Mat(const Mat<T>& superArray, size_t startRow, size_t startCol, size_t height, size_t width)
+    : gpuArray<T>(height, width, superArray.getLD()) {
     size_t offset = startCol * superArray.getLD() + startRow;
     this->_ptr = std::shared_ptr<void>(
         superArray._ptr,
@@ -168,17 +168,17 @@ CuArray2D<T>::CuArray2D(const CuArray2D<T>& superArray, size_t startRow, size_t 
 }
 
 template <typename T>
-size_t CuArray2D<T>::size() const {
+size_t Mat<T>::size() const {
     return this->_rows * this->_cols;
 }
 
 template <typename T>
-size_t CuArray2D<T>::bytes() const {
+size_t Mat<T>::bytes() const {
     return this->_cols * this->_ld * sizeof(T);
 }
 
 template <typename T>
-void CuArray2D<T>::set(const T* src, cudaStream_t stream) {
+void Mat<T>::set(const T* src, cudaStream_t stream) {
     cudaMemcpy2DAsync(
         this->_ptr.get(), this->_ld * sizeof(T),
         src, this->_rows * sizeof(T),
@@ -188,7 +188,7 @@ void CuArray2D<T>::set(const T* src, cudaStream_t stream) {
 }
 
 template <typename T>
-void CuArray2D<T>::get(T* dst, cudaStream_t stream) const {
+void Mat<T>::get(T* dst, cudaStream_t stream) const {
     cudaMemcpy2DAsync(
         dst, this->_rows * sizeof(T),
         this->_ptr.get(), this->_ld * sizeof(T),
@@ -198,7 +198,7 @@ void CuArray2D<T>::get(T* dst, cudaStream_t stream) const {
 }
 
 template <typename T>
-void CuArray2D<T>::set(const CuArray<T>& src, cudaStream_t stream) {
+void Mat<T>::set(const gpuArray<T>& src, cudaStream_t stream) {
     cudaMemcpy2DAsync(
         this->_ptr.get(), this->_ld * sizeof(T),
         src.data(), src.getLD() * sizeof(T),
@@ -208,7 +208,7 @@ void CuArray2D<T>::set(const CuArray<T>& src, cudaStream_t stream) {
 }
 
 template <typename T>
-void CuArray2D<T>::get(CuArray<T>& dst, cudaStream_t cuStream) const {
+void Mat<T>::get(gpuArray<T>& dst, cudaStream_t cuStream) const {
     cudaMemcpy2DAsync(
         dst.data(), dst.getLD() * sizeof(T),
         this->_ptr.get(), this->_ld * sizeof(T),
@@ -221,13 +221,13 @@ void CuArray2D<T>::get(CuArray<T>& dst, cudaStream_t cuStream) const {
  * Note, if set from text will read data as row major and is much slower.  If set from binary data, will read as column major and is fast.
  */
 template <typename T>
-void CuArray2D<T>::set(std::istream& input_stream, bool isText, bool readColMajor, cudaStream_t cuStream) {
+void Mat<T>::set(std::istream& input_stream, bool isText, bool readColMajor, cudaStream_t cuStream) {
 
     StreamSet<T> helper(this->_rows, this->_cols, input_stream);
 
     while (helper.hasNext()) {
         helper.readChunk(isText);
-        CuArray2D<T> subArray(
+        Mat<T> subArray(
             *this,
             0,
             helper.getColsProcessed(),
@@ -249,12 +249,12 @@ void CuArray2D<T>::set(std::istream& input_stream, bool isText, bool readColMajo
  * Note, if gets to text, will print data as row major and is much slower.  If gets to binary data, will write as column major and is fast.
  */
 template <typename T>
-void CuArray2D<T>::get(std::ostream& output_stream, bool isText, bool printColMajor, cudaStream_t stream) const {
+void Mat<T>::get(std::ostream& output_stream, bool isText, bool printColMajor, cudaStream_t stream) const {
 
     StreamGet<T> helper(this->_rows, this->_cols, output_stream);
     
     if(!printColMajor) {
-        CuArray2D<T> mat(this->_rows, this->_cols);
+        Mat<T> mat(this->_rows, this->_cols);
         Handle handle(stream);
         this -> transpose(mat, &handle);
         mat.get(output_stream, isText, true, stream);
@@ -262,7 +262,7 @@ void CuArray2D<T>::get(std::ostream& output_stream, bool isText, bool printColMa
     }
     
     while (helper.hasNext()) {
-        CuArray2D<T> subArray(
+        Mat<T> subArray(
             *this,
             0,
             helper.getColsProcessed(),
@@ -280,9 +280,9 @@ void CuArray2D<T>::get(std::ostream& output_stream, bool isText, bool printColMa
 
 
 template <>
-CuArray2D<float> CuArray2D<float>::plus(
-    const CuArray2D<float>& x, 
-    CuArray2D<float>* result,
+Mat<float> Mat<float>::plus(
+    const Mat<float>& x, 
+    Mat<float>* result,
     float alpha,
     float beta,
     bool transposeA,
@@ -294,7 +294,7 @@ CuArray2D<float> CuArray2D<float>::plus(
     }
     
     // Determine the result pointer, creating a new one if necessary
-    CuArray2D<float>* resPtr = result ? result : new CuArray2D<float>(this->_rows, this->_cols);
+    Mat<float>* resPtr = result ? result : new Mat<float>(this->_rows, this->_cols);
     
     Handle* h = handle ? handle : new Handle();
 
@@ -314,7 +314,7 @@ CuArray2D<float> CuArray2D<float>::plus(
     }
     
     if (!result) {
-        CuArray2D<float> temp = *resPtr;
+        Mat<float> temp = *resPtr;
         delete resPtr;
         return temp;
     }
@@ -323,9 +323,9 @@ CuArray2D<float> CuArray2D<float>::plus(
 }
 
 template <>
-CuArray2D<double> CuArray2D<double>::plus(
-    const CuArray2D<double>& x, 
-    CuArray2D<double>* result,
+Mat<double> Mat<double>::plus(
+    const Mat<double>& x, 
+    Mat<double>* result,
     double alpha,
     double beta,
     bool transposeA,
@@ -337,7 +337,7 @@ CuArray2D<double> CuArray2D<double>::plus(
     }
 
     // Determine the result pointer, creating a new one if necessary
-    CuArray2D<double>* resPtr = result ? result : new CuArray2D<double>(this->_rows, this->_cols);
+    Mat<double>* resPtr = result ? result : new Mat<double>(this->_rows, this->_cols);
     
     Handle* h = handle ? handle : new Handle();
 
@@ -357,7 +357,7 @@ CuArray2D<double> CuArray2D<double>::plus(
     }
     
     if (!result) {
-        CuArray2D<double> temp = *resPtr;
+        Mat<double> temp = *resPtr;
         delete resPtr;
         return temp;
     }
@@ -366,9 +366,9 @@ CuArray2D<double> CuArray2D<double>::plus(
 }
 
 template <>
-CuArray2D<float> CuArray2D<float>::minus(
-    const CuArray2D<float>& x,
-    CuArray2D<float>* result,
+Mat<float> Mat<float>::minus(
+    const Mat<float>& x,
+    Mat<float>* result,
     float alpha,
     float beta,
     bool transposeA,
@@ -379,9 +379,9 @@ CuArray2D<float> CuArray2D<float>::minus(
 }
 
 template <>
-CuArray2D<double> CuArray2D<double>::minus(
-    const CuArray2D<double>& x,
-    CuArray2D<double>* result,
+Mat<double> Mat<double>::minus(
+    const Mat<double>& x,
+    Mat<double>* result,
     double alpha,
     double beta,
     bool transposeA,
@@ -392,7 +392,7 @@ CuArray2D<double> CuArray2D<double>::minus(
 }
 
 template <typename T>
-__global__ void scaleKernel(T* matrix, size_t rows, size_t cols, size_t ld, T alpha) {
+__global__ void scaleKernel(T* matrix, size_t rows, size_t cols, size_t ld, const T alpha) {
     size_t col = blockIdx.x * blockDim.x + threadIdx.x;
     size_t row = blockIdx.y * blockDim.y + threadIdx.y;
 
@@ -401,7 +401,7 @@ __global__ void scaleKernel(T* matrix, size_t rows, size_t cols, size_t ld, T al
 }
 
 template <typename T>
-void CuArray2D<T>::_scale_impl(T alpha, Handle* handle) {
+void Mat<T>::_scale_impl(T alpha, Handle* handle) {
     if (this->_rows == 0 || this->_cols == 0) {
         return;
     }
@@ -432,12 +432,12 @@ void CuArray2D<T>::_scale_impl(T alpha, Handle* handle) {
 }
 
 template <>
-void CuArray2D<float>::mult(float alpha, Handle* handle) {
+void Mat<float>::mult(float alpha, Handle* handle) {
     this->_scale_impl(alpha, handle);
 }
 
 template <>
-void CuArray2D<double>::mult(double alpha, Handle* handle) {
+void Mat<double>::mult(double alpha, Handle* handle) {
     this->_scale_impl(alpha, handle);
 }
 
@@ -445,9 +445,9 @@ void CuArray2D<double>::mult(double alpha, Handle* handle) {
  * Multiplies a banded 2D float matrix with a 1D vector using cuBLAS gbmv.
  */
 template <>
-CuArray1D<float> CuArray2D<float>::bandedMult(
-    const CuArray1D<float>& x,
-    CuArray1D<float>* result,
+Vec<float> Mat<float>::bandedMult(
+    const Vec<float>& x,
+    Vec<float>* result,
     Handle* handle,
     float alpha,
     float beta,
@@ -460,7 +460,7 @@ CuArray1D<float> CuArray2D<float>::bandedMult(
         throw std::invalid_argument("Matrix/vector dimensions do not match for banded multiplication.");
     }
 
-    CuArray1D<float>* resPtr = result ? result : new CuArray1D<float>(transpose ? this->_cols : this->_rows);
+    Vec<float>* resPtr = result ? result : new Vec<float>(transpose ? this->_cols : this->_rows);
 
     Handle* h = handle ? handle : new Handle();
 
@@ -482,7 +482,7 @@ CuArray1D<float> CuArray2D<float>::bandedMult(
     );
 
     if (!result) {
-        CuArray1D<float> temp = *resPtr;
+        Vec<float> temp = *resPtr;
         delete resPtr;
         return temp;
     }
@@ -499,9 +499,9 @@ CuArray1D<float> CuArray2D<float>::bandedMult(
  * Multiplies a banded 2D double matrix with a 1D vector using cuBLAS gbmv.
  */
 template <>
-CuArray1D<double> CuArray2D<double>::bandedMult(
-    const CuArray1D<double>& x,
-    CuArray1D<double>* result,
+Vec<double> Mat<double>::bandedMult(
+    const Vec<double>& x,
+    Vec<double>* result,
     Handle* handle,
     double alpha,
     double beta,
@@ -514,7 +514,7 @@ CuArray1D<double> CuArray2D<double>::bandedMult(
         throw std::invalid_argument("Matrix/vector dimensions do not match for banded multiplication.");
     }
 
-    CuArray1D<double>* resPtr = result ? result : new CuArray1D<double>(transpose ? this->_cols : this->_rows);
+    Vec<double>* resPtr = result ? result : new Vec<double>(transpose ? this->_cols : this->_rows);
 
     Handle* h = handle ? handle : new Handle();
 
@@ -536,7 +536,7 @@ CuArray1D<double> CuArray2D<double>::bandedMult(
     );
 
     if (!result) {
-        CuArray1D<double> temp = *resPtr;
+        Vec<double> temp = *resPtr;
         delete resPtr;
         return temp;
     }
@@ -627,10 +627,10 @@ __global__ void diagMatVecKernel(
  * @return A new CuArray1D containing the result.
  */
 template <typename T>
-CuArray1D<T> CuArray2D<T>::diagMult(
-    const CuArray1D<int>& diags,
-    const CuArray1D<T>& x,
-    CuArray1D<T>* result,
+Vec<T> Mat<T>::diagMult(
+    const Vec<int>& diags,
+    const Vec<T>& x,
+    Vec<T>* result,
     Handle* handle,
     const T alpha,
     const T beta    
@@ -638,7 +638,7 @@ CuArray1D<T> CuArray2D<T>::diagMult(
     if (this->_rows > 64)
         throw std::invalid_argument("height must be <= 32 for this kernel");
 
-    CuArray1D<T>* resPtr = result ? result : new CuArray1D<T>(this->_cols);
+    Vec<T>* resPtr = result ? result : new Vec<T>(this->_cols);
     Handle* h = handle ? handle : new Handle();
 
     int sharedMemSize = sizeof(T) * this->_rows;
@@ -655,7 +655,7 @@ CuArray1D<T> CuArray2D<T>::diagMult(
     CHECK_CUDA_ERROR(cudaGetLastError());
 
     if (!result) {
-        CuArray1D<T> temp = *resPtr;
+        Vec<T> temp = *resPtr;
         if (!handle) CHECK_CUDA_ERROR(cudaDeviceSynchronize());
         delete resPtr;
         if (!handle) delete h;
@@ -680,8 +680,8 @@ CuArray1D<T> CuArray2D<T>::diagMult(
  * @return A new CuArray2D object containing the transposed matrix.
  */
 template <typename T>
-void CuArray2D<T>::transpose(
-    CuArray2D<T>& result,
+void Mat<T>::transpose(
+    Mat<T>& result,
     Handle* handle
 ) const {    
     
@@ -732,14 +732,14 @@ void CuArray2D<T>::transpose(
  * @param handle Optional Cuda handle for stream/context management.
  */
 template <typename T>
-void CuArray2D<T>::transpose(Handle* handle, CuArray2D<T>* temp) {
+void Mat<T>::transpose(Handle* handle, Mat<T>* temp) {
     if (this->_rows == 0 || this->_cols == 0) return;
     if(this->_rows != this->_cols)
         throw std::runtime_error("In-place transpose is only supported for square matrices. For non-square matrices, use the out-of-place version.");
     
-    CuArray2D<T>* temp_ptr = temp;
+    Mat<T>* temp_ptr = temp;
     
-    if (!temp) temp_ptr =  new CuArray2D<T>(this->_rows, this->_cols);
+    if (!temp) temp_ptr =  new Mat<T>(this->_rows, this->_cols);
         
      else if (temp_ptr->_rows != this->_cols || temp_ptr->_cols != this->_rows)
         throw std::invalid_argument("Provided temporary matrix has incorrect dimensions for transpose.");
@@ -753,6 +753,6 @@ void CuArray2D<T>::transpose(Handle* handle, CuArray2D<T>* temp) {
 }
 
 
-template class CuArray2D<int>;
-template class CuArray2D<float>;
-template class CuArray2D<double>;
+template class Mat<int>;
+template class Mat<float>;
+template class Mat<double>;

@@ -12,7 +12,7 @@ using namespace std;
  * 
  */
 template <typename T>
-void readAndPrint(CuArray<T>& array, const string& fileName, const bool isText){
+void readAndPrint(gpuArray<T>& array, const string& fileName, const bool isText){
     ifstream reader(fileName);
     if(!reader.is_open()) throw runtime_error("Could not open " + fileName);
 
@@ -30,10 +30,10 @@ void runAllTests() {
     
     multiTest();
 
-    CuArray2D<float> A(3, 3);
-    CuArray1D<float> b(3);
-    CuArray1D<int> diags(3);
-    CuArray1D<float> x(3);
+    Mat<float> A(3, 3);
+    Vec<float> b(3);
+    Vec<int> diags(3);
+    Vec<float> x(3);
 
     float dataA[] = {1.0f, 2.0f, 3.0f,
                      4.0f, 5.0f, 6.0f,
@@ -129,8 +129,8 @@ void processCommandLineArgs(int argc, char const* argv[], string& a_file, int& n
  * @param x_dest_file The path to the output file for the solution vector x.
  * @throws std::runtime_error if the output file cannot be opened.
  */
-void solveAndWriteOutput(CuArray2D<float>& A, const CuArray1D<int>& diags, CuArray1D<float>& b, const string& x_dest_file, const bool isText) {
-    CuArray1D<float> x(b.size());
+void solveAndWriteOutput(Mat<float>& A, const Vec<int>& diags, Vec<float>& b, const string& x_dest_file, const bool isText) {
+    Vec<float> x(b.size());
     unpreconditionedBiCGSTAB(A, diags, b, &x, 20, 1e-6f);
 
     ofstream x_fs(x_dest_file);
@@ -175,9 +175,9 @@ int main(int argc, char const* argv[]) {
 
         processCommandLineArgs(argc, argv, a_file, numDiags, width, diags_file, b_file, x_dest_file, isText);
 
-        CuArray2D<float> A(numDiags, width);
-        CuArray1D<float> b(width);
-        CuArray1D<int> diags(numDiags);
+        Mat<float> A(numDiags, width);
+        Vec<float> b(width);
+        Vec<int> diags(numDiags);
 
         readAndPrint(A, a_file, isText);
         readAndPrint(diags, diags_file, isText);

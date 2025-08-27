@@ -3,16 +3,16 @@
 
 
 template <typename T>
-CuArray1D<T>::CuArray1D(size_t length)
-    : CuArray<T>(1, length, 1) {
+Vec<T>::Vec(size_t length)
+    : gpuArray<T>(1, length, 1) {
     void* rawPtr = nullptr;
     cudaMalloc(&rawPtr, length * sizeof(T));
     this->_ptr = std::shared_ptr<void>(rawPtr, cudaFreeDeleter);
 }
 
 template <typename T>
-CuArray1D<T>::CuArray1D(const CuArray1D<T>& superArray, size_t offset, size_t length, size_t stride)
-    : CuArray<T>(1, length, stride * superArray.getLD()) {
+Vec<T>::Vec(const Vec<T>& superArray, size_t offset, size_t length, size_t stride)
+    : gpuArray<T>(1, length, stride * superArray.getLD()) {
     this->_ptr = std::shared_ptr<void>(
         superArray._ptr,
         static_cast<char*>(superArray._ptr.get()) + offset * superArray.getLD() * sizeof(T)
@@ -20,21 +20,21 @@ CuArray1D<T>::CuArray1D(const CuArray1D<T>& superArray, size_t offset, size_t le
 }
 
 template <>
-CuArray1D<float> CuArray1D<float>::mult(
-    const CuArray2D<float>& other,
-    CuArray1D<float>* result,
+Vec<float> Vec<float>::mult(
+    const Mat<float>& other,
+    Vec<float>* result,
     Handle* handle,
     float alpha,
     float beta,
     bool transpose
 ) const {
 
-    CuArray1D<float>* resPtr = result ? result: new CuArray1D<float>(other._cols);
+    Vec<float>* resPtr = result ? result: new Vec<float>(other._cols);
     
     other.mult(*this, resPtr, handle, alpha, beta, !transpose);  
 
     if (!result) {
-        CuArray1D<float> temp = *resPtr;
+        Vec<float> temp = *resPtr;
         delete resPtr;
         return temp;
     }
@@ -43,21 +43,21 @@ CuArray1D<float> CuArray1D<float>::mult(
 }
 
 template <>
-CuArray1D<double> CuArray1D<double>::mult(
-    const CuArray2D<double>& other,
-    CuArray1D<double>* result,
+Vec<double> Vec<double>::mult(
+    const Mat<double>& other,
+    Vec<double>* result,
     Handle* handle,
     double alpha,
     double beta,
     bool transpose
 ) const {
 
-    CuArray1D<double>* resPtr = result ? result: new CuArray1D<double>(other._cols);
+    Vec<double>* resPtr = result ? result: new Vec<double>(other._cols);
     
     other.mult(*this, resPtr, handle, alpha, beta, !transpose);
 
     if (!result) {
-        CuArray1D<double> temp = *resPtr;
+        Vec<double> temp = *resPtr;
         delete resPtr;
         return temp;
     }
@@ -66,8 +66,9 @@ CuArray1D<double> CuArray1D<double>::mult(
 }
 
 template <>
-float CuArray1D<float>::mult(
-    const CuArray1D<float>& other,
+float Vec<float>::mult(
+    const Vec<float>& other,
+    Singleton<float>* result,
     Handle* handle
 ) const {
     if (this->_cols != other._cols)
@@ -75,61 +76,70 @@ float CuArray1D<float>::mult(
     
     
     Handle* h = handle ? handle : new Handle();
-    float resultHost = 0.0f;
+    Singleton<float>* r = result? result : new Singleton<float>();
     
-    cublasSdot(h->handle, this->_cols, this->data(), this->getLD(), other.data(), other.getLD(), &resultHost);
+    cublasSdot(h->handle, this->_cols, this->data(), this->getLD(), other.data(), other.getLD(), r->data());
     
 
     if (!handle){
         CHECK_CUDA_ERROR(cudaDeviceSynchronize());
          delete h;
     }
-    
-    return resultHost;
+
+    float scalar = r->get();
+
+    if(!result) delete r;
+
+    return scalar;
 }
 
 template <>
-double CuArray1D<double>::mult(
-    const CuArray1D<double>& other,
+double Vec<double>::mult(
+    const Vec<double>& other,
+    Singleton<double>* result,
     Handle* handle
 ) const {
     if (this->_cols != other._cols)
         throw std::invalid_argument("Vector lengths do not match for dot product.");
     
     Handle* h = handle ? handle : new Handle();
-    double resultHost = 0.0;
+    Singleton<double>* r = result? result : new Singleton<double>();
     
-    cublasDdot(h->handle, this->_cols, this->data(), this->getLD(), other.data(), other.getLD(), &resultHost);
+    cublasDdot(h->handle, this->_cols, this->data(), this->getLD(), other.data(), other.getLD(), r->data());
 
     if (!handle) {
         CHECK_CUDA_ERROR(cudaDeviceSynchronize());
         delete h;
     }
+
+    double scalar = r->get();
+
+    if(!result) delete r;
     
-    return resultHost;
+    return scalar;
 }
 
 template <>
-CuArray1D<float> CuArray1D<float>::operator*(const CuArray2D<float>& other) const {
+Vec<float> Vec<float>::operator*(const Mat<float>& other) const {
     return this->mult(other);
 }
 template <>
-CuArray1D<double> CuArray1D<double>::operator*(const CuArray2D<double>& other) const {
+Vec<double> Vec<double>::operator*(const Mat<double>& other) const {
     return this->mult(other);
 }
 template <>
-float CuArray1D<float>::operator*(const CuArray1D<float>& other) const {
+float Vec<float>::operator*(const Vec<float>& other) const {
     return this->mult(other);
 }
 template <>
-double CuArray1D<double>::operator*(const CuArray1D<double>& other) const {
+double Vec<double>::operator*(const Vec<double>& other) const {
     return this->mult(other);
 }
 
 
 template <typename T>
-CuArray1D<T>::CuArray1D(const CuArray2D<T>& extractFrom, int index, IndexType indexType):
-CuArray<T>(
+Vec<T>::Vec(const Mat<T>& extractFrom, int index, IndexType indexType):
+gpuArray<T>(
     1,
     indexType == IndexType::Row ? extractFrom._cols : extractFrom._rows,
     indexType == IndexType::Row ? extractFrom.getLD() : 1
@@ -144,17 +154,17 @@ CuArray<T>(
 }
 
 template <typename T>
-size_t CuArray1D<T>::size() const {
+size_t Vec<T>::size() const {
     return this->_cols;
 }
 
 template <typename T>
-size_t CuArray1D<T>::bytes() const {
+size_t Vec<T>::bytes() const {
     return this->_cols * this->_ld * sizeof(T);
 }
 
 template <typename T>
-void CuArray1D<T>::set(const T* hostData, cudaStream_t stream) {
+void Vec<T>::set(const T* hostData, cudaStream_t stream) {
     if (this->_ld == 1) cudaMemcpyAsync(this->_ptr.get(), hostData, bytes(), cudaMemcpyHostToDevice, stream);
     else cudaMemcpy2DAsync(
             this->_ptr.get(), this->_ld * sizeof(T),
@@ -165,7 +175,7 @@ void CuArray1D<T>::set(const T* hostData, cudaStream_t stream) {
 }
 
 template <typename T>
-void CuArray1D<T>::get(T* hostData, cudaStream_t stream) const {
+void Vec<T>::get(T* hostData, cudaStream_t stream) const {
     if (this->_ld == 1)
         cudaMemcpyAsync(hostData, this->_ptr.get(), bytes(), cudaMemcpyDeviceToHost, stream);
     else cudaMemcpy2DAsync(
@@ -177,7 +187,7 @@ void CuArray1D<T>::get(T* hostData, cudaStream_t stream) const {
 }
 
 template <typename T>
-void CuArray1D<T>::set(const CuArray<T>& src, cudaStream_t stream) {
+void Vec<T>::set(const gpuArray<T>& src, cudaStream_t stream) {
     if (this->_ld == 1 && src.getLD() == 1) {
         cudaMemcpyAsync(this->_ptr.get(), src.data(), bytes(), cudaMemcpyDeviceToDevice, stream);
     } else {
@@ -191,7 +201,7 @@ void CuArray1D<T>::set(const CuArray<T>& src, cudaStream_t stream) {
 }
 
 template <typename T>
-void CuArray1D<T>::get(CuArray<T>& dst, cudaStream_t stream) const {
+void Vec<T>::get(gpuArray<T>& dst, cudaStream_t stream) const {
     if (this->_ld == 1 && dst.getLD() == 1) {
         cudaMemcpyAsync(dst.data(), this->_ptr.get(), bytes(), cudaMemcpyDeviceToDevice, stream);
     } else {
@@ -205,11 +215,11 @@ void CuArray1D<T>::get(CuArray<T>& dst, cudaStream_t stream) const {
 }
 
 template <typename T>
-void CuArray1D<T>::set(std::istream& input_stream, bool isText, bool, cudaStream_t stream) {
+void Vec<T>::set(std::istream& input_stream, bool isText, bool, cudaStream_t stream) {
     StreamSet<T> helper(this->_rows, this->_cols, input_stream);
     while (helper.hasNext()) {
         helper.readChunk(isText);
-        CuArray1D<T> subArray(
+        Vec<T> subArray(
             *this,
             helper.getColsProcessed(),
             helper.getChunkWidth()
@@ -220,10 +230,10 @@ void CuArray1D<T>::set(std::istream& input_stream, bool isText, bool, cudaStream
 }
 
 template <typename T>
-void CuArray1D<T>::get(std::ostream& output_stream, bool isText, bool, cudaStream_t stream) const {
+void Vec<T>::get(std::ostream& output_stream, bool isText, bool, cudaStream_t stream) const {
     StreamGet<T> helper(this->_rows, this->_cols, output_stream);
     while (helper.hasNext()) {
-        CuArray1D<T> subArray(
+        Vec<T> subArray(
             *this,
             helper.getColsProcessed(),
             helper.getChunkWidth()
@@ -235,7 +245,7 @@ void CuArray1D<T>::get(std::ostream& output_stream, bool isText, bool, cudaStrea
 }
 
 template <>
-void CuArray1D<float>::add(const CuArray1D<float>& x, float alpha, Handle* handle) {
+void Vec<float>::add(const Vec<float>& x, float alpha, Handle* handle) {
     if (this->_cols != x._cols) 
         throw std::invalid_argument("Vector lengths do not match for add.");
     
@@ -250,7 +260,7 @@ void CuArray1D<float>::add(const CuArray1D<float>& x, float alpha, Handle* handl
 }
 
 template <>
-void CuArray1D<double>::add(const CuArray1D<double>& x, double alpha, Handle* handle) {
+void Vec<double>::add(const Vec<double>& x, double alpha, Handle* handle) {
     if (this->_cols != x._cols)
         throw std::invalid_argument("Vector lengths do not match for add.");
         
@@ -265,17 +275,17 @@ void CuArray1D<double>::add(const CuArray1D<double>& x, double alpha, Handle* ha
 }
 
 template <>
-void CuArray1D<float>::sub(const CuArray1D<float>& x, float alpha, Handle* handle) {
+void Vec<float>::sub(const Vec<float>& x, float alpha, Handle* handle) {
     this->add(x, -alpha, handle);
 }
 
 template <>
-void CuArray1D<double>::sub(const CuArray1D<double>& x, double alpha, Handle* handle) {
+void Vec<double>::sub(const Vec<double>& x, double alpha, Handle* handle) {
     this->add(x, -alpha, handle);
 }
 
 template <>
-void CuArray1D<float>::mult(float alpha, Handle* handle) {
+void Vec<float>::mult(float alpha, Handle* handle) {
     if (this->_cols == 0) {
         return;
     }
@@ -290,8 +300,13 @@ void CuArray1D<float>::mult(float alpha, Handle* handle) {
     }
 }
 
+template <typename T>
+Vec<T>::Vec(size_t cols, size_t rows, size_t ld)
+    : gpuArray<T>(cols, rows, ld) {}
+
+
 template <>
-void CuArray1D<double>::mult(double alpha, Handle* handle) {
+void Vec<double>::mult(double alpha, Handle* handle) {
     if (this->_cols == 0) {
         return;
     }
@@ -336,7 +351,7 @@ __global__ void fillRandomKernel_double(double* array, size_t size, size_t strid
 }
 
 template <>
-void CuArray1D<float>::fillRandom(Handle* handle) {
+void Vec<float>::fillRandom(Handle* handle) {
     
     Handle* h = handle ? handle : new Handle();
     
@@ -359,7 +374,7 @@ void CuArray1D<float>::fillRandom(Handle* handle) {
 }
 
 template <>
-void CuArray1D<double>::fillRandom(Handle* handle) {
+void Vec<double>::fillRandom(Handle* handle) {
     
     Handle* h = handle ? handle : new Handle();
 
@@ -382,7 +397,37 @@ void CuArray1D<double>::fillRandom(Handle* handle) {
     }
 }
 
+template <typename T>
+__global__ void EBEPowKernel(T* data, size_t size, size_t stride, const T* t, const T n) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < size) {
+        size_t offset = idx * stride;
+        data[offset] = (*t) * pow(data[offset], n);
+    }
+}
 
-template class CuArray1D<int>;
-template class CuArray1D<float>;
-template class CuArray1D<double>;
+template <typename T>
+void Vec<T>::EBEPow(const Singleton<T>& t, const T n, cudaStream_t stream) {
+    if (this->_cols == 0) return;
+
+    int blockSize = 256;
+    int gridSize  = (this->_cols + blockSize - 1) / blockSize;
+
+    EBEPowKernel<<<gridSize, blockSize, 0, stream>>>(
+        this->data(), this->_cols, this->getLD(),
+        t.data(), n
+    );
+
+    CHECK_CUDA_ERROR(cudaGetLastError());
+
+    if (stream == nullptr) {
+        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
+    }
+}
+
+
+
+
+template class Vec<int>;
+template class Vec<float>;
+template class Vec<double>;

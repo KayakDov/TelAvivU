@@ -89,7 +89,7 @@ void runBasicArrayTests()
             for (size_t r = 0; r < rows; ++r)
                 h[c*rows + r] = static_cast<T>(c*10 + r + 1);
 
-        CuArray2D<T> d(rows, cols);
+        Mat<T> d(rows, cols);
         d.set(h.data());
         CHECK_CUDA_ERROR(cudaDeviceSynchronize());
 
@@ -107,13 +107,13 @@ void runBasicArrayTests()
             for (size_t r = 0; r < rows; ++r)
                 h[c*rows + r] = static_cast<T>(100 + c*10 + r); // unique
 
-        CuArray2D<T> parent(rows, cols);
+        Mat<T> parent(rows, cols);
         parent.set(h.data());
         CHECK_CUDA_ERROR(cudaDeviceSynchronize());
 
         const size_t startRow = 1, startCol = 1;
         const size_t subH = 2, subW = 2;
-        CuArray2D<T> sub(parent, startRow, startCol, subH, subW);
+        Mat<T> sub(parent, startRow, startCol, subH, subW);
 
         std::vector<T> got(subH * subW);
         sub.get(got.data());
@@ -134,7 +134,7 @@ void runBasicArrayTests()
         std::vector<T> h(n);
         for (size_t i = 0; i < n; ++i) h[i] = static_cast<T>(i + 5);
 
-        CuArray1D<T> d(n);
+        Vec<T> d(n);
         d.set(h.data());
         CHECK_CUDA_ERROR(cudaDeviceSynchronize());
 
@@ -152,13 +152,13 @@ void runBasicArrayTests()
             for (size_t r = 0; r < rows; ++r)
                 h[c*rows + r] = static_cast<T>(c*100 + r);
 
-        CuArray2D<T> A(rows, cols);
+        Mat<T> A(rows, cols);
         A.set(h.data());
         CHECK_CUDA_ERROR(cudaDeviceSynchronize());
 
         // Column extract
         int col = 2;
-        CuArray1D<T> d_col(A, col, IndexType::Column);
+        Vec<T> d_col(A, col, IndexType::Column);
         std::vector<T> got_col(rows);
         d_col.get(got_col.data());
         CHECK_CUDA_ERROR(cudaDeviceSynchronize());
@@ -168,7 +168,7 @@ void runBasicArrayTests()
 
         // Row extract
         int row = 3;
-        CuArray1D<T> d_row(A, row, IndexType::Row);
+        Vec<T> d_row(A, row, IndexType::Row);
         std::vector<T> got_row(cols);
         d_row.get(got_row.data());
         CHECK_CUDA_ERROR(cudaDeviceSynchronize());
@@ -214,8 +214,8 @@ void runMulTests()
     }; // column-major (m*n entries)
 
     // Load to device
-    CuArray2D<T> dA(m, k);
-    CuArray2D<T> dB(k, n);
+    Mat<T> dA(m, k);
+    Mat<T> dB(k, n);
 
     dA.set(hA.data());
     dB.set(hB.data());
@@ -229,7 +229,7 @@ void runMulTests()
     verifyVectors(hC_expected, hC, "CuArray2D operator* GEMM");
 
     // Test out-parameter version (mult into pre-allocated)
-    CuArray2D<T> dC(m, n);
+    Mat<T> dC(m, n);
     dA.mult(dB, &dC);
     std::vector<T> hC2(m*n);
     dC.get(hC2.data());
@@ -240,19 +240,19 @@ void runMulTests()
     std::vector<T> hx = { T(1), T(1), T(1) }; // 3
     std::vector<T> hy_expected = { T(6), T(15) }; // [1+2+3, 4+5+6]
 
-    CuArray1D<T> dx(k);
+    Vec<T> dx(k);
     dx.set(hx.data());
     CHECK_CUDA_ERROR(cudaDeviceSynchronize());
 
     // operator* returns a CuArray1D<T>
-    CuArray1D<T> dy_new = dA * dx;
+    Vec<T> dy_new = dA * dx;
     std::vector<T> hy(m);
     dy_new.get(hy.data());
     CHECK_CUDA_ERROR(cudaDeviceSynchronize());
     verifyVectors(hy_expected, hy, "CuArray2D * CuArray1D (gemv)");
 
     // Fix: Remove the redundant instantiation and directly assign
-    CuArray1D<T> dy2 = dA.mult(dx);
+    Vec<T> dy2 = dA.mult(dx);
     std::vector<T> hy2(m);
     dy2.get(hy2.data());
     CHECK_CUDA_ERROR(cudaDeviceSynchronize());
@@ -261,7 +261,7 @@ void runMulTests()
     // Vector-Vector dot: use operator*
     std::vector<T> hv1 = { T(1), T(2), T(3) };
     std::vector<T> hv2 = { T(4), T(5), T(6) };
-    CuArray1D<T> dv1(hv1.size()), dv2(hv2.size());
+    Vec<T> dv1(hv1.size()), dv2(hv2.size());
     dv1.set(hv1.data());
     dv2.set(hv2.data());
     CHECK_CUDA_ERROR(cudaDeviceSynchronize());
@@ -304,7 +304,7 @@ void runFileIOTests()
 
     std::string fname = "test_array.bin";
     try {
-        CuArray2D<T> d(rows, cols);
+        Mat<T> d(rows, cols);
         d.set(h.data());
         CHECK_CUDA_ERROR(cudaDeviceSynchronize());
 
@@ -317,7 +317,7 @@ void runFileIOTests()
         CHECK_CUDA_ERROR(cudaDeviceSynchronize());
 
         // Read back into a fresh array
-        CuArray2D<T> d2(rows, cols);
+        Mat<T> d2(rows, cols);
         {
             std::ifstream in(fname, std::ios::binary);
             if (!in) throw std::runtime_error("Could not open file for reading.");
