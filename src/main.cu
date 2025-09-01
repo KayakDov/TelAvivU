@@ -1,66 +1,35 @@
-//TODO: When reading in the diagonals of A, allow for different lengths.
-
 #include "deviceArrays.h"
 #include "testMethods.cu"
 #include "algorithms.cu"
+#include <fstream>
+#include <stdexcept>
+#include <iostream>
+#include <string>
+#include <cstring>
+#include <iomanip>
+#include <limits>
 
 using namespace std;
 
 /**
  * @brief Read a file into a device array and print an update for the command line.
- * 
- * 
+ *
+ *
  */
 template <typename T>
-void readAndPrint(gpuArray<T>& array, const string& fileName, const bool isText){
+void readAndPrint(gpuArray<T>& array, const string& fileName, const bool isText) {
     ifstream reader(fileName);
-    if(!reader.is_open()) throw runtime_error("Could not open " + fileName);
+    if(!reader.is_open())
+        throw runtime_error("Could not open " + fileName);
 
     array.set(reader, isText, !isText);
     reader.close();
 
     cout << "Read matrix "<< fileName <<" from file." << endl;
-    if(array.size() < 1000) cout << array << endl;
-    else cout << "The matrix is too large to display." << endl;
-}
-
-void runAllTests() {
-    // Check if a CUDA device is available.
-    checkForDevice();
-    
-    multiTest();
-
-    Mat<double> A(3, 3);
-    Vec<double> b(3);
-    Vec<int> diags(3);
-    Vec<double> x(3);
-
-    double dataA[] = {1.0f, 2.0f, 3.0f,
-                     4.0f, 5.0f, 6.0f,
-                     0.0f, 8.0f, 0.0f};
-    A.set(dataA);
-
-    cout << "A:\n" << A << endl;
-
-    double data_b[] = {1.0f, 2.0f, 3.0f};
-    b.set(data_b);
-
-    cout << "b:\n" << b << endl;
-
-    const int data_diags[] = {-1, 0, 1};
-    diags.set(data_diags);
-    
-    
-    unpreconditionedBiCGSTAB(A, diags, b, &x, 20);
-
-    cout << "x:\n" << x << endl;
-    cout << "Expected: 2.7500 -1.5000 1.1250 "<< endl;
-
-    cout << "testing multiplication:" << endl;
-    double data_x[] = {2.7500f, -1.5000f, 1.1250f};   
-    x.set(data_x);
-    A.diagMult(diags, x, &b);
-    cout << "A*x:\n" << b << "Expected: 1 2 3" << endl;
+    if(array.size() < 1000)
+        cout << array << endl;
+    else
+        cout << "The matrix is too large to display." << endl;
 }
 
 // Helper function to display the help message.
@@ -71,50 +40,26 @@ void runAllTests() {
  * It provides a detailed explanation of the required parameters and their constraints.
  */
 void showHelp() {
-    cout << "Usage: ./BiCGSTAB [options] <A_file> <num_diags> <matrix_width> <diag_indices> <b_file> <x_dest_file> <optional -text>\n";
+    cout << "Usage: ./BiCGSTAB [options] <A_file> <num_diags> <matrix_width> <diag_indices> <b_file> <x_dest_file>\n";
     cout << "Options:\n";
-    cout << "  -h  Show this help message.\n\n";
-    cout << "  -t  Run tests.\n\n";
+    cout << "  -h  Show this help message.\n";
+    cout << "  -float     Use single-precision floating-point numbers.\n";
+    cout << "  -double    Use double-precision floating-point numbers (default).\n";
+    cout << "  -text      Use text files (row-major) instead of binary files (column-major).\n";
+    cout << "  -precision <num>   Set the convergence epsilon (default: " << numeric_limits<double>::epsilon() << ").\n";
+    cout << "  -max_iter <num>    Set the maximum number of iterations (default 2 * num_rows).\n\n";
     cout << "Arguments:\n";
-    cout << "  <A_file>         (1) Path to a file containing the non-zero diagonals of the sparse square matrix 'A'.  This file should have a matrix in column major order, where each row is a non 0 diagonal of A.  For diagonals shorter than the primary diagonal, padding is required so that they be the same length.\n";//TODO: make this better.  Matrix A should have a column be a diagonal of A, and shorter diagonals should be padded with 0s to be the same length as the primary diagonal.\n";
+    cout << "  <A_file>         (1) Path to a file containing the non-zero diagonals of the sparse square matrix 'A'.\n";
     cout << "  <diag_indices>   (2) The number of non 0 diagonals.\n";
     cout << "  <matrix_width>   (3) The height and width of 'A' and the height of b.\n";
-    cout << "  <diags_file>     (4) Path to a file containing the indices of the diagonals (space-separated integers).  THe first value should be the index of the first diagonal in the diagonal file, the second value should be the index of the second diagonal, and so on.  Use negative values for sub indices, 0 for the primary diagonal, and positive integer values for the super diagonals. For example, an index of 1 is the superdiagonaladjacent to the primary diagonal.\n";
+    cout << "  <diags_file>     (4) Path to a file containing the indices of the diagonals (space-separated integers).\n";
     cout << "  <b_file>         (5) Path to a file containing the right-hand side vector b.\n";
     cout << "  <x_dest_file>    (6) Path to a destination file for the solution vector x\n";
-    cout << "  <optional -text>     Include '-text' as a final optional argument to say that all files are text and not binary files.  If this option is selected, input and output will be row major, and slow.  If this option is not selected, input and output will be column major and faster.\n\n";
     cout << "Constraints:\n";
     cout << "  - The files for A, b, and x should contain space-separated floating-point numbers.\n";
     cout << "  - The file for diagonals should contain space-separated integers.\n";
     cout << "  - The dimensions (num_diags, matrix_width) must be positive integers.\n";
     cout << "  - The number of diagonals in diags_file must match num_diags.\n";
-    cout << "  - All files must be in binary and not text format.\n"; //TODO: add flexabuility here.
-}
-
-/**
- * @brief Processes the command-line arguments and validates them.
- *
- * @param argc The number of command-line arguments.
- * @param argv The array of command-line argument strings.
- * @param a_file Reference to a string to store the path to the matrix A file.
- * @param numDiags Reference to an int to store the number of diagonals.
- * @param width Reference to an int to store the width of the original matrix.
- * @param diags_file Reference to a string to store the path to the diagonals file.
- * @param b_file Reference to a string to store the path to the vector b file.
- * @param x_dest_file Reference to a string to store the path to the solution x file.
- * @throws std::runtime_error if numDiags or width are not positive.
- */
-void processCommandLineArgs(int argc, char const* argv[], string& a_file, int& numDiags, int& width, string& diags_file, string& b_file, string& x_dest_file, bool& isText) {
-    a_file = argv[1];
-    numDiags = stoi(argv[2]);
-    width = stoi(argv[3]);
-    diags_file = argv[4];
-    b_file = argv[5];
-    x_dest_file = argv[6];
-    isText = argc == 8 && !strcmp(argv[7], "-text");
-
-    if (numDiags <= 0 || width <= 0) 
-        throw runtime_error("Number of diagonals and matrix width must be positive.");    
 }
 
 /**
@@ -129,20 +74,49 @@ void processCommandLineArgs(int argc, char const* argv[], string& a_file, int& n
  * @param x_dest_file The path to the output file for the solution vector x.
  * @throws std::runtime_error if the output file cannot be opened.
  */
-void solveAndWriteOutput(Mat<double>& A, const Vec<int>& diags, Vec<double>& b, const string& x_dest_file, const bool isText) {
-    Vec<double> x(b.size());
-    unpreconditionedBiCGSTAB(A, diags, b, &x, 20);
+template <typename T>
+void solveAndWriteOutput(Mat<T>& A, const Vec<int>& diags, Vec<T>& b, const string& x_dest_file, const bool isText, int maxIter, double epsilon) {
+    Vec<T> x(b.size());
+    unpreconditionedBiCGSTAB(A, diags, b, &x,  maxIter, static_cast<T>(epsilon));
 
     ofstream x_fs(x_dest_file);
-    if (!x_fs.is_open()) {
+    if (!x_fs.is_open())
         throw runtime_error("Could not open destination file: " + x_dest_file);
-    }
+
     x.get(x_fs, isText, !isText);
     x_fs.close();
     cout << "Wrote solution vector x to file: " << x_dest_file << endl;
-    if(x.size() < 1000) cout << "x:\n" << x << endl;
-    else cout << "x is too large to display." << endl;
+    if(x.size() < 1000)
+        cout << "x:\n" << x << endl;
+    else
+        cout << "x is too large to display." << endl;
+}
 
+template <typename T>
+void solveSystem(int argc, char const* argv[], bool isText, int maxIter, double epsilon) {
+    string a_file = argv[1];
+    int numDiags = stoi(argv[2]);
+    int width = stoi(argv[3]);
+    string diags_file = argv[4];
+    string b_file = argv[5];
+    string x_dest_file = argv[6];
+
+    if (numDiags <= 0 || width <= 0)
+        throw runtime_error("Number of diagonals and matrix width must be positive.");
+
+    // Check if maxIter needs to be set to its default
+    if (maxIter == -1)
+        maxIter = width * 2;
+
+    Mat<T> A(numDiags, width);
+    Vec<T> b(width);
+    Vec<int> diags(numDiags);
+
+    readAndPrint(A, a_file, isText);
+    readAndPrint(diags, diags_file, isText); 
+    readAndPrint(b, b_file, isText);
+
+    solveAndWriteOutput(A, diags, b, x_dest_file, isText, maxIter, epsilon);
 }
 
 /**
@@ -157,11 +131,11 @@ void solveAndWriteOutput(Mat<double>& A, const Vec<int>& diags, Vec<double>& b, 
 int main(int argc, char const* argv[]) {
     if (argc == 2) {
         if(string(argv[1]) == "-h")  showHelp();
-        if(string(argv[1]) == "-t")  runAllTests();
         return 0;
     }
-    else if (argc < 7 || argc > 8) {
-        cerr << "Error: Incorrect number of arguments.\n";
+
+    if (argc < 7) {
+        cerr << "Error: Incorrect number of arguments. Please provide at least the 6 required arguments." << endl;
         showHelp();
         return 1;
     }
@@ -169,21 +143,45 @@ int main(int argc, char const* argv[]) {
     checkForDevice();
 
     try {
-        string a_file, diags_file, b_file, x_dest_file;
-        int numDiags, width;
-        bool isText;
+        bool useFloat = false;
+        bool isText = false;
+        double epsilon = -1.0; // -1.0 indicates default epsilon
+        int maxIter = -1; // -1 indicates default max iterations
 
-        processCommandLineArgs(argc, argv, a_file, numDiags, width, diags_file, b_file, x_dest_file, isText);
+        // Parse optional flags
+        for (int i = 1; i < argc; ++i) {
+            if (strcmp(argv[i], "-float") == 0)
+                useFloat = true;
 
-        Mat<double> A(numDiags, width);
-        Vec<double> b(width);
-        Vec<int> diags(numDiags);
+            if (strcmp(argv[i], "-text") == 0)
+                isText = true;
 
-        readAndPrint(A, a_file, isText);
-        readAndPrint(diags, diags_file, isText);
-        readAndPrint(b, b_file, isText);
+            if (strcmp(argv[i], "-precision") == 0) {
+                if (i + 1 < argc) {
+                    epsilon = stod(argv[i+1]);
+                } else {
+                    cerr << "Error: '-precision' flag requires a number." << endl;
+                    showHelp();
+                    return 1;
+                }
+            }
+            if (strcmp(argv[i], "-max_iter") == 0) {
+                if (i + 1 < argc) {
+                    maxIter = stoi(argv[i+1]);
+                } else {
+                    cerr << "Error: '-max_iter' flag requires a number." << endl;
+                    showHelp();
+                    return 1;
+                }
+            }
+        }
 
-        solveAndWriteOutput(A, diags, b, x_dest_file, isText);
+        // Set default epsilon if not specified
+        if (epsilon < 0)
+            epsilon = useFloat ? numeric_limits<float>::epsilon() : numeric_limits<double>::epsilon();
+
+        if (useFloat) solveSystem<float>(argc, argv, isText, maxIter, epsilon);
+        else solveSystem<double>(argc, argv, isText, maxIter, epsilon);
 
     } catch (const exception& e) {
         cerr << "An error occurred: " << e.what() << endl;
