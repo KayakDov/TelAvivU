@@ -147,6 +147,7 @@ class Mat : public gpuArray<T> {
     using gpuArray<T>::mult;
 private:
     void _scale_impl(T alpha, Handle* handle);
+    void _fixToColMjr();
     
 public:
     Mat(size_t rows, size_t cols);

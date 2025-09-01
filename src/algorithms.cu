@@ -50,6 +50,7 @@ Vec<T> unpreconditionedBiCGSTAB(
        
     r_tilde.mult(r, &rho, handle);    
     
+    xReady.wait(handle[1]);
     for(int i = 0; i < maxIterations; i++) {
        
         A.diagMult(diags, p, &v, handle, T(1), T(0)); // v = A * p
@@ -64,8 +65,6 @@ Vec<T> unpreconditionedBiCGSTAB(
         
         pReady.wait(handle[1]);
         pReady.renew();
-        xReady.wait(handle[1]);
-        xReady.renew();
         h.set(result, handle[1].stream);
         cudaStreamSynchronize(handle[1].stream);
         alphaReady.renew();

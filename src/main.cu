@@ -71,7 +71,7 @@ void runAllTests() {
  * It provides a detailed explanation of the required parameters and their constraints.
  */
 void showHelp() {
-    cout << "Usage: ./unpreconditionedBiCGSTAB [options] <A_file> <num_diags> <matrix_width> <diag_indices> <b_file> <x_dest_file>\n";
+    cout << "Usage: ./BiCGSTAB [options] <A_file> <num_diags> <matrix_width> <diag_indices> <b_file> <x_dest_file> <optional -text>\n";
     cout << "Options:\n";
     cout << "  -h  Show this help message.\n\n";
     cout << "  -t  Run tests.\n\n";
@@ -82,7 +82,7 @@ void showHelp() {
     cout << "  <diags_file>     (4) Path to a file containing the indices of the diagonals (space-separated integers).  THe first value should be the index of the first diagonal in the diagonal file, the second value should be the index of the second diagonal, and so on.  Use negative values for sub indices, 0 for the primary diagonal, and positive integer values for the super diagonals. For example, an index of 1 is the superdiagonaladjacent to the primary diagonal.\n";
     cout << "  <b_file>         (5) Path to a file containing the right-hand side vector b.\n";
     cout << "  <x_dest_file>    (6) Path to a destination file for the solution vector x\n";
-    cout << "  <optional -text>     Include '-t' as a final optional argument to say that all files are text and not binary files.  If this option is selected, input and output will be row major, and slow.  If this option is not selected, input and output will be column major and faster.\n\n";
+    cout << "  <optional -text>     Include '-text' as a final optional argument to say that all files are text and not binary files.  If this option is selected, input and output will be row major, and slow.  If this option is not selected, input and output will be column major and faster.\n\n";
     cout << "Constraints:\n";
     cout << "  - The files for A, b, and x should contain space-separated floating-point numbers.\n";
     cout << "  - The file for diagonals should contain space-separated integers.\n";

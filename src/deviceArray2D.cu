@@ -223,10 +223,18 @@ void Mat<T>::get(gpuArray<T>& dst, cudaStream_t cuStream) const {
 template <typename T>
 void Mat<T>::set(std::istream& input_stream, bool isText, bool readColMajor, cudaStream_t cuStream) {
 
+    if(!readColMajor){
+        Mat<T> temp(this->_cols, this->_rows);
+        temp.set(input_stream, isText, true, cuStream);
+        Handle hand(cuStream);
+        temp.transpose(*this, &hand);
+        return;
+    }
+
     StreamSet<T> helper(this->_rows, this->_cols, input_stream);
 
     while (helper.hasNext()) {
-        helper.readChunk(isText);
+        helper.readChunk(isText);//This will either be a set of columns or a set of rows.
         Mat<T> subArray(
             *this,
             0,
@@ -236,8 +244,6 @@ void Mat<T>::set(std::istream& input_stream, bool isText, bool readColMajor, cud
         );
 
         subArray.set(helper.getBuffer().data(), cuStream);
-
-        if(!readColMajor) this->transpose();
 
         CHECK_CUDA_ERROR(cudaDeviceSynchronize());//TODO: this might be avoidable with multi threading
 
@@ -278,6 +284,52 @@ void Mat<T>::get(std::ostream& output_stream, bool isText, bool printColMajor, c
     }
 }
 
+
+// template <typename T>
+// __global__ void fixToColMjrKernel(
+//     const T* __restrict__ src, const int ldSrc,
+//     T* __restrict__ dst, int ldDst,
+//     const int height, const int width
+// ){  
+//     int idx = blockIdx.x * blockDim.x + threadIdx.x;    
+
+//     if (idx < height * width) {
+        
+//         T element = src[(idx/height) * ldSrc + idx % height];
+
+//         int dstRow = idx % width;
+//         int dstCol = idx / width;
+
+//         dst[dstCol * ldDst + dstRow] = element;
+//     }
+// }
+
+// template <typename T>
+// void Mat<T>::_fixToColMjr(){
+ 
+//     if (this->_rows == 0 || this->_cols == 0) return;
+
+//     Mat<T> temp(this->_rows, this->_cols);
+//     Handle h;
+
+//     dim3 threadsPerBlock(256);
+//     dim3 numBlocks((this->_rows * this->_cols + threadsPerBlock.x - 1) / threadsPerBlock.x);
+    
+//     fixToColMjrKernel<<<numBlocks, threadsPerBlock, 0, h.stream>>>(
+//         this->data(),
+//         this->getLD(),
+//         temp.data(),
+//         temp.getLD(),
+//         this->_rows,
+//         this->_cols
+//     );
+
+//     CHECK_CUDA_ERROR(cudaGetLastError());
+//     CHECK_CUDA_ERROR(cudaDeviceSynchronize());
+    
+//     this->set(temp, h.stream);
+//     CHECK_CUDA_ERROR(cudaDeviceSynchronize());
+// }
 
 template <>
 Mat<float> Mat<float>::plus(

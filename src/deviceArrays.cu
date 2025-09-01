@@ -57,12 +57,12 @@ StreamSet<T>::StreamSet(size_t rows, size_t cols, std::istream& input_stream)
     : StreamHelper<T>(rows, cols), _input_stream(input_stream) {}
 
 template <typename T>
-void StreamSet<T>::readChunk(bool isText) {
+void StreamSet<T>::readChunk(bool isRowMajor) {
     
     size_t num_elements = this->getChunkWidth() * this->_rows;
     size_t current_chunk_bytes = num_elements * sizeof(T);
     
-    if(isText) {
+    if(isRowMajor) {
         for (size_t i = 0; i < num_elements; ++i) 
             if (!(this->_input_stream >> this->_hostBuffer[i]))
                 throw std::runtime_error("Failed to read enough elements. Failed at index " + i);
