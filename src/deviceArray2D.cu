@@ -601,21 +601,21 @@ Vec<double> Mat<double>::bandedMult(
     return *resPtr;
 }
 
-
-
 /**
  * Kernel for sparse diagonal matrix-vector multiplication.
  * 
- * When calling this kernel, <<<numberOfBlocks, threadsPerBlock, sharedMemorySize, stream>>>,  Number of blocks should be the number of rows in the solution vector.  
- * Threads per block should be numDiags/2.  Shared memory size should be sizeof(T) * numDiags, where numDiags is the number of diagonals in the packed matrix.
+ * When calling this kernel, <<<numberOfBlocks, threadsPerBlock, sharedMemorySize, stream>>>,  
+ * Number of blocks should be the number of rows in the solution vector.  
+ * Threads per block should be 32.  
+ * Shared memory size should be sizeof(T) * 32.
  * 
- * @param A Packed diagonals of the matrix.  Trailing values are not read.  Each row is a diagonal, and the matrix is stored in column-major order.
+ * @param A Packed diagonals of the matrix.  Trailing values are not read.  Each row is a diagonal, and the matrix is stored in column-major order.  There may be no more than 32 rows.
  * @param height Number of rows in the greater matrix, not the packed matrix.  This is also the number of columns in the greater matrix and the number of rows in x.
  * @param ld Leading dimension of the packed diagonals.
  * @param diags Indices of the diagonals.  Negative indices indicate sub-diagonals. 
  * Positive indices indicate super-diagonals. 
  * For example, diags = {-1, 0, 1} means the first diagonal is the sub-diagonal, the second is the main diagonal, and the third is the super-diagonal.
- * @param numDiags Number of nonzero diagonals.  This number must be less than or eqaul to 64.
+ * @param numDiags Number of nonzero diagonals.  This number must be less than or equal to 64.
  * @param x Input vector.
  * @param stride Stride for the input vector x.
  * @param result Output vector.
@@ -623,9 +623,8 @@ Vec<double> Mat<double>::bandedMult(
  * @param alpha Scalar multiplier for the matrix-vector product.
  * @param beta Scalar multiplier for the existing values in the result vector.
  */
-#pragma diag_suppress 1886
 template <typename T>
-__global__ void diagMatVecKernel(
+__global__ void diag32MatVecKernel(
     const T* __restrict__ A, // packed diagonals
     const int height, const int ld,
     
@@ -641,31 +640,22 @@ __global__ void diagMatVecKernel(
     const T alpha,
     const T beta
 ){
-    extern __shared__ __align__(sizeof(T)) unsigned char sharedMem[];
-    T *sData = reinterpret_cast<T *>(sharedMem);
-    
     int rowX = blockIdx.x;
-    int idx = threadIdx.x;
-    bool isValid = rowX < height && idx * 2 < numDiags;
-    if (isValid){        
-        
-        int d = diags[2 * idx]; // First diagonal index
-        int i = (d >= 0) ? rowX : rowX + d; // Row index for first diagonal
-        sData[idx] = 0 <= i && i < height - abs(d) ? A[i*ld + 2 * idx] * x[(rowX + d) * strideX] : 0;
-        
-        if(2 * idx + 1 < numDiags) {
-            d = diags[2 * idx + 1]; // Second diagonal index
-            i = (d >= 0) ? rowX : rowX + d; // Row index for second diagonal
-            sData[idx] += 0 <= i && i < height - abs(d) ? A[i*ld + 2 * idx + 1] * x[(rowX + d) * strideX] : 0;
-        }
-    }
-
-    for(int s = 1; s < blockDim.x; s *= 2) {
-        __syncthreads(); 
-        if(idx % (s * 2) == 0 && isValid && (idx + s) * 2 < numDiags) sData[idx] += sData[idx + s];
-    }
+    int rowA = threadIdx.x;
+    bool isValid = rowX < height && rowA < numDiags;
+    T val;
+    if (isValid){//TODO: this condition can be removed by requiring input matrices have exactly 32 rows, with extra rows having all 0's.  This may give a small speed boost.       
+        int d = diags[rowA], colA = rowX;
+        if(d < 0) colA += d;
+        val = 0 <= colA && colA < height - abs(d) ? A[colA*ld + rowA] * x[(rowX + d) * strideX] : 0;
+    } else val = 0;
     
-    if(isValid && idx == 0) result[rowX * strideR] = alpha * sData[0] + beta * result[rowX * strideR]; // Write the result for this row
+    for (int offset = 16; offset > 0; offset >>= 1)
+        val += __shfl_down_sync(0xFFFFFFFF, val, offset);
+    
+    int indR = rowX * strideR;
+
+    if(isValid && rowA == 0) result[indR] = alpha * val + beta * result[indR];
 }
 
 /**
@@ -677,6 +667,7 @@ __global__ void diagMatVecKernel(
  * @param diags Array of diagonal indices (negative=sub-diagonal, 0=main, positive=super-diagonal)
  * @param stride Stride for input vector x
  * @return A new CuArray1D containing the result.
+ * 
  */
 template <typename T>
 Vec<T> Mat<T>::diagMult(
@@ -687,15 +678,13 @@ Vec<T> Mat<T>::diagMult(
     const T alpha,
     const T beta    
 ) const {
-    if (this->_rows > 64)
+    if (this->_rows > 32)
         throw std::invalid_argument("height must be <= 32 for this kernel");
 
     Vec<T>* resPtr = result ? result : new Vec<T>(this->_cols);
     Handle* h = handle ? handle : new Handle();
-
-    int sharedMemSize = sizeof(T) * this->_rows;
     
-    diagMatVecKernel<<<this->_cols, (this->_cols + 1) / 2, sharedMemSize, h->stream>>>(
+    diag32MatVecKernel<<<this->_cols, 32, 0, h->stream>>>(
         this->data(), this->_cols, this->getLD(),
         diags.data(), this->_rows,
         x.data(), x.getLD(),

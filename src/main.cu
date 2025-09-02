@@ -128,7 +128,7 @@ void solveSystem(int argc, char const* argv[], bool isText, int maxIter, double 
  * indices as input from files specified on the command line. The solution x
  * is then written to an output file.
  */
-int main(int argc, char const* argv[]) {
+int useCommandLineArgs(int argc, char const* argv[]){
     if (argc == 2) {
         if(string(argv[1]) == "-h")  showHelp();
         return 0;
@@ -189,4 +189,51 @@ int main(int argc, char const* argv[]) {
     }
 
     return 0;
+}
+
+
+void testDiag32MatVecKernelShort() {
+    std::cout << "Testing diag32MatVecKernel (short version)\n";
+
+    // Define a tiny matrix (2 diagonals, 4x4 matrix)
+    Mat<float> A(2, 4); // 2 diagonals, 4 columns
+    std::vector<float> h_A = {
+        1, 2, 3, 4,   // first diagonal (sub-diagonal, -1)
+        10, 11, 0, 13 // second diagonal (main diagonal, 0)
+    };
+    A.set(h_A.data());
+
+    // Input vector x
+    Vec<float> x(4);
+    std::vector<float> h_x = {1, 2, 3, 4};
+    x.set(h_x.data());
+
+    // Diagonal indices
+    Vec<int> diags(2);
+    int diagIndices[2] = {-1, 0};
+    diags.set(diagIndices);
+    cout << "diaonal indices" << diags;
+
+
+    // Output vector
+    Vec<float> result(4);
+
+    // Multiply
+    result = A.diagMult(diags, x);
+
+    // Print
+    std::cout << "Matrix A (packed diagonals):\n" << A;
+    
+    std::cout << "\nVector x: " <<  x;
+    
+    std::cout << "\nResult from kernel: " << result;
+}
+
+
+
+int main(int argc, char const* argv[]) {
+    return useCommandLineArgs(argc, argv);
+    
+    // testDiag32MatVecKernelShort();
+
 }
