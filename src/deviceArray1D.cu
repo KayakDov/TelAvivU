@@ -425,6 +425,12 @@ void Vec<T>::EBEPow(const Singleton<T>& t, const T n, cudaStream_t stream) {
     }
 }
 
+template <typename T>
+void Vec<T>::setSum(const Vec& a, const Vec& B, T alpha, T beta, Handle* handle){
+    this->set(a, handle.stream);
+    if(alpha != 1) this->mult(alpha);
+    this->add(b, beta, handle);
+}
 
 
 

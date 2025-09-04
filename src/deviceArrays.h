@@ -247,6 +247,8 @@ public:
 
     void EBEPow(const Singleton<T>& t, T n, cudaStream_t stream = 0);
 
+    void setSum(const Vec& a, const Vec& B, T alpha = 1, T beta = 1, Handle* handle = nullptr);
+
 };
 
 template <typename T>

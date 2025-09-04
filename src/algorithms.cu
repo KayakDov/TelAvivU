@@ -94,8 +94,6 @@ Vec<T> unpreconditionedBiCGSTAB(
         t.mult(t, &omega, handle);
         prodTS.wait(handle[0]);
         omega.EBEPow(temp, T(-1), handle[0].stream); //omega = t * s / t * t;
-        cudaStreamSynchronize(handle[0].stream);
-        prodTS.renew();
 
         omegaReady.record(handle[0]);
 
@@ -103,6 +101,8 @@ Vec<T> unpreconditionedBiCGSTAB(
         result.add(s, omega.get(handle[1].stream), handle + 1); // x = h + omega * s
         xReady.record(handle[1]);        
         
+        cudaStreamSynchronize(handle[0].stream);
+        prodTS.renew();
         r.set(s, handle[0].stream);
         r.sub(t, omega.get(handle[0].stream), handle); // r = s - omega * t
         rReady.record(handle[0]);
