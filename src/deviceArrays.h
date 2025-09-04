@@ -18,7 +18,7 @@
 #include <typeinfo>
 #include <stdexcept>
 
-template <typename T> class gpuArray;
+template <typename T> class GpuArray;
 template <typename T> class Vec;
 template <typename T> class Mat;
 template <typename T> class StreamHelper;
@@ -87,6 +87,8 @@ public:
     
     explicit Handle(cudaStream_t user_stream);
 
+    static Handle* _get_or_create_handle(Handle* handle, std::unique_ptr<Handle>& out_ptr_unique);
+
     ~Handle();
 
 private:
@@ -96,25 +98,28 @@ private:
 
 
 template <typename T>
-class gpuArray {
+class GpuArray {
 public:
     const size_t _rows;
     const size_t _cols;
 protected:
     std::shared_ptr<void> _ptr;
     size_t _ld;
-    gpuArray(size_t rows, size_t cols, size_t ld);
+    GpuArray(size_t rows, size_t cols, size_t ld);
 
-    virtual void mult(const gpuArray<float>& other, gpuArray<float>* result, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transposeA = false, bool transposeB = false) const;
-    virtual void mult(const gpuArray<double>& other, gpuArray<double>* result, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transposeA = false, bool transposeB = false) const;
+    Mat<T>* _get_or_create_target(size_t rows, size_t cols, Mat<T>* result, std::unique_ptr<Mat<T>>& out_ptr_unique) const;
+    Vec<T>* _get_or_create_target(size_t size, Vec<T>* result, std::unique_ptr<Vec<T>>& out_ptr_unique) const;
+
+    virtual void mult(const GpuArray<float>& other, GpuArray<float>* result, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transposeA = false, bool transposeB = false) const;
+    virtual void mult(const GpuArray<double>& other, GpuArray<double>* result, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transposeA = false, bool transposeB = false) const;
 public:
-    virtual ~gpuArray();
+    virtual ~GpuArray();
     virtual size_t size() const = 0;
     virtual size_t bytes() const = 0;
     virtual void set(const T* hostData, cudaStream_t stream = 0) = 0;
     virtual void get(T* hostData, cudaStream_t stream = 0) const = 0;
-    virtual void set(const gpuArray<T>& src, cudaStream_t stream = 0) = 0;
-    virtual void get(gpuArray<T>& dst, cudaStream_t stream = 0) const = 0;
+    virtual void set(const GpuArray<T>& src, cudaStream_t stream = 0) = 0;
+    virtual void get(GpuArray<T>& dst, cudaStream_t stream = 0) const = 0;
     virtual void set(std::istream& input_stream, bool isText = false, bool isColMjr = true, cudaStream_t stream = 0) = 0;
     virtual void get(std::ostream& output_stream, bool isText = false, bool isColMjr = true, cudaStream_t stream = 0) const = 0;
     T* data();
@@ -122,7 +127,7 @@ public:
     size_t getLD() const;
     std::shared_ptr<void> getPtr() const;
 
-    gpuArray<T>& operator=(const gpuArray<T>& other) {
+    GpuArray<T>& operator=(const GpuArray<T>& other) {
         if (this != &other) {
             if (_rows != other._rows || _cols != other._cols)
                 throw std::runtime_error("gpuArray assignment: row/col dimensions do not match");
@@ -134,7 +139,7 @@ public:
     }
 
 
-    gpuArray(const gpuArray<T>& other) = default;
+    GpuArray(const GpuArray<T>& other) = default;
     
 };
 
@@ -143,8 +148,8 @@ class Singleton;
 
 
 template <typename T>
-class Mat : public gpuArray<T> {
-    using gpuArray<T>::mult;
+class Mat : public GpuArray<T> {
+    using GpuArray<T>::mult;
 private:
     void _scale_impl(T alpha, Handle* handle);
     void _fixToColMjr();
@@ -156,33 +161,27 @@ public:
     size_t bytes() const override;
     void set(const T* src, cudaStream_t stream = 0) override;
     void get(T* dst, cudaStream_t stream = 0) const override;
-    void set(const gpuArray<T>& src, cudaStream_t stream = 0) override;
-    void get(gpuArray<T>& dst, cudaStream_t stream = 0) const override;
+    void set(const GpuArray<T>& src, cudaStream_t stream = 0) override;
+    void get(GpuArray<T>& dst, cudaStream_t stream = 0) const override;
     void set(std::istream& input_stream, bool isText= false, bool readColMjr = true, cudaStream_t stream = 0);
     void get(std::ostream& output_stream, bool isText = false, bool printColMjr = true, cudaStream_t stream = 0) const;
     
-    Mat<float> mult(const Mat<float>& other, Mat<float>* result = nullptr, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transposeA = false, bool transposeB = false) const;
-    Mat<double> mult(const Mat<double>& other, Mat<double>* result = nullptr, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transposeA = false, bool transposeB = false) const;
+    Mat<T> mult(const Mat<T>& other, Mat<T>* result = nullptr, Handle* handle = nullptr, T alpha = 1.0f, T beta = 0.0f, bool transposeA = false, bool transposeB = false) const;
 
-    Vec<float> mult(const Vec<float>& other, Vec<float>* result = nullptr, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transpose = false) const;
-    Vec<double> mult(const Vec<double>& other, Vec<double>* result = nullptr, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transpose = false) const;
+    Vec<T> mult(const Vec<T>& other, Vec<T>* result = nullptr, Handle* handle = nullptr, T alpha = 1.0f, T beta = 0.0f, bool transpose = false) const;    
     
-    Vec<float> operator*(const Vec<float>& other) const;
-    Vec<double> operator*(const Vec<double>& other) const;
+    Vec<T> operator*(const Vec<T>& other) const;    
 
-    Mat<float> operator*(const Mat<float>& other) const;
-    Mat<double> operator*(const Mat<double>& other) const;
+    Mat<T> operator*(const Mat<T>& other) const;    
     
-    Mat<float> plus(const Mat<float>& x, Mat<float>* result = nullptr, float alpha = 1.0f, float beta = 1.0f, bool transposeA = false, bool transposeB = false, Handle* handle = nullptr);
-    Mat<double> plus(const Mat<double>& x, Mat<double>* result = nullptr, double alpha = 1.0, double beta = 1.0, bool transposeA = false, bool transposeB = false, Handle* handle = nullptr);
-    Mat<float> minus(const Mat<float>& x, Mat<float>* result = nullptr, float alpha = 1.0f, float beta = 1.0f, bool transposeA = false, bool transposeB = false, Handle* handle = nullptr);
-    Mat<double> minus(const Mat<double>& x, Mat<double>* result = nullptr, double alpha = 1.0, double beta = 1.0, bool transposeA = false, bool transposeB = false, Handle* handle = nullptr);
+    Mat<T> plus(const Mat<T>& x, Mat<T>* result = nullptr, T alpha = 1.0f, T beta = 1.0f, bool transposeA = false, bool transposeB = false, Handle* handle = nullptr);
+    
+    Mat<T> minus(const Mat<T>& x, Mat<T>* result = nullptr, T alpha = 1.0f, T beta = 1.0f, bool transposeA = false, bool transposeB = false, Handle* handle = nullptr);    
 
-    void mult(float alpha, Handle* handle = nullptr);
-    void mult(double alpha, Handle* handle = nullptr);
+    void mult(T alpha, Handle* handle = nullptr);    
 
-    Vec<float> bandedMult(const Vec<float>& other, Vec<float>* result = nullptr, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, int kl = 0, int ku = 0, bool transpose = false) const;
-    Vec<double> bandedMult(const Vec<double>& other, Vec<double>* result = nullptr, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, int kl = 0, int ku = 0, bool transpose = false) const;
+    Vec<T> bandedMult(const Vec<T>& other, Vec<T>* result = nullptr, Handle* handle = nullptr, T alpha = 1.0f, T beta = 0.0f, int kl = 0, int ku = 0, bool transpose = false) const;
+    
 
     /**
      * Multiply a sparse diagonal matrix (packed diagonals) with a 1D vector.
@@ -206,8 +205,8 @@ public:
 };
 
 template <typename T>
-class Vec : public gpuArray<T> {
-    using gpuArray<T>::mult;
+class Vec : public GpuArray<T> {
+    using GpuArray<T>::mult;
 protected:
     Vec(size_t cols, size_t rows, size_t ld);
 public:
@@ -218,30 +217,25 @@ public:
     size_t bytes() const override;
     void set(const T* hostData, cudaStream_t stream = 0) override;
     void get(T* hostData, cudaStream_t stream = 0) const override;
-    void set(const gpuArray<T>& src, cudaStream_t stream = 0) override;
-    void get(gpuArray<T>& dst, cudaStream_t stream = 0) const override;
+    void set(const GpuArray<T>& src, cudaStream_t stream = 0) override;
+    void get(GpuArray<T>& dst, cudaStream_t stream = 0) const override;
     void set(std::istream& input_stream, bool isText = false, bool isColMjr = true, cudaStream_t stream = 0) override;
     void get(std::ostream& output_stream, bool isText = false, bool isColMjr = true, cudaStream_t stream = 0) const override;
 
-    Vec<float> mult(const Mat<float>& other, Vec<float>* result = nullptr, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transpose = false) const;
-    Vec<double> mult(const Mat<double>& other, Vec<double>* result = nullptr, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transpose = false) const;
+    Vec<T> mult(const Mat<T>& other, Vec<T>* result = nullptr, Handle* handle = nullptr, T alpha = T(1.0), T beta = T(0.0), bool transpose = false) const;
 
-    float mult(const Vec<float>& other, Singleton<float>* result = nullptr, Handle* handle = nullptr) const;
-    double mult(const Vec<double>& other, Singleton<double>* result = nullptr, Handle* handle = nullptr) const;
+    T mult(const Vec<T>& other, Singleton<T>* result = nullptr, Handle* handle = nullptr) const;    
 
-    Vec<float> operator*(const Mat<float>& other) const;
-    Vec<double> operator*(const Mat<double>& other) const;
-    float operator*(const Vec<float>& other) const;
-    double operator*(const Vec<double>& other) const;
+    Vec<T> operator*(const Mat<T>& other) const;    
+    T operator*(const Vec<T>& other) const;
+    
 
-    void add(const Vec<float>& x, float alpha = 1.0f, Handle* handle = nullptr);
-    void sub(const Vec<float>& x, float alpha = 1.0f, Handle* handle = nullptr);
+    void add(const Vec<T>& x, T alpha = T(1.0), Handle* handle = nullptr);
+    void sub(const Vec<T>& x, T alpha = T(1.0), Handle* handle = nullptr);
 
-    void add(const Vec<double>& x, double alpha = 1.0, Handle* handle = nullptr);
-    void sub(const Vec<double>& x, double alpha = 1.0, Handle* handle = nullptr);
+    void mult(T alpha, Handle* handle = nullptr);
 
-    void mult(float alpha, Handle* handle = nullptr);
-    void mult(double alpha, Handle* handle = nullptr);
+    void mult(Singleton<T> alpha, Handle* handle = nullptr);
 
     void fillRandom(Handle* handle = nullptr);
 
@@ -375,7 +369,7 @@ std::istream& operator>>(std::istream& is, Mat<T>& arr) {
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const gpuArray<T>& arr) {
+std::ostream& operator<<(std::ostream& os, const GpuArray<T>& arr) {
     
     if (auto ptr1d = dynamic_cast<const Vec<T>*>(&arr)) return os << *ptr1d;
     else if (auto ptr2d = dynamic_cast<const Mat<T>*>(&arr)) return os << *ptr2d;

@@ -98,28 +98,28 @@ void StreamGet<T>::writeChunk(bool isText) {
 }
 
 template <typename T>
-gpuArray<T>::gpuArray(size_t rows, size_t cols, size_t ld)
+GpuArray<T>::GpuArray(size_t rows, size_t cols, size_t ld)
     : _rows(rows), _cols(cols), _ld(ld){}
 
 template <typename T>
-gpuArray<T>::~gpuArray() = default;
+GpuArray<T>::~GpuArray() = default;
 
 template <typename T>
-T* gpuArray<T>::data() { return static_cast<T*>(_ptr.get()); }
+T* GpuArray<T>::data() { return static_cast<T*>(_ptr.get()); }
 
 template <typename T>
-const T* gpuArray<T>::data() const { return static_cast<const T*>(_ptr.get()); }
+const T* GpuArray<T>::data() const { return static_cast<const T*>(_ptr.get()); }
 
 template <typename T>
-size_t gpuArray<T>::getLD() const { return _ld; }
+size_t GpuArray<T>::getLD() const { return _ld; }
 
 template <typename T>
-std::shared_ptr<void> gpuArray<T>::getPtr() const{ return _ptr; }
+std::shared_ptr<void> GpuArray<T>::getPtr() const{ return _ptr; }
 
 template<>
-void gpuArray<float>::mult(
-    const gpuArray<float>& other,
-    gpuArray<float>* result,
+void GpuArray<float>::mult(
+    const GpuArray<float>& other,
+    GpuArray<float>* result,
     Handle* handle,
     float alpha,
     float beta,
@@ -145,9 +145,9 @@ void gpuArray<float>::mult(
 }
 
 template<>
-void gpuArray<double>::mult(
-    const gpuArray<double>& other,
-    gpuArray<double>* result,
+void GpuArray<double>::mult(
+    const GpuArray<double>& other,
+    GpuArray<double>* result,
     Handle* handle,
     double alpha,
     double beta,
@@ -172,9 +172,9 @@ void gpuArray<double>::mult(
 }
 
 template<>
-void gpuArray<int>::mult(
-    const gpuArray<float>& other,
-    gpuArray<float>* result,
+void GpuArray<int>::mult(
+    const GpuArray<float>& other,
+    GpuArray<float>* result,
     Handle* handle,
     float alpha,
     float beta,
@@ -185,9 +185,9 @@ void gpuArray<int>::mult(
 }
 
 template<>
-void gpuArray<int>::mult(
-    const gpuArray<double>& other,
-    gpuArray<double>* result,
+void GpuArray<int>::mult(
+    const GpuArray<double>& other,
+    GpuArray<double>* result,
     Handle* handle,
     double alpha,
     double beta,
@@ -231,16 +231,15 @@ Handle::Handle() : Handle(nullptr) {}
 
 Handle::~Handle() {
     cublasDestroy(handle);
-    if (this->isOwner) {
-        cudaStreamDestroy(stream);
-    }
+    if (this->isOwner) cudaStreamDestroy(stream);
+    CHECK_CUDA_ERROR(cudaDeviceSynchronize());
 }
 
 // Disallow mixed-type multiplication for float/double
 template<>
-void gpuArray<float>::mult(
-    const gpuArray<double>& other,
-    gpuArray<double>* result,
+void GpuArray<float>::mult(
+    const GpuArray<double>& other,
+    GpuArray<double>* result,
     Handle* handle,
     double alpha,
     double beta,
@@ -251,9 +250,9 @@ void gpuArray<float>::mult(
 }
 
 template<>
-void gpuArray<double>::mult(
-    const gpuArray<float>& other,
-    gpuArray<float>* result,
+void GpuArray<double>::mult(
+    const GpuArray<float>& other,
+    GpuArray<float>* result,
     Handle* handle,
     float alpha,
     float beta,
@@ -263,8 +262,31 @@ void gpuArray<double>::mult(
     throw std::logic_error("Multiplication not supported between double and float");
 }
 
+template <typename T>
+Mat<T>* GpuArray<T>::_get_or_create_target(size_t rows, size_t cols, Mat<T>* result, std::unique_ptr<Mat<T>>& out_ptr_unique) const {
+    if (result) return result;
+    else {
+        out_ptr_unique = std::make_unique<Mat<T>>(rows, cols);
+        return out_ptr_unique.get();
+    }
+}
 
-// Explicit template instantiations to satisfy the linker
+template <typename T>
+Vec<T>* GpuArray<T>::_get_or_create_target(size_t length, Vec<T>* result, std::unique_ptr<Vec<T>>& out_ptr_unique) const {
+    if (result) return result;
+    else {
+        out_ptr_unique = std::make_unique<Vec<T>>(length);
+        return out_ptr_unique.get();
+    }
+}
+
+Handle* Handle::_get_or_create_handle(Handle* handle, std::unique_ptr<Handle>& out_ptr_unique) {
+    if (handle) return handle;
+    else {
+        out_ptr_unique = std::make_unique<Handle>();
+        return out_ptr_unique.get();
+    }
+}
 
 // CuFileHelper
 template class StreamHelper<int>;
@@ -282,16 +304,6 @@ template class StreamGet<float>;
 template class StreamGet<double>;
 
 // CuArray
-template class gpuArray<int>;
-template class gpuArray<float>;
-template class gpuArray<double>;
-
-// If you also use mult() with mixed types (float vs double or int), explicitly instantiate those specializations:
-// For example:
-template void gpuArray<float>::mult(
-    const gpuArray<float>&, gpuArray<float>*, Handle*, float, float, bool, bool
-) const;
-
-template void gpuArray<double>::mult(
-    const gpuArray<double>&, gpuArray<double>*, Handle*, double, double, bool, bool
-) const;
+template class GpuArray<int>;
+template class GpuArray<float>;
+template class GpuArray<double>;

@@ -17,7 +17,7 @@ using namespace std;
  *
  */
 template <typename T>
-void readAndPrint(gpuArray<T>& array, const string& fileName, const bool isText) {
+void readAndPrint(GpuArray<T>& array, const string& fileName, const bool isText) {
     ifstream reader(fileName);
     if(!reader.is_open())
         throw runtime_error("Could not open " + fileName);

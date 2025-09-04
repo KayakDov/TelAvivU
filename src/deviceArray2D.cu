@@ -1,23 +1,30 @@
 #include "deviceArrays.h"
 
 
-template <>
-Mat<float> Mat<float>::mult(
-    const Mat<float>& other,
-    Mat<float>* result,
+template <typename T>
+Mat<T> Mat<T>::mult(
+    const Mat<T>& other,
+    Mat<T>* result,
     Handle* handle,
-    float alpha,
-    float beta,
+    T alpha,
+    T beta,
     bool transposeA,
     bool transposeB
 ) const {
     
-    Mat<float>* resPtr = result ? result: new Mat<float>(this->_rows, other._cols);
+    std::unique_ptr<Mat<T>> resPtr;
+    Mat<T>* targetPtr;
+    if (!result) {
+        resPtr = std::make_unique<Mat<T>>(this->_rows, other._cols);
+        targetPtr = resPtr.get();
+    } else targetPtr = result;
     
-    gpuArray<float>::mult(other, resPtr, handle, alpha, beta, transposeA, transposeB);
+    
+    
+    gpuArray<T>::mult(other, resPtr, handle, alpha, beta, transposeA, transposeB);
 
     if (!result) {
-        Mat<float> temp = *resPtr;
+        Mat<T> temp = *resPtr;
         delete resPtr;
         return temp;
     }
@@ -25,123 +32,40 @@ Mat<float> Mat<float>::mult(
     return *resPtr;
 }
 
-template <>
-Mat<double> Mat<double>::mult(
-    const Mat<double>& other,
-    Mat<double>* result,
-    Handle* handle,
-    double alpha,
-    double beta,
-    bool transposeA,
-    bool transposeB
-) const {
-    Mat<double>* resPtr = result ? result: new Mat<double>(this->_rows, other._cols);
-    
-    gpuArray<double>::mult(other, resPtr, handle, alpha, beta, transposeA, transposeB);
-    
-    if (!result) {
-        Mat<double> temp = *resPtr;
-        delete resPtr;
-        return temp;
-    }
-    
-    return *resPtr;
-}
 
-template <>
-Vec<float> Mat<float>::mult(
-    const Vec<float>& other,
-    Vec<float>* result,
+template <typename T>
+Vec<T> Mat<T>::mult(
+    const Vec<T>& other,
+    Vec<T>* result,
     Handle* handle,
-    float alpha,
-    float beta,
+    T alpha,
+    T beta,
     bool transpose
     
-) const {
-
-    Vec<float>* resPtr = result ? result: new Vec<float>(other._cols);
+) const {//TODO: use the new pointer methods everywhere possible.
+    std::unique_ptr<Vec<T>> temp_res_ptr;
+    Vec<T>* resPtr = _get_or_create_target(this->_rows, result, temp_res_ptr);
     
-    Handle* h = handle ? handle : new Handle();
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
 
-    cublasSgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, &alpha, this->data(), this->getLD(), other.data(), other.getLD(), &beta, resPtr->data(), resPtr->getLD());
-
-    if (!result) {
-        Vec<float> temp = *resPtr;
-        delete resPtr;
-        return temp;
-    }
-
-    if (!handle){
-        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-         delete h;
-    }
-    
-    return *resPtr;
+    if constexpr(is_same_v<T, float>)
+        cublasSgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, &alpha, this->data(), this->getLD(), other.data(), other.getLD(), &beta, resPtr->data(), resPtr->getLD());
+    else if constexpr(is_same_v<T, double>)
+        cublasDgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, &alpha, this->data(), this->getLD(), other.data(), other.getLD(), &beta, resPtr->data(), resPtr->getLD());
+    else static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>, "Vec::add unsupported type.");
+        
+    return *(result? result : resPtr);
 }
 
-/**
- * Multiplies a 2D array with a 1D array, returning a new 1D array.
- * @param other The 1D array to multiply with.
- * @param result Optional pointer to an existing 1D array to store the result.
- * @param handle Optional CublasHandle for managing the cuBLAS context.
- * @param alpha Scalar multiplier for the result.   
- *  @param beta Scalar multiplier for the existing values in the result array.
- * @param transpose If true, the 2D array is transposed before multiplication.
- * @return A new 1D array containing the result of the multiplication.
- */
-template <>
-Vec<double> Mat<double>::mult(
-    const Vec<double>& other,
-    Vec<double>* result,
-    Handle* handle,
-    double alpha,
-    double beta,
-    bool transpose
-) const {
 
-    Vec<double>* resPtr = result ? result: new Vec<double>(other._cols);
-
-    Handle* h = handle ? handle : new Handle();
-    
-    cublasDgemv(
-        h->handle,
-        transpose ? CUBLAS_OP_T : CUBLAS_OP_N,
-        this->_rows, this->_cols,
-        &alpha,
-        this->data(), this->getLD(),
-        other.data(), other.getLD(),
-        &beta,
-        resPtr->data(), resPtr->getLD()
-    );
-
-    if (!result) {
-        Vec<double> temp = *resPtr;
-        delete resPtr;
-        return temp;
-    }
-
-    if (!handle){
-        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-         delete h;
-    }
-    
-    return *resPtr;
-}
-
-template <>
-Mat<float> Mat<float>::operator*(const Mat<float>& other) const {
+template <typename T>
+Mat<T> Mat<T>::operator*(const Mat<T>& other) const {
     return this->mult(other);
 }
-template <>
-Mat<double> Mat<double>::operator*(const Mat<double>& other) const {
-    return this->mult(other);
-}
-template <>
-Vec<float> Mat<float>::operator*(const Vec<float>& other) const {
-    return this->mult(other);
-}
-template <>
-Vec<double> Mat<double>::operator*(const Vec<double>& other) const {
+
+template <typename T>
+Vec<T> Mat<T>::operator*(const Vec<T>& other) const {
     return this->mult(other);
 }
 
@@ -284,59 +208,12 @@ void Mat<T>::get(std::ostream& output_stream, bool isText, bool printColMajor, c
     }
 }
 
-
-// template <typename T>
-// __global__ void fixToColMjrKernel(
-//     const T* __restrict__ src, const int ldSrc,
-//     T* __restrict__ dst, int ldDst,
-//     const int height, const int width
-// ){  
-//     int idx = blockIdx.x * blockDim.x + threadIdx.x;    
-
-//     if (idx < height * width) {
-        
-//         T element = src[(idx/height) * ldSrc + idx % height];
-
-//         int dstRow = idx % width;
-//         int dstCol = idx / width;
-
-//         dst[dstCol * ldDst + dstRow] = element;
-//     }
-// }
-
-// template <typename T>
-// void Mat<T>::_fixToColMjr(){
- 
-//     if (this->_rows == 0 || this->_cols == 0) return;
-
-//     Mat<T> temp(this->_rows, this->_cols);
-//     Handle h;
-
-//     dim3 threadsPerBlock(256);
-//     dim3 numBlocks((this->_rows * this->_cols + threadsPerBlock.x - 1) / threadsPerBlock.x);
-    
-//     fixToColMjrKernel<<<numBlocks, threadsPerBlock, 0, h.stream>>>(
-//         this->data(),
-//         this->getLD(),
-//         temp.data(),
-//         temp.getLD(),
-//         this->_rows,
-//         this->_cols
-//     );
-
-//     CHECK_CUDA_ERROR(cudaGetLastError());
-//     CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-    
-//     this->set(temp, h.stream);
-//     CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-// }
-
-template <>
-Mat<float> Mat<float>::plus(
-    const Mat<float>& x, 
-    Mat<float>* result,
-    float alpha,
-    float beta,
+template <typename T>
+Mat<T> Mat<T>::plus(
+    const Mat<T>& x, 
+    Mat<T>* result,
+    T alpha,
+    T beta,
     bool transposeA,
     bool transposeB,
     Handle* handle
@@ -346,19 +223,31 @@ Mat<float> Mat<float>::plus(
     }
     
     // Determine the result pointer, creating a new one if necessary
-    Mat<float>* resPtr = result ? result : new Mat<float>(this->_rows, this->_cols);
+    Mat<T>* resPtr = result ? result : new Mat<T>(this->_rows, this->_cols);
     
     Handle* h = handle ? handle : new Handle();
-
-    cublasSgeam(
-        h->handle, 
-        transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
-        transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
-        this->_rows, this->_cols, 
-        &alpha, x.data(), x.getLD(),
-        &beta, this->data(), this->getLD(),
-        resPtr->data(), resPtr->getLD()
-    );
+    
+    if constexpr (std::is_same_v<T, float>)
+        cublasSgeam(
+            h->handle, 
+            transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
+            transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
+            this->_rows, this->_cols, 
+            &alpha, x.data(), x.getLD(),
+            &beta, this->data(), this->getLD(),
+            resPtr->data(), resPtr->getLD()
+        );
+    else if constexpr (std:: is_same_v<T, double>)
+        cublasDgeam(
+            h->handle, 
+            transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
+            transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
+            this->_rows, this->_cols, 
+            &alpha, x.data(), x.getLD(),
+            &beta, this->data(), this->getLD(),
+            resPtr->data(), resPtr->getLD()
+        );
+    else static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>, "Vec::add unsupported type.");
 
     if (!handle) {
         CHECK_CUDA_ERROR(cudaDeviceSynchronize());
@@ -366,7 +255,7 @@ Mat<float> Mat<float>::plus(
     }
     
     if (!result) {
-        Mat<float> temp = *resPtr;
+        Mat<T> temp = *resPtr;
         delete resPtr;
         return temp;
     }
@@ -374,68 +263,13 @@ Mat<float> Mat<float>::plus(
     return *resPtr;
 }
 
-template <>
-Mat<double> Mat<double>::plus(
-    const Mat<double>& x, 
-    Mat<double>* result,
-    double alpha,
-    double beta,
-    bool transposeA,
-    bool transposeB,
-    Handle* handle
-) {
-    if (this->_rows != x._rows || this->_cols != x._cols) {
-        throw std::invalid_argument("Matrix dimensions do not match for add.");
-    }
 
-    // Determine the result pointer, creating a new one if necessary
-    Mat<double>* resPtr = result ? result : new Mat<double>(this->_rows, this->_cols);
-    
-    Handle* h = handle ? handle : new Handle();
-
-    cublasDgeam(
-        h->handle, 
-        transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
-        transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
-        this->_rows, this->_cols, 
-        &alpha, x.data(), x.getLD(),
-        &beta, this->data(), this->getLD(),
-        resPtr->data(), resPtr->getLD()
-    );
-    
-    if (!handle) {
-        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-        delete h;
-    }
-    
-    if (!result) {
-        Mat<double> temp = *resPtr;
-        delete resPtr;
-        return temp;
-    }
-    
-    return *resPtr;
-}
-
-template <>
-Mat<float> Mat<float>::minus(
-    const Mat<float>& x,
-    Mat<float>* result,
-    float alpha,
-    float beta,
-    bool transposeA,
-    bool transposeB,
-    Handle* handle
-) {
-    return this->plus(x, result, -alpha, beta, transposeA, transposeB, handle);
-}
-
-template <>
-Mat<double> Mat<double>::minus(
-    const Mat<double>& x,
-    Mat<double>* result,
-    double alpha,
-    double beta,
+template <typename T>
+Mat<T> Mat<T>::minus(
+    const Mat<T>& x,
+    Mat<T>* result,
+    T alpha,
+    T beta,
     bool transposeA,
     bool transposeB,
     Handle* handle
@@ -483,26 +317,21 @@ void Mat<T>::_scale_impl(T alpha, Handle* handle) {
     }
 }
 
-template <>
-void Mat<float>::mult(float alpha, Handle* handle) {
-    this->_scale_impl(alpha, handle);
-}
-
-template <>
-void Mat<double>::mult(double alpha, Handle* handle) {
+template <typename T>
+void Mat<T>::mult(T alpha, Handle* handle) {
     this->_scale_impl(alpha, handle);
 }
 
 /**
- * Multiplies a banded 2D float matrix with a 1D vector using cuBLAS gbmv.
+ * Multiplies a banded 2D matrix with a 1D vector using cuBLAS gbmv.
  */
-template <>
-Vec<float> Mat<float>::bandedMult(
-    const Vec<float>& x,
-    Vec<float>* result,
+template <typename T>
+Vec<T> Mat<T>::bandedMult(
+    const Vec<T>& x,
+    Vec<T>* result,
     Handle* handle,
-    float alpha,
-    float beta,
+    T alpha,
+    T beta,
     int kl,   // number of sub-diagonals
     int ku,   // number of super-diagonals
     bool transpose
@@ -512,29 +341,48 @@ Vec<float> Mat<float>::bandedMult(
         throw std::invalid_argument("Matrix/vector dimensions do not match for banded multiplication.");
     }
 
-    Vec<float>* resPtr = result ? result : new Vec<float>(transpose ? this->_cols : this->_rows);
+    Vec<T>* resPtr = result ? result : new Vec<T>(transpose ? this->_cols : this->_rows);
 
     Handle* h = handle ? handle : new Handle();
 
-    cublasSgbmv(
-        h->handle,
-        transpose ? CUBLAS_OP_T : CUBLAS_OP_N,
-        this->_rows,
-        this->_cols,
-        kl,
-        ku,
-        &alpha,
-        this->data(),
-        this->getLD(),
-        x.data(),
-        x.getLD(),
-        &beta,
-        resPtr->data(),
-        resPtr->getLD()
-    );
+    if constexpr (std::is_same_v<T, float>)
+        cublasSgbmv(
+            h->handle,
+            transpose ? CUBLAS_OP_T : CUBLAS_OP_N,
+            this->_rows,
+            this->_cols,
+            kl,
+            ku,
+            &alpha,
+            this->data(),
+            this->getLD(),
+            x.data(),
+            x.getLD(),
+            &beta,
+            resPtr->data(),
+            resPtr->getLD()
+        );
+    else if constexpr (std::is_same_v<T, double>)
+        cublasDgbmv(
+            h->handle,
+            transpose ? CUBLAS_OP_T : CUBLAS_OP_N,
+            this->_rows,
+            this->_cols,
+            kl,
+            ku,
+            &alpha,
+            this->data(),
+            this->getLD(),
+            x.data(),
+            x.getLD(),
+            &beta,
+            resPtr->data(),
+            resPtr->getLD()
+        );
+    else static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>, "Vec::add unsupported type.");
 
     if (!result) {
-        Vec<float> temp = *resPtr;
+        Vec<T> temp = *resPtr;
         delete resPtr;
         return temp;
     }
@@ -547,59 +395,6 @@ Vec<float> Mat<float>::bandedMult(
     return *resPtr;
 }
 
-/**
- * Multiplies a banded 2D double matrix with a 1D vector using cuBLAS gbmv.
- */
-template <>
-Vec<double> Mat<double>::bandedMult(
-    const Vec<double>& x,
-    Vec<double>* result,
-    Handle* handle,
-    double alpha,
-    double beta,
-    int kl,   // number of sub-diagonals
-    int ku,   // number of super-diagonals
-    bool transpose
-) const {
-    if ((transpose && this->_rows != x._cols) ||
-        (!transpose && this->_cols != x._cols)) {
-        throw std::invalid_argument("Matrix/vector dimensions do not match for banded multiplication.");
-    }
-
-    Vec<double>* resPtr = result ? result : new Vec<double>(transpose ? this->_cols : this->_rows);
-
-    Handle* h = handle ? handle : new Handle();
-
-    cublasDgbmv(
-        h->handle,
-        transpose ? CUBLAS_OP_T : CUBLAS_OP_N,
-        this->_rows,
-        this->_cols,
-        kl,
-        ku,
-        &alpha,
-        this->data(),
-        this->getLD(),
-        x.data(),
-        x.getLD(),
-        &beta,
-        resPtr->data(),
-        resPtr->getLD()
-    );
-
-    if (!result) {
-        Vec<double> temp = *resPtr;
-        delete resPtr;
-        return temp;
-    }
-
-    if (!handle) {
-        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-        delete h;
-    }
-
-    return *resPtr;
-}
 
 /**
  * Kernel for sparse diagonal matrix-vector multiplication.
@@ -615,7 +410,7 @@ Vec<double> Mat<double>::bandedMult(
  * @param diags Indices of the diagonals.  Negative indices indicate sub-diagonals. 
  * Positive indices indicate super-diagonals. 
  * For example, diags = {-1, 0, 1} means the first diagonal is the sub-diagonal, the second is the main diagonal, and the third is the super-diagonal.
- * @param numDiags Number of nonzero diagonals.  This number must be less than or equal to 64.
+ * @param numDiags Number of nonzero diagonals.  This number must be less than or equal to 32.
  * @param x Input vector.
  * @param stride Stride for the input vector x.
  * @param result Output vector.
