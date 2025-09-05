@@ -272,6 +272,15 @@ Mat<T>* GpuArray<T>::_get_or_create_target(size_t rows, size_t cols, Mat<T>* res
 }
 
 template <typename T>
+Singleton<T>* GpuArray<T>::_get_or_create_target(Singleton<T>* result, std::unique_ptr<Singleton<T>>& out_ptr_unique) const {
+    if (result) return result;
+    else {
+        out_ptr_unique = std::make_unique<Singleton<T>>();
+        return out_ptr_unique.get();
+    }
+}
+
+template <typename T>
 Vec<T>* GpuArray<T>::_get_or_create_target(size_t length, Vec<T>* result, std::unique_ptr<Vec<T>>& out_ptr_unique) const {
     if (result) return result;
     else {

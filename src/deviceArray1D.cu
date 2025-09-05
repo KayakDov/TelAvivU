@@ -29,15 +29,10 @@ Vec<T> Vec<T>::mult(
     bool transpose
 ) const {
 
-    Vec<T>* resPtr = result ? result: new Vec<T>(other._cols);
+    std::unique_ptr<Vec<T>> temp_res_ptr;
+    Vec<T>* resPtr = _get_or_create_target(other._cols, result, temp_res_ptr);
     
     other.mult(*this, resPtr, handle, alpha, beta, !transpose);  
-
-    if (!result) {
-        Vec<T> temp = *resPtr;
-        delete resPtr;
-        return temp;
-    }
     
     return *resPtr;
 }
@@ -51,24 +46,24 @@ T Vec<T>::mult(
     if (this->_cols != other._cols)
         throw std::invalid_argument("Vector lengths do not match for dot product.");
     
+    std::unique_ptr<Singleton<T>> temp_res_ptr;
+    Singleton<T>* resPtr = _get_or_create_target(result, temp_res_ptr);
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
     
-    Handle* h = handle ? handle : new Handle();
-    Singleton<T>* r = result? result : new Singleton<T>();
-    
+    cublasPointerMode_t savedMode;
+    CHECK_CUBLAS_ERROR(cublasGetPointerMode(h->handle, &savedMode));
+    CHECK_CUBLAS_ERROR(cublasSetPointerMode(h->handle, CUBLAS_POINTER_MODE_DEVICE));
+
     if constexpr (std::is_same_v<T, float>)
-        cublasSdot(h->handle, this->_cols, this->data(), this->getLD(), other.data(), other.getLD(), r->data());
+        cublasSdot(h->handle, this->_cols, this->data(), this->getLD(), other.data(), other.getLD(), resPtr->data());
     else constexpr (std::is_same_v<T, double>)
-        cublasDdot(h->handle, this->_cols, this->data(), this->getLD(), other.data(), other.getLD(), r->data());
+        cublasDdot(h->handle, this->_cols, this->data(), this->getLD(), other.data(), other.getLD(), resPtr->data());
     else static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>, "Vec::add unsupported type.");
 
-    if (!handle){
-        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-         delete h;
-    }
+    CHECK_CUBLAS_ERROR(cublasSetPointerMode(h->handle, savedMode));
 
-    T scalar = r->get();
-
-    if(!result) delete r;
+    T scalar = resPtr->get();
 
     return scalar;
 }
@@ -80,7 +75,7 @@ Vec<T> Vec<T>::operator*(const Mat<T>& other) const {
 }
 
 template <typename T>
-float Vec<T>::operator*(const Vec<T>& other) const {
+T Vec<T>::operator*(const Vec<T>& other) const {
     return this->mult(other);
 }
 
@@ -196,18 +191,14 @@ void Vec<T>::add(const Vec<T>& x, T alpha, Handle* handle) {
     if (this->_cols != x._cols) 
         throw std::invalid_argument("Vector lengths do not match for add.");
     
-    Handle* h = handle ? handle : new Handle();
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
     
     if constexpr (std::is_same_v<T, float>)
         cublasSaxpy(h->handle, this->_cols, &alpha, x.data(), x.getLD(), this->data(), this->getLD());
     else if constexpr(std::is_same_v<T, double>) 
         cublasDaxpy(h->handle, this->_cols, &alpha, x.data(), x.getLD(), this->data(), this->getLD());
-    else static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>, "Vec::add unsupported type.");
-    
-    if (!handle) {
-        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-        delete h;
-    }
+    else static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>, "Vec::add unsupported type.");    
 }
 
 template <typename T>
@@ -218,18 +209,14 @@ void Vec<T>::sub(const Vec<T>& x, T alpha, Handle* handle) {
 template <typename T>
 void Vec<T>::mult(T alpha, Handle* handle) {
     
-    Handle* h = handle ? handle : new Handle();
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
     
     if constexpr (std::is_same_v<T, float>)
         cublasSscal(h->handle, this->_cols, &alpha, this->data(), this->getLD());
     else if constexpr(std::is_same_v<T, double>) 
         cublasDscal(h->handle, this->_cols, &alpha, this->data(), this->getLD());
     else static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>, "Vec::add unsupported type.");
-
-    if (!handle) {
-        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-        delete h;
-    }
 }
 
 template <typename T>
@@ -263,7 +250,8 @@ __global__ void fillRandomKernel_double(double* array, size_t size, size_t strid
 template <typename T>
 void Vec<T>::fillRandom(Handle* handle) {
     
-    Handle* h = handle ? handle : new Handle();
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
     
     dim3 threadsPerBlock(256);
     dim3 numBlocks((this->_cols + threadsPerBlock.x - 1) / threadsPerBlock.x);
@@ -273,18 +261,15 @@ void Vec<T>::fillRandom(Handle* handle) {
 
     if constexpr (std::is_same_v<T, float>){
         setup_kernel_float<<<numBlocks, threadsPerBlock, 0, h->stream>>>(devStates, 0, this->size(), this->getLD());
+        cudaStreamSynchronize(handle->stream);
         fillRandomKernel_float<<<numBlocks, threadsPerBlock, 0, h->stream>>>(this->data(), this->_cols, this->getLD(), devStates);
     } else if constexpr (std::is_same_v<T, double>){
         setup_kernel_double<<<numBlocks, threadsPerBlock, 0, h->stream>>>(devStates, 0, this->size(), this->getLD());
+        cudaStreamSynchronize(handle->stream);
         fillRandomKernel_double<<<numBlocks, threadsPerBlock, 0, h->stream>>>(this->data(), this->_cols, this->getLD(), devStates);
     } else static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>, "Vec::add unsupported type.");
     
     CHECK_CUDA_ERROR(cudaFree(devStates));
-    
-    if (!handle) {
-        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-        delete h;
-    }
 }
 
 
@@ -317,16 +302,21 @@ void Vec<T>::EBEPow(const Singleton<T>& t, const T n, cudaStream_t stream) {
 }
 
 template <typename T>
-void Vec<T>::setSum(const Vec& a, const Vec& B, T alpha, T beta, Handle* handle){
-    this->set(a, handle.stream);
-    if(alpha != 1) this->mult(alpha);
+void Vec<T>::setSum(const Vec& a, const Vec& b, T alpha, T beta, Handle* handle){
+
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
+
+    this->set(a, h->stream);
+    if(alpha != static_cast<T>(1)) this->mult(alpha);
     this->add(b, beta, handle);
 }
 
 template <typename T>
 void Vec<T>::mult(Singleton<T> alpha, Handle* handle) {    
 
-    Handle* h = handle ? handle : new Handle();
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
 
     cublasPointerMode_t oldMode;
     cublasGetPointerMode(h->handle, &oldMode);
@@ -340,10 +330,6 @@ void Vec<T>::mult(Singleton<T> alpha, Handle* handle) {
 
     cublasSetPointerMode(h->handle, oldMode);
 
-    if (!handle) {
-        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-        delete h;
-    }
 }
 
 template class Vec<int>;

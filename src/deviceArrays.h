@@ -109,9 +109,10 @@ protected:
 
     Mat<T>* _get_or_create_target(size_t rows, size_t cols, Mat<T>* result, std::unique_ptr<Mat<T>>& out_ptr_unique) const;
     Vec<T>* _get_or_create_target(size_t size, Vec<T>* result, std::unique_ptr<Vec<T>>& out_ptr_unique) const;
+    Singleton<T>* _get_or_create_target(Singleton<T>* result, std::unique_ptr<Singleton<T>>& out_ptr_unique) const;
 
-    virtual void mult(const GpuArray<float>& other, GpuArray<float>* result, Handle* handle = nullptr, float alpha = 1.0f, float beta = 0.0f, bool transposeA = false, bool transposeB = false) const;
-    virtual void mult(const GpuArray<double>& other, GpuArray<double>* result, Handle* handle = nullptr, double alpha = 1.0, double beta = 0.0, bool transposeA = false, bool transposeB = false) const;
+    virtual void mult(const GpuArray<T>& other, GpuArray<T>* result, Handle* handle = nullptr, T alpha = T(1.0), T beta = T(0.0, bool transposeA = false, bool transposeB = false) const;
+    
 public:
     virtual ~GpuArray();
     virtual size_t size() const = 0;
