@@ -65,7 +65,7 @@ void StreamSet<T>::readChunk(bool isRowMajor) {
     if(isRowMajor) {
         for (size_t i = 0; i < num_elements; ++i) 
             if (!(this->_input_stream >> this->_hostBuffer[i]))
-                throw std::runtime_error("Failed to read enough elements. Failed at index " + i);
+                throw std::runtime_error("Failed to read enough elements. Failed at index " + std::to_string(i));
     } else this->_input_stream.read(reinterpret_cast<char*>(this->_hostBuffer.data()), current_chunk_bytes);
 
     if (!this->_input_stream) throw std::runtime_error("Stream read error or premature end of stream.");
@@ -84,9 +84,9 @@ void StreamGet<T>::writeChunk(bool isText) {
 
     if (current_chunk_bytes > 0) {
         if(isText){
-            for (size_t i = 0; i < this->getChunkWidth(); ++i) {
-                for(size_t j = 0; j < this->_rows; ++j)
-                    if (!(this->_output_stream << this->_hostBuffer[i * this->_rows + j] << '\t')) 
+            for (size_t col = 0; col < this->getChunkWidth(); ++col) {
+                for(size_t row = 0; row < this->_rows; ++row)
+                    if (!(this->_output_stream << this->_hostBuffer[col * this->_rows + row] << '\t')) 
                         throw std::runtime_error("Failed to write enough elements");
                 this->_output_stream << '\n';
             }                
@@ -116,85 +116,47 @@ size_t GpuArray<T>::getLD() const { return _ld; }
 template <typename T>
 std::shared_ptr<void> GpuArray<T>::getPtr() const{ return _ptr; }
 
-template<>
-void GpuArray<float>::mult(
-    const GpuArray<float>& other,
-    GpuArray<float>* result,
+template <typename T>
+void GpuArray<T>::mult(
+    const GpuArray<T>& other,
+    GpuArray<T>* result,
     Handle* handle,
-    float alpha,
-    float beta,
+    Singleton<T>* alpha,
+    Singleton<T>* beta,
     bool transposeA,
     bool transposeB
 ) const {
     
-    Handle* h = handle ? handle : new Handle();
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
 
-    cublasSgemm(h->handle,
+    std::unique_ptr<Singleton<T>> temp_a_ptr;
+    Singleton<T>* a = _get_or_create_target(1, h, alpha, temp_a_ptr);
+
+    std::unique_ptr<Singleton<T>> temp_b_ptr;
+    Singleton<T>* b = _get_or_create_target(0, h, beta, temp_b_ptr);
+
+    if constexpr (std::is_same_v<T, float>)
+        cublasSgemm(h->handle,
         transposeA ? CUBLAS_OP_T : CUBLAS_OP_N, transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
         this->_rows, other._cols, this->_cols,
-        &alpha,
+        a->data(),
         this->data(), this->getLD(),
         other.data(), other.getLD(),
-        &beta,
+        b->data(),
         result->data(), result->getLD());
-
-    if (!handle){
-        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-         delete h;
-    }
-}
-
-template<>
-void GpuArray<double>::mult(
-    const GpuArray<double>& other,
-    GpuArray<double>* result,
-    Handle* handle,
-    double alpha,
-    double beta,
-    bool transposeA,
-    bool transposeB
-) const {
-    Handle* h = handle ? handle : new Handle();
-    
-    cublasDgemm(h->handle,
+    else if constexpr (std::is_same_v<T, double>)
+        cublasDgemm(h->handle,
         transposeA ? CUBLAS_OP_T : CUBLAS_OP_N, transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
         this->_rows, other._cols, this->_cols,
-        &alpha,
+        a->data(),
         this->data(), this->getLD(),
         other.data(), other.getLD(),
-        &beta,
+        b->data(),
         result->data(), result->getLD());
+    else static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>, "Vec::add unsupported type.");
+
     
-    if (!handle){
-        CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-         delete h;
-    }
-}
-
-template<>
-void GpuArray<int>::mult(
-    const GpuArray<float>& other,
-    GpuArray<float>* result,
-    Handle* handle,
-    float alpha,
-    float beta,
-    bool transposeA,
-    bool transposeB
-) const {
-    throw std::logic_error("Multiplication not supported for int");
-}
-
-template<>
-void GpuArray<int>::mult(
-    const GpuArray<double>& other,
-    GpuArray<double>* result,
-    Handle* handle,
-    double alpha,
-    double beta,
-    bool transposeA,
-    bool transposeB
-) const {
-    throw std::logic_error("Multiplication not supported for int");
 }
 
 
@@ -225,6 +187,7 @@ Handle::Handle(cudaStream_t user_stream) {
         if (this->isOwner) cudaStreamDestroy(this->stream);
         throw std::runtime_error("Failed to set CUBLAS stream");
     }
+
 }
 
 Handle::Handle() : Handle(nullptr) {}
@@ -233,33 +196,6 @@ Handle::~Handle() {
     cublasDestroy(handle);
     if (this->isOwner) cudaStreamDestroy(stream);
     CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-}
-
-// Disallow mixed-type multiplication for float/double
-template<>
-void GpuArray<float>::mult(
-    const GpuArray<double>& other,
-    GpuArray<double>* result,
-    Handle* handle,
-    double alpha,
-    double beta,
-    bool transposeA,
-    bool transposeB
-) const {
-    throw std::logic_error("Multiplication not supported between float and double");
-}
-
-template<>
-void GpuArray<double>::mult(
-    const GpuArray<float>& other,
-    GpuArray<float>* result,
-    Handle* handle,
-    float alpha,
-    float beta,
-    bool transposeA,
-    bool transposeB
-) const {
-    throw std::logic_error("Multiplication not supported between double and float");
 }
 
 template <typename T>
@@ -276,6 +212,16 @@ Singleton<T>* GpuArray<T>::_get_or_create_target(Singleton<T>* result, std::uniq
     if (result) return result;
     else {
         out_ptr_unique = std::make_unique<Singleton<T>>();
+        return out_ptr_unique.get();
+    }
+}
+
+template <typename T>
+Singleton<T>* GpuArray<T>::_get_or_create_target(T defVal, Handle& hand, Singleton<T>* result, std::unique_ptr<Singleton<T>>& out_ptr_unique) const {
+    if (result) return result;
+    else {
+        out_ptr_unique = std::make_unique<Singleton<T>>();
+        out_ptr_unique->set(static_cast<T>(defVal), hand.stream);
         return out_ptr_unique.get();
     }
 }

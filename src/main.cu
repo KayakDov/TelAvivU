@@ -77,7 +77,8 @@ void showHelp() {
 template <typename T>
 void solveAndWriteOutput(Mat<T>& A, const Vec<int>& diags, Vec<T>& b, const string& x_dest_file, const bool isText, int maxIter, double epsilon) {
     Vec<T> x(b.size());
-    unpreconditionedBiCGSTAB(A, diags, b, &x,  maxIter, static_cast<T>(epsilon));
+    BiCGSTAB setup(b, static_cast<T>(epsilon), maxIter);
+    setup.unpreconditionedBiCGSTAB(A, diags, &x);
 
     ofstream x_fs(x_dest_file);
     if (!x_fs.is_open())
@@ -193,6 +194,7 @@ int useCommandLineArgs(int argc, char const* argv[]){
 
 
 int main(int argc, char const* argv[]) {
+    
     return useCommandLineArgs(argc, argv);
 
 }

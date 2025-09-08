@@ -6,15 +6,21 @@ Mat<T> Mat<T>::mult(
     const Mat<T>& other,
     Mat<T>* result,
     Handle* handle,
-    T alpha,
-    T beta,
+    Singleton<T>* alpha,
+    Singleton<T>* beta,
     bool transposeA,
     bool transposeB
-) const {    
-    std::unique_ptr<Mat<T>> temp_res_ptr;
-    Mat<T>* resPtr = _get_or_create_target(this->_rows, other._cols, result, temp_res_ptr);        
+) const {
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
+    std::unique_ptr<Mat<T>> temp_res_ptrMat;
+    Mat<T>* resPtr = _get_or_create_target(this->_rows, other._cols, result, temp_res_ptrMat);
+    std::unique_ptr<Singleton<T>> temp_a_ptrSing;
+    Singleton<T>* a = _get_or_create_target(1, h, alpha, temp_a_ptrSing);
+    std::unique_ptr<Singleton<T>> temp_b_ptrSing2;
+    Singleton<T>* b = _get_or_create_target(1, h, beta, temp_b_ptrSing2);
     
-    gpuArray<T>::mult(other, resPtr, handle, alpha, beta, transposeA, transposeB);
+    GpuArray<T>::mult(other, resPtr, h, a, b, transposeA, transposeB);
     
     return *resPtr;
 }
@@ -25,8 +31,8 @@ Vec<T> Mat<T>::mult(
     const Vec<T>& other,
     Vec<T>* result,
     Handle* handle,
-    T alpha,
-    T beta,
+    Singleton<T>* alpha,
+    Singleton<T>* beta,
     bool transpose
     
 ) const {
@@ -35,11 +41,15 @@ Vec<T> Mat<T>::mult(
     Vec<T>* resPtr = _get_or_create_target(this->_rows, result, temp_res_ptr);    
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
+    std::unique_ptr<Singleton<T>> temp_a_ptr;
+    Singleton<T>* a = _get_or_create_target(1, h, alpha, temp_a_ptr);
+    std::unique_ptr<Singleton<T>> temp_b_ptr;
+    Singleton<T>* b = _get_or_create_target(0, h, beta, temp_b_ptr);
 
-    if constexpr(is_same_v<T, float>)
-        cublasSgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, &alpha, this->data(), this->getLD(), other.data(), other.getLD(), &beta, resPtr->data(), resPtr->getLD());
-    else if constexpr(is_same_v<T, double>)
-        cublasDgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, &alpha, this->data(), this->getLD(), other.data(), other.getLD(), &beta, resPtr->data(), resPtr->getLD());
+    if constexpr(std::is_same_v<T, float>)
+        cublasSgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, a->data(), this->data(), this->getLD(), other.data(), other.getLD(), b->data(), resPtr->data(), resPtr->getLD());
+    else if constexpr(std::is_same_v<T, double>)
+        cublasDgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, a->data(), this->data(), this->getLD(), other.data(), other.getLD(), b->data(), resPtr->data(), resPtr->getLD());
     else static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>, "Vec::add unsupported type.");
         
     return *resPtr;
@@ -57,7 +67,7 @@ Vec<T> Mat<T>::operator*(const Vec<T>& other) const {
 }
 
 template <typename T>
-Mat<T>::Mat(size_t rows, size_t cols): gpuArray<T>(rows, cols, 0) {
+Mat<T>::Mat(size_t rows, size_t cols): GpuArray<T>(rows, cols, 0) {
     void* rawPtr = nullptr;
     size_t pitch = 0;
     cudaError_t err = cudaMallocPitch(&rawPtr, &pitch, rows * sizeof(T), cols);
@@ -70,11 +80,11 @@ Mat<T>::Mat(size_t rows, size_t cols): gpuArray<T>(rows, cols, 0) {
 
 template <typename T>
 Mat<T>::Mat(const Mat<T>& superArray, size_t startRow, size_t startCol, size_t height, size_t width)
-    : gpuArray<T>(height, width, superArray.getLD()) {
+    : GpuArray<T>(height, width, superArray.getLD()) {
     size_t offset = startCol * superArray.getLD() + startRow;
     this->_ptr = std::shared_ptr<void>(
         superArray._ptr,
-        static_cast<char*>(superArray._ptr.get()) + offset * sizeof(T)
+        reinterpret_cast<char*>(superArray._ptr.get()) + offset * sizeof(T)
     );
 }
 
@@ -199,8 +209,8 @@ template <typename T>
 Mat<T> Mat<T>::plus(
     const Mat<T>& x, 
     Mat<T>* result,
-    T alpha,
-    T beta,
+    Singleton<T>* alpha,
+    Singleton<T>* beta,
     bool transposeA,
     bool transposeB,
     Handle* handle
@@ -212,6 +222,10 @@ Mat<T> Mat<T>::plus(
     Mat<T>* resPtr = _get_or_create_target(this->_rows, x._cols, result, temp_res_ptr);    
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
+    std::unique_ptr<Singleton<T>> temp_a_ptr;
+    Singleton<T>* a = _get_or_create_target(1, h , alpha, temp_a_ptr);
+    std::unique_ptr<Singleton<T>> temp_b_ptr;
+    Singleton<T>* b = _get_or_create_target(0, h, beta, temp_b_ptr);
     
     if constexpr (std::is_same_v<T, float>)
         cublasSgeam(
@@ -219,8 +233,8 @@ Mat<T> Mat<T>::plus(
             transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
             transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
             this->_rows, this->_cols, 
-            &alpha, x.data(), x.getLD(),
-            &beta, this->data(), this->getLD(),
+            a->data(), x.data(), x.getLD(),
+            b->data(), this->data(), this->getLD(),
             resPtr->data(), resPtr->getLD()
         );
     else if constexpr (std:: is_same_v<T, double>)
@@ -229,8 +243,8 @@ Mat<T> Mat<T>::plus(
             transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
             transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
             this->_rows, this->_cols, 
-            &alpha, x.data(), x.getLD(),
-            &beta, this->data(), this->getLD(),
+            a->data(), x.data(), x.getLD(),
+            b->data(), this->data(), this->getLD(),
             resPtr->data(), resPtr->getLD()
         );
     else static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>, "Vec::add unsupported type.");
@@ -243,13 +257,23 @@ template <typename T>
 Mat<T> Mat<T>::minus(
     const Mat<T>& x,
     Mat<T>* result,
-    T alpha,
-    T beta,
+    Singleton<T>* alpha,
+    Singleton<T>* beta,
     bool transposeA,
     bool transposeB,
     Handle* handle
 ) {
-    return this->plus(x, result, -alpha, beta, transposeA, transposeB, handle);
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
+    std::unique_ptr<Singleton<T>> temp_a_ptr;
+    Singleton<T>* a = _get_or_create_target(1, h, alpha, temp_a_ptr);
+    std::unique_ptr<Singleton<T>> temp_b_ptr;
+    Singleton<T>* b = _get_or_create_target(beta, temp_b_ptr);
+    if(beta)a->set(-b->get());
+    else b->set(static_cast<T>(-1));
+
+
+    return this->plus(x, result, a, b, transposeA, transposeB, h);
 }
 
 template <typename T>
@@ -261,8 +285,9 @@ __global__ void scaleKernel(T* matrix, size_t rows, size_t cols, size_t ld, cons
     
 }
 
+
 template <typename T>
-void Mat<T>::_scale_impl(T alpha, Handle* handle) {
+void Mat<T>::mult(const Singleton<T>& alpha, Handle* handle) {
     if (this->_rows == 0 || this->_cols == 0) return;
     
     std::unique_ptr<Handle> temp_hand_ptr;
@@ -279,77 +304,9 @@ void Mat<T>::_scale_impl(T alpha, Handle* handle) {
         this->_rows,
         this->_cols,
         this->getLD(),
-        alpha
+        alpha.data()
     );
 }
-
-template <typename T>
-void Mat<T>::mult(T alpha, Handle* handle) {
-    this->_scale_impl(alpha, handle);
-}
-
-/**
- * Multiplies a banded 2D matrix with a 1D vector using cuBLAS gbmv.
- */
-template <typename T>
-Vec<T> Mat<T>::bandedMult(
-    const Vec<T>& x,
-    Vec<T>* result,
-    Handle* handle,
-    T alpha,
-    T beta,
-    int kl,   // number of sub-diagonals
-    int ku,   // number of super-diagonals
-    bool transpose
-) const {
-    if ((transpose && this->_rows != x._cols) ||
-        (!transpose && this->_cols != x._cols)) 
-        throw std::invalid_argument("Matrix/vector dimensions do not match for banded multiplication.");    
-
-    std::unique_ptr<Vec<T>> temp_res_ptr;
-    Vec<T>* resPtr = _get_or_create_target(this->_rows, result, temp_res_ptr);    
-    std::unique_ptr<Handle> temp_hand_ptr;
-    Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
-    
-    if constexpr (std::is_same_v<T, float>)
-        cublasSgbmv(
-            h->handle,
-            transpose ? CUBLAS_OP_T : CUBLAS_OP_N,
-            this->_rows,
-            this->_cols,
-            kl,
-            ku,
-            &alpha,
-            this->data(),
-            this->getLD(),
-            x.data(),
-            x.getLD(),
-            &beta,
-            resPtr->data(),
-            resPtr->getLD()
-        );
-    else if constexpr (std::is_same_v<T, double>)
-        cublasDgbmv(
-            h->handle,
-            transpose ? CUBLAS_OP_T : CUBLAS_OP_N,
-            this->_rows,
-            this->_cols,
-            kl,
-            ku,
-            &alpha,
-            this->data(),
-            this->getLD(),
-            x.data(),
-            x.getLD(),
-            &beta,
-            resPtr->data(),
-            resPtr->getLD()
-        );
-    else static_assert(std::is_same_v<T, float> || std::is_same_v<T, double>, "Vec::add unsupported type.");
-
-    return *resPtr;
-}
-
 
 /**
  * Kernel for sparse diagonal matrix-vector multiplication.
@@ -374,7 +331,7 @@ Vec<T> Mat<T>::bandedMult(
  * @param beta Scalar multiplier for the existing values in the result vector.
  */
 template <typename T>
-__global__ void diag32MatVecKernel(
+__global__ void diagMatVecKernel(
     const T* __restrict__ A, // packed diagonals
     const int height, const int ld,
     
@@ -425,8 +382,8 @@ Vec<T> Mat<T>::diagMult(
     const Vec<T>& x,
     Vec<T>* result,
     Handle* handle,
-    const T alpha,
-    const T beta    
+    const Singleton<T>* alpha,
+    const Singleton<T>* beta    
 ) const {
     if (this->_rows > 32)
         throw std::invalid_argument("height must be <= 32 for this kernel");
@@ -435,8 +392,12 @@ Vec<T> Mat<T>::diagMult(
     Vec<T>* resPtr = _get_or_create_target(this->_rows, x._cols, result, temp_res_ptr);
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
-    
-    diag32MatVecKernel<<<this->_cols, 32, 0, h->stream>>>(
+    std::unique_ptr<Singleton<T>> temp_a_ptr;
+    Singleton<T>* a = _get_or_create_target(1, h, alpha, temp_a_ptr);
+    std::unique_ptr<Singleton<T>> temp_b_ptr;
+    Singleton<T>* b = _get_or_create_target(0, h, beta, temp_b_ptr);
+
+    diagMatVecKernel<<<this->_cols, 32, 0, h->stream>>>(
         this->data(), this->_cols, this->getLD(),
         diags.data(), this->_rows,
         x.data(), x.getLD(),
@@ -469,17 +430,19 @@ void Mat<T>::transpose(
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
 
     if constexpr (std::is_same_v<T, float>) {
-        float alpha = 1.0f;
-        float beta = 0.0f;
+        Singleton<T> alpha;
+        Singleton<T> beta;
+        alpha.set(static_cast<T>(1), h->stream);
+        beta.set(static_cast<T>(0), h->stream);
         cublasSgeam(
             h->handle, 
             CUBLAS_OP_T, // Transpose A
             CUBLAS_OP_N, // Don't transpose B (it's not used)
             this->_cols, // Result rows
             this->_rows, // Result columns
-            &alpha, 
+            alpha.data(), 
             this->data(), this->getLD(),
-            &beta, nullptr, this->getLD(), // B is not referenced since beta=0
+            beta.data(), nullptr, this->getLD(), // B is not referenced since beta=0
             result.data(), result.getLD()
         );
     } else if constexpr (std::is_same_v<T, double>) {
