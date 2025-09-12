@@ -244,7 +244,7 @@ CMakeFiles/BiCGSTAB.dir/src/Event.cu.o : /home/dov/Documents/LaplaceFiniteDiffer
     /usr/include/c++/13/bits/uses_allocator.h \
     /usr/include/c++/13/bits/uses_allocator_args.h \
     /usr/include/c++/13/tuple \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/deviceArrays.h \
     /usr/include/c++/13/vector \
     /usr/include/c++/13/bits/stl_uninitialized.h \
     /usr/include/c++/13/bits/stl_vector.h \

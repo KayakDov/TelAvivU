@@ -1,4 +1,4 @@
-#include "deviceArrays.h"
+#include "deviceArrays/deviceArrays.h"
 #include <cmath>
 #include "Event.h"
 #include <iostream>
@@ -61,10 +61,10 @@ public:
         Mat<T>* preAllocated = nullptr
     ):tolerance(tolerance),
       b(b),
-      paM(preAllocated ? *preAllocated : Mat<T>(b.size(), 7)),
-      r(paM, 0, IndexType::Column), r_tilde(paM, 1, IndexType::Column), p(paM, 2, IndexType::Column), v(paM, 3, IndexType::Column), s(paM, 4, IndexType::Column), t(paM, 5, IndexType::Column), h(paM, 6, IndexType::Column),
+      paM(preAllocated ? *preAllocated : Mat<T>::create(b.size(), 7)),
+      r(paM.col(0)), r_tilde(paM.col(1)), p(paM.col(2)), v(paM.col(3)), s(paM.col(4)), t(paM.col(5)), h(paM.col(6)),
       paV(6),
-      rho(paV, 0), alpha(paV, 1), omega(paV, 2), rho_new(paV, 3), beta(paV, 4), temp(paV, 5),
+      rho(paV.get(0)), alpha(paV.get(1)), omega(paV.get(2)), rho_new(paV.get(3)), beta(paV.get(4)), temp(paV.get(5)),
       maxIterations(maxIterations)
     {
         static_assert(std::is_same_v<T,float> || std::is_same_v<T,double>,
@@ -80,7 +80,8 @@ public:
         const Vec<int>& diags, 
         Vec<T>* x = nullptr){
 
-        Vec<T> result = x ? *x : Vec<T>(b.size());
+        Vec<T> result = x ? *x : Vec<T>::create(b.size(), handle[0].stream);
+        result.fillRandom(&handle[0]); // set x randomly
         record(0, xReady);
         
         r_tilde.fillRandom(&handle[0]); // set r_tilde randomly    

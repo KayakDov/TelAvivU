@@ -185,7 +185,7 @@ CMakeFiles/BiCGSTAB.dir/src/algorithms.cu.o : /home/dov/Documents/LaplaceFiniteD
     /usr/include/c++/13/utility \
     /usr/include/c++/13/bits/stl_relops.h \
     /usr/include/c++/13/initializer_list \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/deviceArrays.h \
     /usr/include/c++/13/vector \
     /usr/include/c++/13/bits/allocator.h \
     /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h \

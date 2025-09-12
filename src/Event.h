@@ -8,7 +8,7 @@
 
 #include <cuda_runtime.h>
 #include <stdexcept>
-#include "deviceArrays.h"
+#include "deviceArrays/deviceArrays.h"
 /**
  * @class Event
  * @brief A RAII wrapper for CUDA events, supporting creation, destruction,

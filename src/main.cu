@@ -1,4 +1,4 @@
-#include "deviceArrays.h"
+#include "deviceArrays/deviceArrays.h"
 #include "testMethods.cu"
 #include "algorithms.cu"
 #include <fstream>
@@ -36,10 +36,8 @@ void readAndPrint(GpuArray<T>& array, const string& fileName, const bool isText,
     reader.close();
 
     cout << "Read matrix "<< fileName <<" from file." << endl;
-    if(array.size() < 1000)
-        cout << array << endl;
-    else
-        cout << "The matrix is too large to display." << endl;
+    if(array.size() < 1000) cout << array << endl;
+    else cout << "The matrix is too large to display." << endl;
 }
 
 // Helper function to display the help message.
@@ -94,8 +92,7 @@ void solveAndWriteOutput(Mat<T>& A, const Vec<int>& diags, Vec<T>& b, const stri
     setup.unpreconditionedBiCGSTAB(A, diags, &x);
 
     ofstream x_fs(x_dest_file);
-    if (!x_fs.is_open())
-        throw runtime_error("Could not open destination file: " + x_dest_file);
+    if (!x_fs.is_open()) throw runtime_error("Could not open destination file: " + x_dest_file);
 
     x.get(x_fs, isText, !isText, handle.stream);
     x_fs.close();
@@ -118,9 +115,9 @@ void solveSystem(int argc, char const* argv[], bool isText, int maxIter, double 
     // Check if maxIter needs to be set to its default
     if (maxIter == -1) maxIter = width * 2;
 
-    Mat<T> A(numDiags, width);
-    Vec<T> b(width);
-    Vec<int> diags(numDiags);
+    Mat<T> A = Mat<T>::create(numDiags, width);
+    Vec<T> b = Vec<T>::create(width);
+    Vec<int> diags = Vec<T>::create(numDiags);
 
     Handle hand;
     readAndPrint(A, a_file, isText, hand);
