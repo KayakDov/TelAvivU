@@ -2,11 +2,12 @@
 
 
 template<typename T>
-Singleton<T>::Singleton(std::shared_ptr<T> ptr):Vec<T>(1, ptr, 1) {}
+Singleton<T>::Singleton(std::shared_ptr<T> ptr):Vec<T>(static_cast<size_t>(1), ptr, static_cast<size_t>(1)) {}
 
 template<typename T>
 Singleton<T> Singleton<T>::create(cudaStream_t stream) {
-    return Vec<T>::create(1, stream).get(0);
+    Vec<T> preSing = Vec<T>::create(static_cast<size_t>(1), stream);
+    return preSing.get(0);
 }
 
 template<typename T>
@@ -30,13 +31,13 @@ void Singleton<T>::set(const T val, cudaStream_t stream){
 }
 
 template <typename T>
-const Singleton<T> Singleton<T>::ONE(static_cast<T>(1));
+const Singleton<T> Singleton<T>::ONE = Singleton<T>::create(static_cast<T>(1));
 
 template <typename T>
-const Singleton<T> Singleton<T>::ZERO(static_cast<T>(0));
+const Singleton<T> Singleton<T>::ZERO = Singleton<T>::create(static_cast<T>(0));
 
 template <typename T>
-const Singleton<T> Singleton<T>::MINUS_ONE(static_cast<T>(-1));
+const Singleton<T> Singleton<T>::MINUS_ONE = Singleton<T>::create(static_cast<T>(-1));
 
 
 template class Singleton<int>;

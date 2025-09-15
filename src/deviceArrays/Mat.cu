@@ -37,11 +37,10 @@ Vec<T> Mat<T>::mult(
     bool transpose
 
 ) const {
-    
-    std::unique_ptr<Vec<T>> temp_res_ptr;
-    Vec<T>* resPtr = this->_get_or_create_target(this->_rows, result, temp_res_ptr);
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
+    std::unique_ptr<Vec<T>> temp_res_ptr;
+    Vec<T>* resPtr = this->_get_or_create_target(this->_rows, result, temp_res_ptr, h->stream);
     std::unique_ptr<Singleton<T>> temp_a_ptr;
     const Singleton<T>* a = this->_get_or_create_target(1, *h, alpha, temp_a_ptr);
     std::unique_ptr<Singleton<T>> temp_b_ptr;
@@ -139,15 +138,14 @@ void Mat<T>::set(std::istream& input_stream, bool isText, bool readColMajor, cud
 
     while (helper.hasNext()) {
         helper.readChunk(isText);//This will either be a set of columns or a set of rows.
-        Mat<T> subArray(
-            *this,
+        Mat<T> subMat = this->createSubMat(
             0,
             helper.getColsProcessed(),
             this->_rows,
             helper.getChunkWidth()
         );
 
-        subArray.set(helper.getBuffer().data(), cuStream);
+        subMat.set(helper.getBuffer().data(), cuStream);
 
         hand.synch();//TODO: this might be avoidable with multi threading
 
@@ -165,22 +163,21 @@ void Mat<T>::get(std::ostream& output_stream, bool isText, bool printColMajor, c
     Handle handle(stream);
 
     if(!printColMajor) {
-        Mat<T> mat(this->_rows, this->_cols);
+        Mat<T> mat = Mat<T>::create(this->_rows, this->_cols);
         this -> transpose(mat, &handle);
         mat.get(output_stream, isText, true, stream);
         return;        
     }
     
     while (helper.hasNext()) {
-        Mat<T> subArray(
-            *this,
+        Mat<T> subMat = this->createSubMat(
             0,
             helper.getColsProcessed(),
             this->_rows,
             helper.getChunkWidth()
         );
 
-        subArray.get(helper.getBuffer().data(), stream);
+        subMat.get(helper.getBuffer().data(), stream);
         handle.synch();//TODO: this might be avoidable with multi threading
 
         helper.writeChunk(isText);
@@ -373,10 +370,10 @@ Vec<T> Mat<T>::diagMult(
     if (this->_rows > 32)
         throw std::invalid_argument("height must be <= 32 for this kernel");
 
-    std::unique_ptr<Vec<T>> temp_res_ptr;
-    Vec<T>* resPtr = this->_get_or_create_target(this->_rows, result, temp_res_ptr);
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
+    std::unique_ptr<Vec<T>> temp_res_ptr;
+    Vec<T>* resPtr = this->_get_or_create_target(this->_rows, result, temp_res_ptr, h->stream);
     std::unique_ptr<Singleton<T>> temp_a_ptr;
     const Singleton<T>* a = this->_get_or_create_target(static_cast<T>(1), *h, alpha, temp_a_ptr);
     std::unique_ptr<Singleton<T>> temp_b_ptr;
@@ -415,10 +412,9 @@ void Mat<T>::transpose(
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
 
     if constexpr (std::is_same_v<T, float>) {
-        Singleton<T> alpha;
-        Singleton<T> beta;
-        alpha.set(static_cast<T>(1), h->stream);
-        beta.set(static_cast<T>(0), h->stream);
+        Singleton<T> alpha = Singleton<T>::create(static_cast<T>(1), h->stream);
+        Singleton<T> beta = Singleton<T>::create(static_cast<T>(0), h->stream);
+
         cublasSgeam(
             h->handle, 
             CUBLAS_OP_T, // Transpose A
@@ -477,19 +473,19 @@ Mat<T> Mat<T>::create(size_t rows, size_t cols){
     T* rawPtr = nullptr;
     size_t pitch = 0;
 
-    CHECK_CUDA_ERROR(cudaMallocPitch(&rawPtr, &pitch, rows * sizeof(T), cols));
+    CHECK_CUDA_ERROR(cudaMallocPitch(&rawPtr, &pitch, rows * sizeof(T), cols));//Note: there does not seem to be an asynchronos version of this method.
 
     return Mat<T>(rows, cols, pitch / sizeof(T), std::shared_ptr<T>(rawPtr, cudaFreeDeleter));
 }
 
 template <typename T>
-Mat<T> Mat<T>::createSubMat(size_t startRow, size_t startCol, size_t height, size_t width){
+Mat<T> Mat<T>::createSubMat(const size_t startRow, const size_t startCol, const size_t height, const size_t width) const{
 
     return Mat<T>(
         height,
         width,
         this->getLD(),
-        std::shared_ptr<T>(this->_ptr, this->data() + startCol * this->getLD() + startRow)
+        std::shared_ptr<T>(this->_ptr, const_cast<T*>(this->data() + startCol * this->getLD() + startRow))
     );
 }
 
@@ -497,12 +493,12 @@ Mat<T> Mat<T>::createSubMat(size_t startRow, size_t startCol, size_t height, siz
 template <typename T>
 Vec<T> Mat<T>::col(const size_t index){
     if (index >= this->_cols) throw std::out_of_range("Out of range");
-    return new Vec<T>(this->_rows, std::shared_ptr<T>(this->_ptr, this->data() + index * this->getLD()), 1);
+    return Vec<T>(this->_rows, std::shared_ptr<T>(this->_ptr, this->data() + index * this->getLD()), 1);
 }
 template <typename T>
 Vec<T> Mat<T>::row(const size_t index){
     if (index > this->_rows) throw std::out_of_range("Out of range");
-    return new Vec<T>(this->_cols, std::shared_ptr<T>(this->_ptr, this->data() + index), this->_ld);
+    return Vec<T>(this->_cols, std::shared_ptr<T>(this->_ptr, this->_ptr.get() + index), this->_ld);
 }
 
 template class Mat<int>;

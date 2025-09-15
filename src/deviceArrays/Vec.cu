@@ -4,19 +4,23 @@
 
 
 template<typename T>
-Vec<T>::Vec(size_t cols, std::shared_ptr<T> ptr, size_t stride): GpuArray<T>(static_cast<size_t>(1), cols, stride, ptr) {
+Vec<T>::Vec(const size_t cols, const std::shared_ptr<T> ptr, const size_t stride): GpuArray<T>(static_cast<size_t>(1), cols, stride, ptr) {
 }
 
 template <typename T>
-Vec<T> Vec<T>::create(size_t length){
+Vec<T> Vec<T>::create(size_t length, cudaStream_t stream){
     T* rawPtr = nullptr;
-    cudaMalloc(&rawPtr, length * sizeof(T));
+    cudaMallocAsync(&rawPtr, length * sizeof(T), stream);
     return Vec<T>(length, std::shared_ptr<T>(rawPtr, cudaFreeDeleter), 1);
 }
 
 template <typename T>
-Vec<T> Vec<T>::subVec(size_t offset, size_t length, size_t stride){
-    return Vec<T>(length, std::shared_ptr<T>(this->_ptr, (this->_ptr.data() + offset * this->getLD() * stride)));
+Vec<T> Vec<T>::subVec(const size_t offset, const size_t length, const size_t stride) const{
+    return Vec<T>(
+        length,
+        std::shared_ptr<T>(this->_ptr, const_cast<T*>(this->data() + offset * this->getLD() * stride)),
+        stride*this->getLD()
+        );
 }
 
 template <typename T>
@@ -32,7 +36,7 @@ Vec<T> Vec<T>::mult(
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
     std::unique_ptr<Vec<T>> temp_res_ptr;
-    Vec<T>* resPtr = this->_get_or_create_target(other._cols, result, temp_res_ptr);
+    Vec<T>* resPtr = this->_get_or_create_target(other._cols, result, temp_res_ptr, h->stream);
     std::unique_ptr<Singleton<T>> temp_a_ptr;
     const Singleton<T>* a = this->_get_or_create_target(static_cast<T>(1), *h, alpha, temp_a_ptr);
     std::unique_ptr<Singleton<T>> temp_b_ptr;
@@ -55,7 +59,7 @@ T Vec<T>::mult(
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
     std::unique_ptr<Singleton<T>> temp_res_ptr;
-    Singleton<T>* resPtr = this->_get_or_create_target(result, temp_res_ptr);
+    Singleton<T>* resPtr = this->_get_or_create_target(result, temp_res_ptr, h->stream);
     
     if constexpr (std::is_same_v<T, float>)
         cublasSdot(h->handle, this->_cols, this->data(), this->getLD(), other.data(), other.getLD(), resPtr->data());
@@ -145,12 +149,12 @@ void Vec<T>::set(std::istream& input_stream, bool isText, bool, cudaStream_t str
     StreamSet<T> helper(this->_rows, this->_cols, input_stream);
     while (helper.hasNext()) {
         helper.readChunk(isText);
-        Vec<T> subArray(
-            *this,
+        Vec<T> subVec = this->subVec(
             helper.getColsProcessed(),
-            helper.getChunkWidth()
+            helper.getChunkWidth(),
+            1
         );
-        subArray.set(helper.getBuffer().data(), stream);
+        subVec.set(helper.getBuffer().data(), stream);
         helper.updateProgress();
     }
 }
@@ -159,10 +163,10 @@ template <typename T>
 void Vec<T>::get(std::ostream& output_stream, bool isText, bool, cudaStream_t stream) const {
     StreamGet<T> helper(this->_rows, this->_cols, output_stream);
     while (helper.hasNext()) {
-        Vec<T> subArray(
-            *this,
+        Vec<T> subArray = this->subVec(
             helper.getColsProcessed(),
-            helper.getChunkWidth()
+            helper.getChunkWidth(),
+            1
         );
         subArray.get(helper.getBuffer().data(), stream);
         helper.writeChunk(isText);
@@ -172,7 +176,7 @@ void Vec<T>::get(std::ostream& output_stream, bool isText, bool, cudaStream_t st
 
 template<typename T>
 Singleton<T> Vec<T>::get(size_t i) {
-    return Singleton<T>(std::shared_ptr<T>(this->_ptr, this->_ptr.data() + i * this->getLD()));
+    return Singleton<T>(std::shared_ptr<T>(this->_ptr, this->data() + i * this->getLD()));
 }
 
 template <typename T>
@@ -196,7 +200,7 @@ template <typename T>
 void Vec<T>::sub(const Vec<T>& x, const Singleton<T>* alpha, Handle* handle) {
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
-    Singleton<T> a;
+    Singleton<T> a = Singleton<T>::create(h->stream);
     a.set(-alpha->get(), h->stream);
     this->add(x, &a, h);
 }
@@ -302,7 +306,7 @@ Tensor<T>::Tensor(size_t rows, size_t cols, size_t layers, size_t ld, std::share
 }
 
 template<typename T>
-Tensor<T> Tensor<T>::create(size_t rows, size_t cols, size_t layers) {
+Tensor<T> Tensor<T>::create(size_t rows, size_t cols, size_t layers, cudaStream_t stream) {
     Mat<T> temp = Mat<T>::create(rows, cols * layers);
     return Tensor<T>(rows, cols, layers, temp._ld, temp._ptr);
 }
@@ -323,7 +327,9 @@ Vec<T> Tensor<T>::depth(size_t row, size_t col) {
 
 template<typename T>
 Singleton<T> Tensor<T>::get(size_t row, size_t col, size_t layer) {
-    return Singleton<T>(std::shared_ptr<T>(this->_ptr, this->_ptr.get() + layer * this->_ld * this->_cols + col * this->_ld + row));
+    return Singleton<T>(
+        std::shared_ptr<T>(this->_ptr, this->_ptr.get() + layer * this->_ld * this->_cols + col * this->_ld + row)
+        );
 }
 
 

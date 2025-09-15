@@ -105,10 +105,10 @@ template <typename T>
 GpuArray<T>::~GpuArray() = default;
 
 template <typename T>
-T* GpuArray<T>::data() { return static_cast<T*>(_ptr.get()); }
+T* GpuArray<T>::data() { return _ptr.get(); }
 
 template <typename T>
-const T* GpuArray<T>::data() const { return static_cast<const T*>(_ptr.get()); }
+const T* GpuArray<T>::data() const {return _ptr.get(); }
 
 template <typename T>
 size_t GpuArray<T>::getLD() const { return _ld; }
@@ -201,16 +201,16 @@ template <typename T>
 Mat<T>* GpuArray<T>::_get_or_create_target(size_t rows, size_t cols, Mat<T>* result, std::unique_ptr<Mat<T>>& out_ptr_unique) const {
     if (result) return result;
     else {
-        out_ptr_unique = std::make_unique<Mat<T>>(rows, cols);
+        out_ptr_unique = std::make_unique<Mat<T>>(Mat<T>::create(rows, cols));
         return out_ptr_unique.get();
     }
 }
 
 template <typename T>
-Singleton<T>* GpuArray<T>::_get_or_create_target(Singleton<T>* result, std::unique_ptr<Singleton<T>>& out_ptr_unique) const {
+Singleton<T>* GpuArray<T>::_get_or_create_target(Singleton<T>* result, std::unique_ptr<Singleton<T>>& out_ptr_unique, cudaStream_t stream) const {
     if (result) return result;
     else {
-        out_ptr_unique = std::make_unique<Singleton<T>>();
+        out_ptr_unique = std::make_unique<Singleton<T>>(Singleton<T>::create(stream));
         return out_ptr_unique.get();
     }
 }
@@ -219,17 +219,16 @@ template <typename T>
 const Singleton<T>* GpuArray<T>::_get_or_create_target(T defaultVal, Handle& hand, const Singleton<T>* result, std::unique_ptr<Singleton<T>>& out_ptr_unique) const {
     if (result) return result;
     else {
-        out_ptr_unique = std::make_unique<Singleton<T>>();
-        out_ptr_unique->set(defaultVal, hand.stream);
+        out_ptr_unique = std::make_unique<Singleton<T>>(Singleton<T>::create(defaultVal, hand.stream));
         return out_ptr_unique.get();
     }
 }
 
 template <typename T>
-Vec<T>* GpuArray<T>::_get_or_create_target(size_t length, Vec<T>* result, std::unique_ptr<Vec<T>>& out_ptr_unique) const {
+Vec<T>* GpuArray<T>::_get_or_create_target(size_t length, Vec<T>* result, std::unique_ptr<Vec<T>>& out_ptr_unique, cudaStream_t stream) const {
     if (result) return result;
     else {
-        out_ptr_unique = std::make_unique<Vec<T>>(length);
+        out_ptr_unique = std::make_unique<Vec<T>>(Vec<T>::create(length, stream));
         return out_ptr_unique.get();
     }
 }

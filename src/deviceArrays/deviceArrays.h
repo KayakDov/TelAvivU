@@ -101,8 +101,8 @@ protected:
     GpuArray(size_t rows, size_t cols, size_t ld, std::shared_ptr<T> _ptr);
 
     Mat<T>* _get_or_create_target(size_t rows, size_t cols, Mat<T>* result, std::unique_ptr<Mat<T>>& out_ptr_unique) const;
-    Vec<T>* _get_or_create_target(size_t size, Vec<T>* result, std::unique_ptr<Vec<T>>& out_ptr_unique) const;
-    Singleton<T>* _get_or_create_target(Singleton<T>* result, std::unique_ptr<Singleton<T>>& out_ptr_unique) const;
+    Vec<T>* _get_or_create_target(size_t length, Vec<T> *result, std::unique_ptr<Vec<T>> &out_ptr_unique, cudaStream_t stream) const;
+    Singleton<T>* _get_or_create_target(Singleton<T> *result, std::unique_ptr<Singleton<T>> &out_ptr_unique, cudaStream_t stream) const;
     const Singleton<T>* _get_or_create_target(T defaultVal, Handle& hand, const Singleton<T>* result, std::unique_ptr<Singleton<T>>& out_ptr_unique) const;
 
     virtual void mult(const GpuArray<T>& other, GpuArray<T>* result, Handle* handle, const Singleton<T> *alpha, const Singleton<T> *beta, bool transposeA, bool transposeB) const;
@@ -182,7 +182,8 @@ public:
     void transpose(Handle* handle = nullptr, Mat<T>* preAlocatedMem = nullptr);
 
     static Mat<T> create(size_t rows, size_t cols);
-    Mat<T> createSubMat(size_t startRow, size_t startCol, size_t height, size_t width);
+
+    [[nodiscard]] Mat<T> createSubMat(size_t startRow, size_t startCol, size_t height, size_t width) const;
 
     Vec<T> col(size_t index);
     Vec<T> row(size_t index);
@@ -195,11 +196,13 @@ private:
     friend Vec<T> Mat<T>::row(size_t index);
     friend Vec<T> Mat<T>::col(size_t index);
     friend Vec<T> Tensor<T>::depth(size_t row, size_t col);
-
+protected:
     Vec(size_t cols, std::shared_ptr<T> _ptr, size_t stride);
-    Vec<T> create(size_t length);
-
 public:
+
+    static Vec<T> create(size_t length, cudaStream_t stream);
+
+    Vec<T> subVec(size_t offset, size_t length, size_t stride) const;
 
     [[nodiscard]] size_t size() const override;
     [[nodiscard]] size_t bytes() const override;
@@ -211,8 +214,6 @@ public:
     void get(std::ostream& output_stream, bool isText, bool isColMjr, cudaStream_t stream) const override;
 
     Singleton<T> get(size_t i);
-
-    Vec<T> subVec(size_t offset, size_t length, size_t stride);
 
     Vec<T> mult(const Mat<T>& other, Vec<T>* result = nullptr, Handle* handle = nullptr, const Singleton<T>* alpha = nullptr, const Singleton<T>* beta = nullptr, bool transpose = false) const;
 
@@ -240,7 +241,7 @@ class Tensor final : public Mat<T> {
 private:
     Tensor(size_t rows, size_t cols, size_t layers, size_t ld, std::shared_ptr<T> _ptr);
 public:
-    static Tensor<T> create(size_t rows, size_t cols, size_t layers);
+    static Tensor<T> create(size_t rows, size_t cols, size_t layers, cudaStream_t stream);
     Mat<T> layer(size_t index);
     Vec<T> depth(size_t row, size_t col);
     Singleton<T> get(size_t row, size_t col, size_t layer);

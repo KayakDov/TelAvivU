@@ -37,7 +37,7 @@ private:
     }
 
     bool isSmall(const Vec<T>& v, const size_t streamInd){
-        Singleton<T> vSquared;
+        Singleton<T> vSquared = Singleton<T>::create();
             v.mult(v, &vSquared, handle + streamInd);
             T vSq = vSquared.get(handle[streamInd].stream);
             synch(streamInd);
@@ -63,7 +63,7 @@ public:
       b(b),
       paM(preAllocated ? *preAllocated : Mat<T>::create(b.size(), 7)),
       r(paM.col(0)), r_tilde(paM.col(1)), p(paM.col(2)), v(paM.col(3)), s(paM.col(4)), t(paM.col(5)), h(paM.col(6)),
-      paV(6),
+      paV(Vec<T>::create(6, handle[0].stream)),
       rho(paV.get(0)), alpha(paV.get(1)), omega(paV.get(2)), rho_new(paV.get(3)), beta(paV.get(4)), temp(paV.get(5)),
       maxIterations(maxIterations)
     {

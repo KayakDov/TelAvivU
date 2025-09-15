@@ -86,8 +86,8 @@ void showHelp() {
  * @throws std::runtime_error if the output file cannot be opened.
  */
 template <typename T>
-void solveAndWriteOutput(Mat<T>& A, const Vec<int>& diags, Vec<T>& b, const string& x_dest_file, const bool isText, int maxIter, double epsilon, Handle& handle) {
-    Vec<T> x(b.size());
+void solveAndWriteOutput(Mat<T>& A, const Vec<int>& diags, Vec<T>& b, const string& x_dest_file, const bool isText, size_t maxIter, double epsilon, Handle& handle) {
+    Vec<T> x = Vec<T>::create(b.size(), handle.stream);
     BiCGSTAB setup(b, static_cast<T>(epsilon), maxIter);
     setup.unpreconditionedBiCGSTAB(A, diags, &x);
 
@@ -102,10 +102,10 @@ void solveAndWriteOutput(Mat<T>& A, const Vec<int>& diags, Vec<T>& b, const stri
 }
 
 template <typename T>
-void solveSystem(int argc, char const* argv[], bool isText, int maxIter, double epsilon) {
+void solveSystem(int argc, char const* argv[], bool isText, size_t maxIter, double epsilon) {
     string a_file = argv[1];
-    int numDiags = stoi(argv[2]);
-    int width = stoi(argv[3]);
+    size_t numDiags = stoi(argv[2]);
+    size_t width = stoi(argv[3]);
     string diags_file = argv[4];
     string b_file = argv[5];
     string x_dest_file = argv[6];
@@ -115,11 +115,13 @@ void solveSystem(int argc, char const* argv[], bool isText, int maxIter, double 
     // Check if maxIter needs to be set to its default
     if (maxIter == -1) maxIter = width * 2;
 
-    Mat<T> A = Mat<T>::create(numDiags, width);
-    Vec<T> b = Vec<T>::create(width);
-    Vec<int> diags = Vec<T>::create(numDiags);
-
     Handle hand;
+
+    Mat<T> A = Mat<T>::create(numDiags, width);
+    Vec<T> b = Vec<T>::create(width, hand.stream);
+    Vec<int> diags = Vec<int>::create(numDiags, hand.stream);
+
+
     readAndPrint(A, a_file, isText, hand);
     readAndPrint(diags, diags_file, isText, hand);
     readAndPrint(b, b_file, isText, hand);
@@ -154,7 +156,7 @@ int useCommandLineArgs(int argc, char const* argv[]){
         bool useFloat = false;
         bool isText = false;
         double epsilon = -1.0; // -1.0 indicates default epsilon
-        int maxIter = -1; // -1 indicates default max iterations
+        size_t maxIter = -1; // -1 indicates default max iterations
 
         // Parse optional flags
         for (size_t i = 1; i < argc; ++i) {
