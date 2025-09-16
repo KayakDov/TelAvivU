@@ -104,6 +104,25 @@ GpuArray<T>::GpuArray(size_t rows, size_t cols, size_t ld, std::shared_ptr<T> _p
 template <typename T>
 GpuArray<T>::~GpuArray() = default;
 
+
+
+template <typename T>
+__global__ void fill2dKernel(T* __restrict__ a, const size_t height, const size_t width, const size_t ld, const T val){
+
+    if (const size_t idx = blockIdx.x * blockDim.x + threadIdx.x; idx < height * width)
+        a[(idx / height) * ld + idx % height] = val;
+}
+
+
+template<typename T>
+void GpuArray<T>::fill(T val, cudaStream_t stream) {
+
+    constexpr size_t BLOCK_SIZE = 256;
+    size_t num_blocks = (this->size() + BLOCK_SIZE - 1) / BLOCK_SIZE;
+    fill2dKernel<<<num_blocks, BLOCK_SIZE, 0, stream>>>(this->data(), this->_rows, this->_cols, this->_ld, val);
+    CHECK_CUDA_ERROR(cudaGetLastError());
+}
+
 template <typename T>
 T* GpuArray<T>::data() { return _ptr.get(); }
 

@@ -174,6 +174,22 @@ void Vec<T>::get(std::ostream& output_stream, bool isText, bool, cudaStream_t st
     }
 }
 
+template <typename T>
+__global__ void fill1dKernel(T* __restrict__ a, const size_t size, const T val){
+
+    if (const size_t idx = blockIdx.x * blockDim.x + threadIdx.x; idx < size)
+        a[idx] = val;
+}
+
+
+template<typename T>
+void Vec<T>::fill(T val, cudaStream_t stream) {
+    constexpr size_t BLOCK_SIZE = 256;
+    size_t num_blocks = (this->size() + BLOCK_SIZE - 1) / BLOCK_SIZE;
+    fill1dKernel<<<num_blocks, BLOCK_SIZE, 0, stream>>>(this->data(), this->size(), val);
+    CHECK_CUDA_ERROR(cudaGetLastError());
+}
+
 template<typename T>
 Singleton<T> Vec<T>::get(size_t i) {
     return Singleton<T>(std::shared_ptr<T>(this->_ptr, this->data() + i * this->getLD()));
@@ -300,37 +316,6 @@ void Vec<T>::setSum(const Vec& a, const Vec& b, const Singleton<T>* alpha, const
     this->add(b, bet, h);
 }
 
-template<typename T>
-Tensor<T>::Tensor(size_t rows, size_t cols, size_t layers, size_t ld, std::shared_ptr<T> _ptr):GpuArray<T>(rows, cols * layers, ld, _ptr) {
-
-}
-
-template<typename T>
-Tensor<T> Tensor<T>::create(size_t rows, size_t cols, size_t layers, cudaStream_t stream) {
-    Mat<T> temp = Mat<T>::create(rows, cols * layers);
-    return Tensor<T>(rows, cols, layers, temp._ld, temp._ptr);
-}
-
-template<typename T>
-Mat<T> Tensor<T>::layer(size_t index) {
-    return Mat<T>(this->_rows, this->_cols, this->_ld, std::shared_ptr<T>(this->_ptr, this->_ptr.get() + index * this->_ld * this->_cols));
-}
-
-template<typename T>
-Vec<T> Tensor<T>::depth(size_t row, size_t col) {
-    return Vec<T>(
-        this->_layers,
-        std::shared_ptr<T>(this->_ptr, this->_ptr.get() + col * this->_ld + row),
-        this->_ld * this->_cols
-        );
-}
-
-template<typename T>
-Singleton<T> Tensor<T>::get(size_t row, size_t col, size_t layer) {
-    return Singleton<T>(
-        std::shared_ptr<T>(this->_ptr, this->_ptr.get() + layer * this->_ld * this->_cols + col * this->_ld + row)
-        );
-}
 
 
 template class Vec<int>;

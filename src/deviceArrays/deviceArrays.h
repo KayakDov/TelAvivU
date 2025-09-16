@@ -72,7 +72,7 @@ public:
 
 class Handle {
 public:
-    cublasHandle_t handle;
+    cublasHandle_t handle{};
     cudaStream_t stream;
     Handle();
     
@@ -118,6 +118,8 @@ public:
     virtual void get(GpuArray<T>& dst, cudaStream_t stream) const = 0;
     virtual void set(std::istream& input_stream, bool isText, bool isColMjr, cudaStream_t stream) = 0;
     virtual void get(std::ostream& output_stream, bool isText, bool isColMjr, cudaStream_t stream) const = 0;
+
+    virtual void fill(T val, cudaStream_t stream);
     T* data();
     const T* data() const;
     [[nodiscard]] size_t getLD() const;
@@ -183,7 +185,7 @@ public:
 
     static Mat<T> create(size_t rows, size_t cols);
 
-    [[nodiscard]] Mat<T> createSubMat(size_t startRow, size_t startCol, size_t height, size_t width) const;
+    [[nodiscard]] Mat<T> subMat(size_t startRow, size_t startCol, size_t height, size_t width) const;
 
     Vec<T> col(size_t index);
     Vec<T> row(size_t index);
@@ -212,6 +214,8 @@ public:
     void get(GpuArray<T>& dst, cudaStream_t stream) const override;
     void set(std::istream& input_stream, bool isText, bool isColMjr, cudaStream_t stream) override;
     void get(std::ostream& output_stream, bool isText, bool isColMjr, cudaStream_t stream) const override;
+
+    void fill(T val, cudaStream_t stream) override;
 
     Singleton<T> get(size_t i);
 
@@ -242,6 +246,7 @@ private:
     Tensor(size_t rows, size_t cols, size_t layers, size_t ld, std::shared_ptr<T> _ptr);
 public:
     static Tensor<T> create(size_t rows, size_t cols, size_t layers, cudaStream_t stream);
+    Tensor<T> subTensor(size_t startRow, size_t startCol, size_t startLayer, size_t height, size_t width, size_t depth);
     Mat<T> layer(size_t index);
     Vec<T> depth(size_t row, size_t col);
     Singleton<T> get(size_t row, size_t col, size_t layer);

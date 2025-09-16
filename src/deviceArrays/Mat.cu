@@ -479,7 +479,7 @@ Mat<T> Mat<T>::create(size_t rows, size_t cols){
 }
 
 template <typename T>
-Mat<T> Mat<T>::createSubMat(const size_t startRow, const size_t startCol, const size_t height, const size_t width) const{
+Mat<T> Mat<T>::subMat(const size_t startRow, const size_t startCol, const size_t height, const size_t width) const{
 
     return Mat<T>(
         height,
