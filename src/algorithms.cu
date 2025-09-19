@@ -77,7 +77,7 @@ public:
 
     Vec<T> solveUnpreconditionedBiCGSTAB(
         const Mat<T>& A, 
-        const Vec<int>& diags, 
+        const Vec<int32_t>& diags,
         Vec<T>* x = nullptr){
 
         Vec<T> result = x ? *x : Vec<T>::create(b.size(), handle[0].stream);
@@ -171,3 +171,4 @@ public:
     }
 
 };
+

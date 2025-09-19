@@ -246,7 +246,6 @@ private:
     Tensor(size_t rows, size_t cols, size_t layers, size_t ld, std::shared_ptr<T> _ptr);
 public:
     static Tensor<T> create(size_t rows, size_t cols, size_t layers, cudaStream_t stream);
-    Tensor<T> subTensor(size_t startRow, size_t startCol, size_t startLayer, size_t height, size_t width, size_t depth);
     Mat<T> layer(size_t index);
     Vec<T> depth(size_t row, size_t col);
     Singleton<T> get(size_t row, size_t col, size_t layer);

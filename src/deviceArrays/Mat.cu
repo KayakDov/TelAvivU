@@ -138,7 +138,7 @@ void Mat<T>::set(std::istream& input_stream, bool isText, bool readColMajor, cud
 
     while (helper.hasNext()) {
         helper.readChunk(isText);//This will either be a set of columns or a set of rows.
-        Mat<T> subMat = this->createSubMat(
+        Mat<T> subMat = this->subMat(
             0,
             helper.getColsProcessed(),
             this->_rows,
@@ -170,7 +170,7 @@ void Mat<T>::get(std::ostream& output_stream, bool isText, bool printColMajor, c
     }
     
     while (helper.hasNext()) {
-        Mat<T> subMat = this->createSubMat(
+        Mat<T> subMat = this->subMat(
             0,
             helper.getColsProcessed(),
             this->_rows,

@@ -4,8 +4,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/BiCGSTAB.dir/cmake_device_link.o"
   "CMakeFiles/BiCGSTAB.dir/src/Event.cu.o"
   "CMakeFiles/BiCGSTAB.dir/src/Event.cu.o.d"
-  "CMakeFiles/BiCGSTAB.dir/src/PoissonFDM.cu.o"
-  "CMakeFiles/BiCGSTAB.dir/src/PoissonFDM.cu.o.d"
   "CMakeFiles/BiCGSTAB.dir/src/algorithms.cu.o"
   "CMakeFiles/BiCGSTAB.dir/src/algorithms.cu.o.d"
   "CMakeFiles/BiCGSTAB.dir/src/deviceArrays/Mat.cu.o"

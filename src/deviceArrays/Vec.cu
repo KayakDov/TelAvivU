@@ -175,10 +175,10 @@ void Vec<T>::get(std::ostream& output_stream, bool isText, bool, cudaStream_t st
 }
 
 template <typename T>
-__global__ void fill1dKernel(T* __restrict__ a, const size_t size, const T val){
+__global__ void fill1dKernel(T* __restrict__ a, const size_t size, const T val, const size_t stride){
 
     if (const size_t idx = blockIdx.x * blockDim.x + threadIdx.x; idx < size)
-        a[idx] = val;
+        a[idx * stride] = val;
 }
 
 
@@ -186,7 +186,7 @@ template<typename T>
 void Vec<T>::fill(T val, cudaStream_t stream) {
     constexpr size_t BLOCK_SIZE = 256;
     size_t num_blocks = (this->size() + BLOCK_SIZE - 1) / BLOCK_SIZE;
-    fill1dKernel<<<num_blocks, BLOCK_SIZE, 0, stream>>>(this->data(), this->size(), val);
+    fill1dKernel<<<num_blocks, BLOCK_SIZE, 0, stream>>>(this->data(), this->size(), val, this->_ld);
     CHECK_CUDA_ERROR(cudaGetLastError());
 }
 

@@ -6,5 +6,5 @@ CUDA_DEFINES =
 
 CUDA_INCLUDES = --options-file CMakeFiles/BiCGSTAB.dir/includes_CUDA.rsp
 
-CUDA_FLAGS = -g -std=c++17 "--generate-code=arch=compute_52,code=[compute_52,sm_52]"
+CUDA_FLAGS = -std=c++17 -arch=native
 
