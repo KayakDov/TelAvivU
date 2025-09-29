@@ -204,7 +204,7 @@ public:
 
     static Vec<T> create(size_t length, cudaStream_t stream);
 
-    Vec<T> subVec(size_t offset, size_t length, size_t stride) const;
+    Vec<T> subVec(size_t offset, size_t length, size_t stride = 1) const;
 
     [[nodiscard]] size_t size() const override;
     [[nodiscard]] size_t bytes() const override;

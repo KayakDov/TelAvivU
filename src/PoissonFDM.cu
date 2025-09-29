@@ -126,7 +126,7 @@ __global__ void setRHSKernel3D(T* __restrict__ b,
     else if (!setIndicesTopBottomFaces(layer, row, col, gHeight, gWidth, gDepth, idx)) return;
 
     b[row + (col + layer * gWidth) * gHeight] -=
-          (row == 0            ? topBottom[col*tbLd + (gDepth - 1 - layer)]                               : 0)
+          (row == 0            ? topBottom[col*tbLd + (gDepth - 1 - layer)]                : 0)
         + (row == gHeight - 1  ? topBottom[col*tbLd + (gDepth - 1 - layer) + gWidth*tbLd]  : 0)
         + (col == 0            ? leftRight[(gDepth - 1 - layer)*lrLd + row]                : 0)
         + (col == gWidth - 1   ? leftRight[(gDepth -1 - layer)*lrLd + row + gDepth*lrLd]   : 0)
@@ -299,20 +299,29 @@ public:
 
 int main(int argc, char *argv[]) {
     Handle hand;
-    Mat<double> frontBack = Mat<double>::create(2, 4), leftRight = Mat<double>::create(2, 4), topBottom = Mat<double>::create(2, 4);
-    Vec<double> b = Vec<double>::create(8, hand.stream);
-   const double bCpu[] = {0, 0, 0, 0, 0, 0, 0, 0},
-       frontBackCpu[] = {3, 3, 3, 3, 0, 0, 0, 0},
-       leftRightCpu[] = {1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 2.0, 2.0},
-       topBottomCpu[] = {1, 2, 1, 2, 1, 2, 1, 2};
 
-    b.set(bCpu, hand.stream);
-    frontBack.set(frontBackCpu, hand.stream);
-    leftRight.set(leftRightCpu, hand.stream);
-    topBottom.set(topBottomCpu, hand.stream);
+    constexpr size_t height = 2, width = 3, depth = 2, size = height * width * depth;
+    constexpr double frontFaceVal = 1;
+
+    Mat<double> frontBack = Mat<double>::create(height, 2 * width),
+        leftRight = Mat<double>::create(height, 2 * depth),
+        topBottom = Mat<double>::create(depth, 2 * width);
+
+    Vec<double> b = Vec<double>::create(size, hand.stream);
+    b.fill(0, hand.stream);
+    Vec<double> x = Vec<double>::create(size, hand.stream);
+
+    frontBack.subMat(0, 0, height, width).fill(frontFaceVal, hand.stream);
+    frontBack.subMat(0, width, height, width).fill(0, hand.stream);
+    for (size_t layerInd = 0; layerInd < depth; ++layerInd) {
+        double val = (static_cast<double>(layerInd) + 1.0)/(depth + 1.0);
+        leftRight.col(layerInd).fill(val, hand.stream);
+        leftRight.col(layerInd + depth).fill(val, hand.stream);
+        topBottom.row(layerInd).subVec(0, width).fill(val, hand.stream);
+        topBottom.row(layerInd).subVec(width, 2 * width).fill(val, hand.stream);
+    }
 
     PoissonFDM<double> solver(frontBack, leftRight, topBottom, b);
-    Vec<double> x = Vec<double>::create(8, hand.stream);
     solver.solve(x, hand);
     std::cout << x << std::endl;
 
