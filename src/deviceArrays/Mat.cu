@@ -674,11 +674,28 @@ void Mat<T>::normalizeCols(size_t setRowTo1, Handle* handle) {
         this->_ld
     );
 }
+
+class DenseInd {
+public:
+    const int32_t d, row, col;
+    __device__ DenseInd(size_t bandedRow, size_t bandedCol, const int32_t* indices):
+        d(indices[bandedRow]),
+        row(static_cast<int32_t>(d > 0 ? bandedCol : bandedCol - d)),
+        col(static_cast<int32_t>(d > 0 ? bandedCol + d : bandedCol))
+    {}
+    __device__ bool outOfBounds(size_t max) const {
+        return row < 0 || row >= max || col < 0 || col >= max;
+    }
+    __device__ size_t flat(const size_t denseLd) const {
+        return col * denseLd + row;
+    }
+};
+
 //TODO: create a square matrix that has exclusive access to methods that only work on square matrices, like this one, and like eigen
 template <typename T>
 __global__ void mapDenseToBandedSquareKernel(
     const T* __restrict__ dense,
-    const size_t heightwidth, const size_t denseLd,
+    const size_t heightWidth, const size_t denseLd,
     T* __restrict__ banded,
     const size_t numDiags, const size_t bandedLd,
     const int32_t* __restrict__ indices
@@ -686,21 +703,33 @@ __global__ void mapDenseToBandedSquareKernel(
     const size_t bandedRow = blockIdx.y * blockDim.y + threadIdx.y;
     const size_t bandedCol = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if (bandedRow < numDiags && bandedCol < heightwidth){
-        const int32_t d = indices[bandedRow];
+    if (bandedRow < numDiags && bandedCol < heightWidth){
+        DenseInd denseInd(bandedRow, bandedCol, indices);
         const size_t writeTo = bandedCol*bandedLd + bandedRow;
-        auto denseRow = static_cast<int32_t>(d > 0 ? bandedCol : bandedCol - d);
-        auto denseCol = static_cast<int32_t>(d > 0 ? bandedCol + d : bandedCol);
 
-        printf("bandedRow = %lu\tbandedCol = %lu\td = %d\tdenseRow = %d\tdenseCol = %d\n",
-            bandedRow, bandedCol, d, denseRow, denseCol);
-
-        if (denseRow < 0 || denseRow >= heightwidth || denseCol < 0 || denseCol >= heightwidth)
-            banded[writeTo] = NAN;
-        else banded[writeTo] = dense[denseCol * denseLd + denseRow];
+        if (denseInd.outOfBounds(heightWidth)) banded[writeTo] = NAN;
+        else banded[writeTo] = dense[denseInd.flat(denseLd)];
     }
 }
 
+template <typename T>
+__global__ void mapBandedToDenseSquareKernel(
+    T* __restrict__ dense,
+    const size_t heightWidth, const size_t denseLd,
+    const T* __restrict__ banded,
+    const size_t numDiags, const size_t bandedLd,
+    const int32_t* __restrict__ indices
+) {
+    const size_t bandedRow = blockIdx.y * blockDim.y + threadIdx.y;
+    const size_t bandedCol = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (bandedRow < numDiags && bandedCol < heightWidth){
+        const DenseInd denseInd(bandedRow, bandedCol, indices);
+
+        if (!denseInd.outOfBounds(heightWidth))
+            dense[denseInd.flat(denseLd)] = banded[bandedCol * bandedLd + bandedRow];
+    }
+}
 
 template<typename T>
 Mat<T> Mat<T>::mapDenseToBanded(const Vec<int32_t>& indices, Mat<T>* result, Handle *handle) const {
@@ -727,6 +756,30 @@ Mat<T> Mat<T>::mapDenseToBanded(const Vec<int32_t>& indices, Mat<T>* result, Han
     );
     CHECK_CUDA_ERROR(cudaGetLastError());
     return *banded;
+}
+
+template<typename T>
+void Mat<T>::mapBandedToDense(const Vec<int32_t>& indices, Mat<T>& dense, Handle *handle) const {
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
+
+    constexpr dim3 blockDim(16, 16);
+
+    const dim3 gridDim(
+        (this->_cols + blockDim.x - 1) / blockDim.x,
+        (indices.size() + blockDim.y - 1) / blockDim.y
+    );
+
+    mapBandedToDenseSquareKernel<T><<<gridDim, blockDim, 0, h->stream>>>(
+        dense->data(),
+        dense->_cols,
+        dense->getLD(),
+        this->data(),
+        this->_rows,
+        this->_ld,
+        indices.data()
+    );
+    CHECK_CUDA_ERROR(cudaGetLastError());
 }
 
 template class Mat<float>;

@@ -197,6 +197,8 @@ public:
     void normalizeCols(size_t setRowTo1, Handle* handle = nullptr);
 
     Mat<T> mapDenseToBanded(const Vec<int32_t> &indices, Mat *result = nullptr, Handle *handle = nullptr) const;
+
+    void mapBandedToDense(const Vec<int32_t> &indices, Mat<T> &dense, Handle *handle) const;
 };
 
 template <typename T>

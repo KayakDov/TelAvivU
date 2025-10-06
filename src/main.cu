@@ -209,13 +209,13 @@ int main(int argc, char const* argv[]) {
 
     double hostData[] = {0, 1, 0, 0,  //col 1
                          0, 0, 1, 0,  //col 2
-                         0, 0, 0, 2,
-                         0, 0, 0, 0};
+                         0, 7, 0, 2,
+                         5, 0, 0, 0};
 
     mat.set(hostData, nullptr);
 
-    int32_t hostInds[] = {-1};
-    auto inds = Vec<int32_t>::create(1);
+    int32_t hostInds[] = {-1, 1, 3};
+    auto inds = Vec<int32_t>::create(3);
     inds.set(hostInds, nullptr);
 
     Mat<double> diagonal = mat.mapDenseToBanded(inds);
