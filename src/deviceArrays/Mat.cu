@@ -639,7 +639,7 @@ void Mat<T>::eigen(
  * @param ld The leading dimension of the matrix (typically the height).
  */
 template <typename T>
-__global__ void normalizeByRow(
+__global__ void normalizeByRowKernel(
     T* __restrict__ A,
     const size_t normalizeByRow,
     const size_t height, const size_t width, const size_t ld
@@ -666,7 +666,7 @@ void Mat<T>::normalizeCols(size_t setRowTo1, Handle* handle) {
         (this->_rows + blockDim.y - 1) / blockDim.y
     );
 
-    normalizeByRow<T><<<gridDim, blockDim, 0, h->stream>>>(
+    normalizeByRowKernel<T><<<gridDim, blockDim, 0, h->stream>>>(
         this->data(),
         setRowTo1,
         this->_rows,
@@ -674,6 +674,61 @@ void Mat<T>::normalizeCols(size_t setRowTo1, Handle* handle) {
         this->_ld
     );
 }
+//TODO: create a square matrix that has exclusive access to methods that only work on square matrices, like this one, and like eigen
+template <typename T>
+__global__ void mapDenseToBandedSquareKernel(
+    const T* __restrict__ dense,
+    const size_t heightwidth, const size_t denseLd,
+    T* __restrict__ banded,
+    const size_t numDiags, const size_t bandedLd,
+    const int32_t* __restrict__ indices
+) {
+    const size_t bandedRow = blockIdx.y * blockDim.y + threadIdx.y;
+    const size_t bandedCol = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (bandedRow < numDiags && bandedCol < heightwidth){
+        const int32_t d = indices[bandedRow];
+        const size_t writeTo = bandedCol*bandedLd + bandedRow;
+        auto denseRow = static_cast<int32_t>(d > 0 ? bandedCol : bandedCol - d);
+        auto denseCol = static_cast<int32_t>(d > 0 ? bandedCol + d : bandedCol);
+
+        printf("bandedRow = %lu\tbandedCol = %lu\td = %d\tdenseRow = %d\tdenseCol = %d\n",
+            bandedRow, bandedCol, d, denseRow, denseCol);
+
+        if (denseRow < 0 || denseRow >= heightwidth || denseCol < 0 || denseCol >= heightwidth)
+            banded[writeTo] = NAN;
+        else banded[writeTo] = dense[denseCol * denseLd + denseRow];
+    }
+}
+
+
+template<typename T>
+Mat<T> Mat<T>::mapDenseToBanded(const Vec<int32_t>& indices, Mat<T>* result, Handle *handle) const {
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
+    std::unique_ptr<Mat<T>> temp_result;
+    Mat<T>* banded = GpuArray<T>::_get_or_create_target(indices.size(), this->_cols, result, temp_result);
+
+    constexpr dim3 blockDim(16, 16);
+
+    const dim3 gridDim(
+        (this->_cols + blockDim.x - 1) / blockDim.x,
+        (indices.size() + blockDim.y - 1) / blockDim.y
+    );
+
+    mapDenseToBandedSquareKernel<T><<<gridDim, blockDim, 0, h->stream>>>(
+        this->data(),
+        this->_cols,
+        this->getLD(),
+        banded->data(),
+        banded->_rows,
+        banded->_ld,
+        indices.data()
+    );
+    CHECK_CUDA_ERROR(cudaGetLastError());
+    return *banded;
+}
+
 template class Mat<float>;
 template class Mat<double>;
 template class Mat<size_t>;

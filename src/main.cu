@@ -205,21 +205,23 @@ int useCommandLineArgs(int argc, char const* argv[]){
 
 int main(int argc, char const* argv[]) {
 
-    Mat<double> mat = Mat<double>::create(3, 3);
+    auto mat = Mat<double>::create(4, 4);
 
-    double hostData[] = {1, 2, 3,  2, 4, 5,  3, 5, 6};
+    double hostData[] = {0, 1, 0, 0,  //col 1
+                         0, 0, 1, 0,  //col 2
+                         0, 0, 0, 2,
+                         0, 0, 0, 0};
 
     mat.set(hostData, nullptr);
 
-    Vec<double> vals = Vec<double>::create(6, nullptr);
-    Mat<double> vecs = Mat<double>::create(6, 3);
+    int32_t hostInds[] = {-1};
+    auto inds = Vec<int32_t>::create(1);
+    inds.set(hostInds, nullptr);
 
-    mat.eigen(vals, &vecs);
-    vecs.normalizeCols(2);
+    Mat<double> diagonal = mat.mapDenseToBanded(inds);
 
     std::cout << "mat = \n" << mat << std::endl;
-    std::cout << "vals = \n" << vals << std::endl;
-    std::cout << "vecs = \n" << vecs << std::endl;
+    std::cout << "banded = \n" << diagonal << std::endl;
 
 
     // return useCommandLineArgs(argc, argv);

@@ -195,6 +195,8 @@ public:
     void eigen(Vec<T> &eVals, Mat *eVecs, Mat *temp = nullptr, Handle *handle = nullptr) const;
 
     void normalizeCols(size_t setRowTo1, Handle* handle = nullptr);
+
+    Mat<T> mapDenseToBanded(const Vec<int32_t> &indices, Mat *result = nullptr, Handle *handle = nullptr) const;
 };
 
 template <typename T>
@@ -208,7 +210,7 @@ protected:
     Vec(size_t cols, std::shared_ptr<T> _ptr, size_t stride);
 public:
 
-    static Vec<T> create(size_t length, cudaStream_t stream);
+    static Vec<T> create(size_t length, cudaStream_t stream = nullptr);
 
     Vec<T> subVec(size_t offset, size_t length, size_t stride = 1) const;
 
