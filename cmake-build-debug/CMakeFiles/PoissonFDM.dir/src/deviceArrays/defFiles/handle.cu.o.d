@@ -1,4 +1,4 @@
-CMakeFiles/PoissonFDM.dir/src/PoissonFDM.cu.o : /home/dov/Documents/LaplaceFiniteDifference/src/PoissonFDM.cu \
+CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/handle.cu.o : /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/handle.cu \
     /usr/include/stdc-predef.h \
     /usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_runtime.h \
     /usr/local/cuda-12.9/targets/x86_64-linux/include/crt/host_config.h \
@@ -185,44 +185,45 @@ CMakeFiles/PoissonFDM.dir/src/PoissonFDM.cu.o : /home/dov/Documents/LaplaceFinit
     /usr/include/c++/13/utility \
     /usr/include/c++/13/bits/stl_relops.h \
     /usr/include/c++/13/initializer_list \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/bandedMat.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/vec.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Mat.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/deviceArrays.h \
-    /usr/include/c++/13/vector \
-    /usr/include/c++/13/bits/allocator.h \
-    /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h \
-    /usr/include/c++/13/bits/new_allocator.h \
-    /usr/include/c++/13/bits/memoryfwd.h \
-    /usr/include/c++/13/bits/stl_construct.h \
-    /usr/include/c++/13/bits/stl_uninitialized.h \
-    /usr/include/c++/13/ext/alloc_traits.h \
-    /usr/include/c++/13/bits/alloc_traits.h \
-    /usr/include/c++/13/bits/stl_vector.h \
-    /usr/include/c++/13/bits/stl_bvector.h \
-    /usr/include/c++/13/bits/functional_hash.h \
-    /usr/include/c++/13/bits/hash_bytes.h \
-    /usr/include/c++/13/bits/refwrap.h \
-    /usr/include/c++/13/bits/invoke.h \
-    /usr/include/c++/13/bits/stl_function.h \
-    /usr/include/c++/13/backward/binders.h \
-    /usr/include/c++/13/bits/range_access.h \
-    /usr/include/c++/13/bits/vector.tcc \
-    /usr/include/c++/13/bits/memory_resource.h \
-    /usr/include/c++/13/cstddef \
-    /usr/include/c++/13/bits/uses_allocator.h \
-    /usr/include/c++/13/bits/uses_allocator_args.h \
-    /usr/include/c++/13/tuple \
-    /usr/include/c++/13/memory \
-    /usr/include/c++/13/bits/stl_tempbuf.h \
-    /usr/include/c++/13/bits/stl_raw_storage_iter.h \
-    /usr/include/c++/13/bits/align.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/handle.h \
+    /usr/local/cuda-12.9/targets/x86_64-linux/include/cublas_v2.h \
+    /usr/local/cuda-12.9/targets/x86_64-linux/include/cublas_api.h \
     /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h \
     /usr/include/stdint.h \
     /usr/include/x86_64-linux-gnu/bits/wchar.h \
     /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
     /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
+    /usr/local/cuda-12.9/targets/x86_64-linux/include/cuComplex.h \
+    /usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_fp16.h \
+    /usr/local/cuda-12.9/targets/x86_64-linux/include/nv/target \
+    /usr/local/cuda-12.9/targets/x86_64-linux/include/nv/detail/__target_macros \
+    /usr/local/cuda-12.9/targets/x86_64-linux/include/nv/detail/__preprocessor \
+    /usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_fp16.hpp \
+    /usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_bf16.h \
+    /usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_bf16.hpp \
+    /usr/local/cuda-12.9/targets/x86_64-linux/include/cusolverDn.h \
+    /usr/local/cuda-12.9/targets/x86_64-linux/include/cusolver_common.h \
+    /usr/include/inttypes.h \
+    /usr/include/c++/13/memory \
+    /usr/include/c++/13/bits/memoryfwd.h \
+    /usr/include/c++/13/bits/allocator.h \
+    /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h \
+    /usr/include/c++/13/bits/new_allocator.h \
+    /usr/include/c++/13/bits/stl_tempbuf.h \
+    /usr/include/c++/13/bits/stl_construct.h \
+    /usr/include/c++/13/bits/stl_uninitialized.h \
+    /usr/include/c++/13/ext/alloc_traits.h \
+    /usr/include/c++/13/bits/alloc_traits.h \
+    /usr/include/c++/13/bits/stl_raw_storage_iter.h \
+    /usr/include/c++/13/bits/align.h \
+    /usr/include/c++/13/bits/uses_allocator.h \
     /usr/include/c++/13/bits/unique_ptr.h \
+    /usr/include/c++/13/tuple \
+    /usr/include/c++/13/bits/invoke.h \
+    /usr/include/c++/13/bits/stl_function.h \
+    /usr/include/c++/13/backward/binders.h \
+    /usr/include/c++/13/bits/functional_hash.h \
+    /usr/include/c++/13/bits/hash_bytes.h \
     /usr/include/c++/13/bits/shared_ptr.h \
     /usr/include/c++/13/iosfwd \
     /usr/include/c++/13/bits/stringfwd.h \
@@ -234,6 +235,7 @@ CMakeFiles/PoissonFDM.dir/src/PoissonFDM.cu.o : /home/dov/Documents/LaplaceFinit
     /usr/include/c++/13/bits/shared_ptr_base.h \
     /usr/include/c++/13/typeinfo \
     /usr/include/c++/13/bits/allocated_ptr.h \
+    /usr/include/c++/13/bits/refwrap.h \
     /usr/include/c++/13/ext/aligned_buffer.h \
     /usr/include/c++/13/ext/atomicity.h \
     /usr/include/x86_64-linux-gnu/c++/13/bits/gthr.h \
@@ -269,6 +271,7 @@ CMakeFiles/PoissonFDM.dir/src/PoissonFDM.cu.o : /home/dov/Documents/LaplaceFinit
     /usr/include/c++/13/cctype \
     /usr/include/c++/13/bits/ostream_insert.h \
     /usr/include/c++/13/bits/cxxabi_forced.h \
+    /usr/include/c++/13/bits/range_access.h \
     /usr/include/c++/13/bits/basic_string.h \
     /usr/include/c++/13/string_view \
     /usr/include/c++/13/bits/string_view.tcc \
@@ -284,55 +287,6 @@ CMakeFiles/PoissonFDM.dir/src/PoissonFDM.cu.o : /home/dov/Documents/LaplaceFinit
     /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
     /usr/include/c++/13/bits/charconv.h \
     /usr/include/c++/13/bits/basic_string.tcc \
-    /usr/include/c++/13/fstream \
-    /usr/include/c++/13/istream \
-    /usr/include/c++/13/ios \
-    /usr/include/c++/13/bits/ios_base.h \
-    /usr/include/c++/13/bits/locale_classes.h \
-    /usr/include/c++/13/bits/locale_classes.tcc \
-    /usr/include/c++/13/system_error \
-    /usr/include/x86_64-linux-gnu/c++/13/bits/error_constants.h \
-    /usr/include/c++/13/streambuf \
-    /usr/include/c++/13/bits/streambuf.tcc \
-    /usr/include/c++/13/bits/basic_ios.h \
-    /usr/include/c++/13/bits/locale_facets.h \
-    /usr/include/c++/13/cwctype \
-    /usr/include/wctype.h \
-    /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
-    /usr/include/x86_64-linux-gnu/c++/13/bits/ctype_base.h \
-    /usr/include/c++/13/bits/streambuf_iterator.h \
-    /usr/include/x86_64-linux-gnu/c++/13/bits/ctype_inline.h \
-    /usr/include/c++/13/bits/locale_facets.tcc \
-    /usr/include/c++/13/bits/basic_ios.tcc \
-    /usr/include/c++/13/ostream \
-    /usr/include/c++/13/bits/ostream.tcc \
-    /usr/include/c++/13/bits/istream.tcc \
-    /usr/include/c++/13/bits/codecvt.h \
-    /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
-    /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
-    /usr/include/c++/13/bits/fstream.tcc \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/handle.h \
-    /usr/local/cuda-12.9/targets/x86_64-linux/include/cublas_v2.h \
-    /usr/local/cuda-12.9/targets/x86_64-linux/include/cublas_api.h \
-    /usr/local/cuda-12.9/targets/x86_64-linux/include/cuComplex.h \
-    /usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_fp16.h \
-    /usr/local/cuda-12.9/targets/x86_64-linux/include/nv/target \
-    /usr/local/cuda-12.9/targets/x86_64-linux/include/nv/detail/__target_macros \
-    /usr/local/cuda-12.9/targets/x86_64-linux/include/nv/detail/__preprocessor \
-    /usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_fp16.hpp \
-    /usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_bf16.h \
-    /usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_bf16.hpp \
-    /usr/local/cuda-12.9/targets/x86_64-linux/include/cusolverDn.h \
-    /usr/local/cuda-12.9/targets/x86_64-linux/include/cusolver_common.h \
-    /usr/include/inttypes.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Tensor.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/algorithms.cu \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/singleton.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/Event.h \
-    /usr/include/c++/13/iostream \
-    /usr/include/c++/13/chrono \
-    /usr/include/c++/13/bits/chrono.h \
-    /usr/include/c++/13/ratio \
-    /usr/include/c++/13/cstdint \
-    /usr/include/c++/13/ctime \
-    /usr/include/c++/13/bits/parse_numbers.h
+    /usr/include/c++/13/bits/memory_resource.h \
+    /usr/include/c++/13/cstddef \
+    /usr/include/c++/13/bits/uses_allocator_args.h

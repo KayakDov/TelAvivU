@@ -5,15 +5,15 @@ PoissonFDM: \
   CMakeFiles/PoissonFDM.dir/src/PoissonFDM.cu.o \
   CMakeFiles/PoissonFDM.dir/src/Event.cu.o \
   CMakeFiles/PoissonFDM.dir/src/algorithms.cu.o \
-  CMakeFiles/PoissonFDM.dir/src/deviceArrays/BandedMatrix.cu.o \
-  CMakeFiles/PoissonFDM.dir/src/deviceArrays/Mat.cu.o \
-  CMakeFiles/PoissonFDM.dir/src/deviceArrays/Singleton.cu.o \
-  CMakeFiles/PoissonFDM.dir/src/deviceArrays/SquareMat.cu.o \
-  CMakeFiles/PoissonFDM.dir/src/deviceArrays/Tensor.cu.o \
-  CMakeFiles/PoissonFDM.dir/src/deviceArrays/Vec.cu.o \
-  CMakeFiles/PoissonFDM.dir/src/deviceArrays/deviceArrays.cu.o \
-  CMakeFiles/PoissonFDM.dir/src/deviceArrays/handle.cu.o \
-  CMakeFiles/PoissonFDM.dir/src/deviceArrays/streamHelper.cpp.o \
+  CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o \
+  CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/Mat.cu.o \
+  CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/Singleton.cu.o \
+  CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/SquareMat.cu.o \
+  CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/Tensor.cu.o \
+  CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/Vec.cu.o \
+  CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/deviceArrays.cu.o \
+  CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/handle.cu.o \
+  CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/streamHelper.cpp.o \
   CMakeFiles/PoissonFDM.dir/src/testMethods.cu.o \
   CMakeFiles/PoissonFDM.dir/cmake_device_link.o \
   /usr/local/cuda-12.9/targets/x86_64-linux/lib/libcudart.so \
@@ -84,23 +84,23 @@ CMakeFiles/PoissonFDM.dir/src/Event.cu.o:
 
 CMakeFiles/PoissonFDM.dir/src/algorithms.cu.o:
 
-CMakeFiles/PoissonFDM.dir/src/deviceArrays/BandedMatrix.cu.o:
+CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o:
 
-CMakeFiles/PoissonFDM.dir/src/deviceArrays/Mat.cu.o:
+CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/Mat.cu.o:
 
-CMakeFiles/PoissonFDM.dir/src/deviceArrays/Singleton.cu.o:
+CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/Singleton.cu.o:
 
-CMakeFiles/PoissonFDM.dir/src/deviceArrays/SquareMat.cu.o:
+CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/SquareMat.cu.o:
 
-CMakeFiles/PoissonFDM.dir/src/deviceArrays/Tensor.cu.o:
+CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/Tensor.cu.o:
 
-CMakeFiles/PoissonFDM.dir/src/deviceArrays/Vec.cu.o:
+CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/Vec.cu.o:
 
-CMakeFiles/PoissonFDM.dir/src/deviceArrays/deviceArrays.cu.o:
+CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/deviceArrays.cu.o:
 
-CMakeFiles/PoissonFDM.dir/src/deviceArrays/handle.cu.o:
+CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/handle.cu.o:
 
-CMakeFiles/PoissonFDM.dir/src/deviceArrays/streamHelper.cpp.o:
+CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/streamHelper.cpp.o:
 
 CMakeFiles/PoissonFDM.dir/src/testMethods.cu.o:
 

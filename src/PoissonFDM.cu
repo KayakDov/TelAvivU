@@ -1,7 +1,7 @@
 
  #ifndef BICGSTAB_POISSONFDM_CUH
 #define BICGSTAB_POISSONFDM_CUH
-#include "deviceArrays/headers/deviceArrays.h"
+#include "deviceArrays/headers/bandedMat.h"
 #include "algorithms.cu"
 
 
@@ -134,7 +134,16 @@ __global__ void setRHSKernel3D(T* __restrict__ b,
         + (layer == gDepth - 1 ? frontBack[col*fbLd + row + gWidth * tbLd]                 : 0);
 }
 
-
+/**
+ * @brief Device-side functor to set off-diagonal entries of the system matrix A to 0 or NAN.
+ *
+ * This is used inside the setAKernel3d kernel to handle the six neighbors for each interior
+ * grid point. It ensures that entries corresponding to boundary connections are either
+ * correctly set to 0 (non-existent internal connection) or marked as NAN (which typically
+ * signals an element outside the valid band storage).
+ *
+ * @tparam T Floating-point type (float or double).
+ */
 template <typename T>
 class Set0 {
 private:
@@ -142,11 +151,27 @@ private:
     T* __restrict__ A;
     const size_t ldA, idGrid, widthA, colXLda;
 public:
+    /**
+     * @brief Constructs the Set0 functor.
+     *
+     * @param[in] mapDiagIndextoARow Device pointer mapping diagonal index (offset) to the row index in the banded matrix A.
+     * @param[in,out] A Pointer to the banded matrix data on the device.
+     * @param[in] ldA The leading dimension of A.
+     * @param[in] idGrid The linear index of the current grid point (row in A).
+     * @param[in] widthA The width (number of columns) of A, equal to gridSize.
+     */
     __device__ Set0(const size_t* mapDiagIndextoARow, T* __restrict__ A, const size_t ldA, const size_t idGrid, const size_t widthA) :
         mapDiagIndextoARow(mapDiagIndextoARow), A(A), ldA(ldA), idGrid(idGrid), widthA(widthA), colXLda(idGrid * ldA) {}
 
+    /**
+     * @brief Sets the corresponding off-diagonal entry to 0 or NAN based on boundary condition logic.
+     *
+     * This operator is called to check if a specific off-diagonal entry (corresponding to a neighbor)
+     * should be set to 0 (internal point) or NAN (outside band storage).
+     *
+     * @param[in] rowDiagonalIndex The diagonal index (offset) corresponding to the neighbor being checked.
+     */
     __device__ void operator()(const int32_t rowDiagonalIndex) {
-        // ++A[colXLda + mapDiagIndextoARow[0]];
 
         const size_t col = ((static_cast<int32_t>(idGrid) + min(rowDiagonalIndex , 0)) % static_cast<int32_t>(widthA) + static_cast<int32_t>(widthA)) % widthA;
         const size_t indexA = col * ldA + mapDiagIndextoARow[rowDiagonalIndex];
@@ -156,10 +181,25 @@ public:
     }
 };
 
-
-
+/**
+ * @brief CUDA kernel to set up the system matrix A for the 3D Poisson FDM problem.
+ *
+ * Each thread handles one unknown point $(gRow, gCol, gLayer)$ in the interior grid,
+ * setting the main diagonal entry ($A_{i,i} = -6$) and using the Set0 functor to handle
+ * the 6 off-diagonal entries (neighbors) and enforce boundary conditions by setting
+ * unused band elements to NAN.
+ *
+ * @tparam T Floating-point type (float or double).
+ * @param[out] A Pointer to the banded (or dense) matrix storage on the device.
+ * @param[in] ldA The leading dimension of the matrix A.
+ * @param[in] widthA The width (number of columns) of A, equal to gridSize.
+ * @param[in] gHeight Interior grid height.
+ * @param[in] gWidth Interior grid width.
+ * @param[in] gDepth Interior grid depth.
+ * @param[in] mapDiagIndextoARow A device array mapping the diagonal index offset to the row index within the banded storage format of A.
+ */
 template <typename T>
-__global__ void setAKernel3d(T* __restrict__ A, const size_t ldA, const size_t widthA,
+__global__ void setAKernel(T* __restrict__ A, const size_t ldA, const size_t widthA,
     const size_t gHeight, const size_t gWidth, const size_t gDepth,
     const size_t* mapDiagIndextoARow
     ) {
@@ -183,6 +223,18 @@ __global__ void setAKernel3d(T* __restrict__ A, const size_t ldA, const size_t w
 
 }
 
+/**
+ * @brief Solves the 3D Poisson equation $\nabla^2 u = f$ using the Finite Difference Method (FDM)
+ * and the BiCGSTAB iterative solver on the resulting linear system $A\mathbf{x} = \mathbf{b}$.
+ *
+ * This class handles the construction of the FDM linear system for a 3D grid,
+ * including setting up the system matrix $A$ (as a banded matrix), calculating
+ * the right-hand side vector $\mathbf{b}$ (incorporating boundary conditions),
+ * and leveraging the BiCGSTAB solver for the solution. The class assumes a uniform
+ * grid spacing (which is absorbed into the matrix $A$ coefficients).
+ *
+ * @tparam T Floating-point type used for the computation (typically float or double).
+ */
 template <typename T>
 class PoissonFDM {
 private:
@@ -190,11 +242,15 @@ private:
     Vec<T> _b;
     const size_t _rows, _cols, _layers;
 public:
+    /**
+     * @brief Calculates the total number of unknowns (interior points) in the 3D grid.
+     * @return The total grid size: $\text{rows} \times \text{cols} \times \text{layers}$.
+     */
     [[nodiscard]] size_t gridSize() const {
         return _rows * _cols * _layers;
     }
 private:
-    void setB3d(cudaStream_t stream) {
+    void setB(cudaStream_t stream) {
         const size_t totalThreadsNeeded = (_frontBack.size() + _leftRight.size() + _topBottom.size());
 
         constexpr size_t threadsPerBlock = 256;
@@ -202,9 +258,9 @@ private:
 
         setRHSKernel3D<<<gridDim, threadsPerBlock, 0, stream>>>(
             _b.data(),
-            _frontBack.data(), _frontBack.getLD(), _frontBack.size(),
-            _leftRight.data(), _leftRight.getLD(), _leftRight.size(),
-            _topBottom.data(), _topBottom.getLD(), _topBottom.size(),
+            _frontBack.data(), _frontBack._ld, _frontBack.size(),
+            _leftRight.data(), _leftRight._ld, _leftRight.size(),
+            _topBottom.data(), _topBottom._ld, _topBottom.size(),
             _rows, _cols, _layers);
 
         CHECK_CUDA_ERROR(cudaGetLastError());
@@ -245,40 +301,20 @@ private:
     void solve2d(Vec<T>& x, Handle hand) {
 
     }
-    void solve3d(Vec<T>& x, Handle& handle) {
-
-        const size_t numNonZeroDiags = 7;
-        Vec<int32_t> mapARowToDiagnalInd = Vec<int32_t>::create(numNonZeroDiags, handle.stream);
-        int32_t mapRowToDiagCpu[numNonZeroDiags] = {static_cast<int32_t>(0), static_cast<int32_t>(1), static_cast<int32_t>(-1),
-            static_cast<int32_t>(_rows), -static_cast<int32_t>(_rows), static_cast<int32_t>(_rows * _cols),
-            -static_cast<int32_t>(_rows * _cols)};
-        mapARowToDiagnalInd.set(mapRowToDiagCpu, handle.stream);
-
-        size_t mapDiagToRowCpu[2*gridSize()];
-        for (size_t i = 0; i < numNonZeroDiags; ++i) mapDiagToRowCpu[mapRowToDiagCpu[i] + gridSize()] = i;
-        Vec<size_t> mapDiagToRow = Vec<size_t>::create(2*gridSize(), handle.stream);\
-        mapDiagToRow.set(mapDiagToRowCpu, handle.stream);
-
-        Mat<T> AMat = setA3d(mapDiagToRow, numNonZeroDiags, handle);
-        BandedMat<T> A(AMat, mapARowToDiagnalInd);
-        setB3d(handle.stream);
-
-        BiCGSTAB<T> solver(_b);
-
-        // std::cout << "PoissonFDM.cu::solve3d" << std::endl;
-        // std::cout << "Solving 3D Poisson problem with " << _rows << " rows, " << _cols << " cols, " << _layers << " layers" << std::endl;
-        // std::cout << "topBottom:\n" << _topBottom << std::endl;
-        // std::cout << "leftRight:\n" << _leftRight << std::endl;
-        // std::cout << "frontBack:\n" << _frontBack << std::endl;
-        // std::cout << "indices = " << std::endl << mapARowToDiagnalInd << std::endl;
-        // std::cout << "A = " << std::endl << A << std::endl;
-        // std::cout << "b = " << _b << std::endl;
-
-        solver.solveUnpreconditionedBiCGSTAB(A, &x);
-
-    }
 
 public:
+    /**
+    * @brief Constructs the PoissonFDM solver object.
+    *
+    * Initializes the boundary condition matrices and the dimensions of the interior grid.
+    * It assumes the RHS vector $\mathbf{b}$ is pre-loaded with the source term $f$.
+    *
+    * @param[in] frontBack A Mat containing boundary values for the front (layer=0) and back (layer=depth-1) faces.
+    * @param[in] leftRight A Mat containing boundary values for the left (col=0) and right (col=width-1) faces.
+    * @param[in] topBottom A Mat containing boundary values for the top (row=0) and bottom (row=height-1) faces.
+    * @param[in] b The initial right-hand side vector, pre-loaded with the source term $f$.
+    * This vector is modified by the solver to include boundary contributions.
+    */
     PoissonFDM(const Mat<T>& frontBack, const Mat<T>& leftRight, const Mat<T>& topBottom, const Vec<T> b):
         _frontBack(frontBack),
         _leftRight(leftRight),
@@ -289,15 +325,48 @@ public:
         _layers(topBottom._rows) {
 
     }
-
+    /**
+     * @brief Solves the Poisson equation for the grid.
+     *
+     * Automatically dispatches to the 2D or 3D solver based on whether the number of layers is 1.
+     *
+     * @param[out] x A reference to the solution vector (unknowns $u$). It should be pre-allocated.
+     * @param[in] handle The CUDA handle (stream/context) to manage the computation.
+     */
     void solve(Vec<T>& x, Handle& handle) {
-        if (_layers == 1) solve2d(x, handle);
-        else solve3d(x, handle);
+        constexpr size_t numNonZeroDiags = 7;
+        Vec<int32_t> mapARowToDiagonalInd = Vec<int32_t>::create(numNonZeroDiags, handle.stream);
+        int32_t mapRowToDiagCpu[numNonZeroDiags] = {static_cast<int32_t>(0), static_cast<int32_t>(1), static_cast<int32_t>(-1),
+            static_cast<int32_t>(_rows), -static_cast<int32_t>(_rows), static_cast<int32_t>(_rows * _cols),
+            -static_cast<int32_t>(_rows * _cols)};
+        mapARowToDiagonalInd.set(mapRowToDiagCpu, handle.stream);
 
+        size_t mapDiagToRowCpu[2*gridSize()];
+        for (size_t i = 0; i < numNonZeroDiags; ++i) mapDiagToRowCpu[mapRowToDiagCpu[i] + gridSize()] = i;
+        Vec<size_t> mapDiagToRow = Vec<size_t>::create(2*gridSize(), handle.stream);\
+        mapDiagToRow.set(mapDiagToRowCpu, handle.stream);
+
+        Mat<T> AMat = setA3d(mapDiagToRow, numNonZeroDiags, handle);
+        BandedMat<T> A(AMat, mapARowToDiagonalInd);
+        setB3d(handle.stream);
+
+        BiCGSTAB<T> solver(_b);
+
+        solver.solveUnpreconditionedBiCGSTAB(A, &x);
     }
 
 };
 
+/**
+ * @brief Main execution function for the Poisson FDM solver example.
+ *
+ * Sets up a simple 3D grid problem with constant boundary conditions,
+ * initializes the RHS and solution vectors, and calls the solver.
+ *
+ * @param[in] argc Argument count (unused).
+ * @param[in] argv Argument vector (unused).
+ * @return 0 on successful execution.
+ */
 int main(int argc, char *argv[]) {
     Handle hand;
 

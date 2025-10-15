@@ -1,4 +1,4 @@
-CMakeFiles/PoissonFDM.dir/src/PoissonFDM.cu.o : /home/dov/Documents/LaplaceFiniteDifference/src/PoissonFDM.cu \
+CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/deviceArrays.cu.o : /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/deviceArrays.cu \
     /usr/include/stdc-predef.h \
     /usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_runtime.h \
     /usr/local/cuda-12.9/targets/x86_64-linux/include/crt/host_config.h \
@@ -185,10 +185,10 @@ CMakeFiles/PoissonFDM.dir/src/PoissonFDM.cu.o : /home/dov/Documents/LaplaceFinit
     /usr/include/c++/13/utility \
     /usr/include/c++/13/bits/stl_relops.h \
     /usr/include/c++/13/initializer_list \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/bandedMat.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/vec.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Mat.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/deviceArrays.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/singleton.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/vec.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/Mat.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/deviceArrays.h \
     /usr/include/c++/13/vector \
     /usr/include/c++/13/bits/allocator.h \
     /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h \
@@ -311,7 +311,7 @@ CMakeFiles/PoissonFDM.dir/src/PoissonFDM.cu.o : /home/dov/Documents/LaplaceFinit
     /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
     /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
     /usr/include/c++/13/bits/fstream.tcc \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/handle.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/handle.h \
     /usr/local/cuda-12.9/targets/x86_64-linux/include/cublas_v2.h \
     /usr/local/cuda-12.9/targets/x86_64-linux/include/cublas_api.h \
     /usr/local/cuda-12.9/targets/x86_64-linux/include/cuComplex.h \
@@ -325,14 +325,8 @@ CMakeFiles/PoissonFDM.dir/src/PoissonFDM.cu.o : /home/dov/Documents/LaplaceFinit
     /usr/local/cuda-12.9/targets/x86_64-linux/include/cusolverDn.h \
     /usr/local/cuda-12.9/targets/x86_64-linux/include/cusolver_common.h \
     /usr/include/inttypes.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Tensor.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/algorithms.cu \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/singleton.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/Event.h \
-    /usr/include/c++/13/iostream \
-    /usr/include/c++/13/chrono \
-    /usr/include/c++/13/bits/chrono.h \
-    /usr/include/c++/13/ratio \
-    /usr/include/c++/13/cstdint \
-    /usr/include/c++/13/ctime \
-    /usr/include/c++/13/bits/parse_numbers.h
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/Tensor.h \
+    /usr/include/c++/13/numeric \
+    /usr/include/c++/13/bits/stl_numeric.h \
+    /usr/include/c++/13/pstl/glue_numeric_defs.h \
+    /usr/include/c++/13/iostream
