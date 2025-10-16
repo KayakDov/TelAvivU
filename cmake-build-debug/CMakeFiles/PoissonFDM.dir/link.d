@@ -5,6 +5,7 @@ PoissonFDM: \
   CMakeFiles/PoissonFDM.dir/src/PoissonFDM.cu.o \
   CMakeFiles/PoissonFDM.dir/src/BiCGSTAB.cu.o \
   CMakeFiles/PoissonFDM.dir/src/Event.cu.o \
+  CMakeFiles/PoissonFDM.dir/src/deviceArrays/DeviceMemory.cpp.o \
   CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o \
   CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/Mat.cu.o \
   CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/Singleton.cu.o \
@@ -83,6 +84,8 @@ CMakeFiles/PoissonFDM.dir/src/PoissonFDM.cu.o:
 CMakeFiles/PoissonFDM.dir/src/BiCGSTAB.cu.o:
 
 CMakeFiles/PoissonFDM.dir/src/Event.cu.o:
+
+CMakeFiles/PoissonFDM.dir/src/deviceArrays/DeviceMemory.cpp.o:
 
 CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o:
 

@@ -3,6 +3,7 @@
 #define BICGSTAB_POISSONFDM_CUH
 #include "deviceArrays/headers/bandedMat.h"
 #include "BiCGSTAB.cu"
+#include "deviceArrays/DeviceMemory.h"
 
 
  /**
@@ -109,7 +110,7 @@ __device__ bool setIndicesTopBottomFaces(size_t& layer, size_t& row, size_t& col
  * @param[in] gDepth Interior grid depth (number of unknowns along Z).
  */
 template <typename T>
-__global__ void setRHSKernel3D(T* __restrict__ b,
+__global__ void setRHSKernel3D(T* __restrict__ b, const size_t bStride,
                                const T* __restrict__ frontBack, const size_t fbLd, const size_t fbBlockSize,
                                const T* __restrict__ leftRight, const size_t lrLd, const size_t lrBlockSize,
                                const T* __restrict__ topBottom, const size_t tbLd, const size_t tbBlockSize,
@@ -125,7 +126,7 @@ __global__ void setRHSKernel3D(T* __restrict__ b,
     }
     else if (!setIndicesTopBottomFaces(layer, row, col, gHeight, gWidth, gDepth, idx)) return;
 
-    b[row + (col + layer * gWidth) * gHeight] -=
+    b[bStride * (row + (col + layer * gWidth) * gHeight)] -=
           (row == 0            ? topBottom[col*tbLd + (gDepth - 1 - layer)]                : 0)
         + (row == gHeight - 1  ? topBottom[col*tbLd + (gDepth - 1 - layer) + gWidth*tbLd]  : 0)
         + (col == 0            ? leftRight[(gDepth - 1 - layer)*lrLd + row]                : 0)
@@ -234,6 +235,7 @@ __global__ void setAKernel(T* __restrict__ A, const size_t ldA, const size_t wid
 
 }
 
+constexpr  size_t numDiagonals = 7;
 /**
  * @brief Solves the 3D Poisson equation $\nabla^2 u = f$ using the Finite Difference Method (FDM)
  * and the BiCGSTAB iterative solver on the resulting linear system $A\mathbf{x} = \mathbf{b}$.
@@ -252,6 +254,7 @@ private:
     const Mat<T> _frontBack, _leftRight, _topBottom;
     Vec<T> _b;
     const size_t _rows, _cols, _layers;
+
 public:
     const Adjacency here, up, down, left, right, back, front;
     /**
@@ -269,7 +272,7 @@ private:
         const size_t gridDim = (totalThreadsNeeded + threadsPerBlock - 1) / threadsPerBlock;
 
         setRHSKernel3D<<<gridDim, threadsPerBlock, 0, stream>>>(
-            _b.data(),
+            _b.data(), _b._ld,
             _frontBack.data(), _frontBack._ld, _frontBack.size(),
             _leftRight.data(), _leftRight._ld, _leftRight.size(),
             _topBottom.data(), _topBottom._ld, _topBottom.size(),
@@ -288,13 +291,14 @@ private:
     /**
      * @brief Launch kernel that assembles A in banded/dense storage.
      *
-     * @param indices device pointer to the int32_t offsets array (length numNonZeroDiags).
+     * @param numInds The number of indices.
+     * @param mindices device pointer to the int32_t offsets array (length numNonZeroDiags).
      * @param handle contains the stream to run on.
+     * @param A Provide prealocated memory here to be written to, numDiagonals x _b.size().
      */
-    Mat<T> setA(size_t numInds, Handle& handle) {
+    void setA(Handle& handle, Mat<T>& A) {
 
-        Mat<T> A = Mat<T>::create(numInds, _b.size());
-        A.subMat(1, 0, A._rows - 1, A._cols).fill(1, handle.stream);
+        A.template Mat<T>::subMat(1, 0, A._rows - 1, A._cols).fill(1, handle.stream);
 
         dim3 block(8, 8, 8);
         dim3 grid = makeGridDim( _cols, _rows, _layers, block);
@@ -306,17 +310,18 @@ private:
         );
         CHECK_CUDA_ERROR(cudaGetLastError());
 
-        return A;
     }
 
-    void loadMapRowToDiag(int32_t* diags) {
-        diags[up.row] = up.diag;
-        diags[down.row] = down.diag;
-        diags[left.row] = left.diag;
-        diags[right.row] = right.diag;
-        diags[back.row] = back.diag;
-        diags[front.row] = front.diag;
-        diags[here.row] = here.diag;
+    void loadMapRowToDiag(Vec<int32_t> diags, const cudaStream_t stream) const {
+        int32_t diagsCpu[numDiagonals];
+        diagsCpu[up.row] = up.diag;
+        diagsCpu[down.row] = down.diag;
+        diagsCpu[left.row] = left.diag;
+        diagsCpu[right.row] = right.diag;
+        diagsCpu[back.row] = back.diag;
+        diagsCpu[front.row] = front.diag;
+        diagsCpu[here.row] = here.diag;
+        diags.set(diagsCpu, stream);
     }
 public:
     /**
@@ -354,23 +359,23 @@ public:
      *
      * Automatically dispatches to the 2D or 3D solver based on whether the number of layers is 1.
      *
-     * @param[out] x A reference to the solution vector (unknowns $u$). It should be pre-allocated.
-     * @param[in] handle The CUDA handle (stream/context) to manage the computation.
+     * @param[out] x Pre-allocated memory that the solution will be written to.
+     * @param A Pre-allocated memory that will be used to compute the solution.  It should be numDiagonals rows and _b.size() columns.
+     * @param[in] hand The CUDA handle (stream/context) to manage the computation.
      */
-    void solve(Vec<T>& x, Handle& handle) {
-        constexpr size_t numNonZeroDiags = 7;
-        Vec<int32_t> mapARowToDiagonalInd = Vec<int32_t>::create(numNonZeroDiags, handle.stream);
-        int32_t mapRowToDiagCpu[numNonZeroDiags];
-        loadMapRowToDiag(mapRowToDiagCpu);
-        mapARowToDiagonalInd.set(mapRowToDiagCpu, handle.stream);
+    void solve(Vec<T>& x, const Mat<T>& A, Handle& hand) {
 
-        Mat<T> AMat = setA(numNonZeroDiags, handle);
-        BandedMat<T> A(AMat, mapARowToDiagonalInd);
-        setB(handle.stream);
+        Vec<int32_t> mapARowToDiagonalInd = Vec<int32_t>::create(numDiagonals, hand.stream);
+        loadMapRowToDiag(mapARowToDiagonalInd, hand.stream);
+
+        BandedMat<T> ABanded(A, mapARowToDiagonalInd);
+
+        setA(hand, ABanded);
+        setB(hand.stream);
 
         BiCGSTAB<T> solver(_b);
 
-        solver.solveUnpreconditionedBiCGSTAB(A, &x);
+        solver.solveUnpreconditionedBiCGSTAB(ABanded, x);
     }
 
 };
@@ -388,31 +393,44 @@ public:
 int main(int argc, char *argv[]) {
     Handle hand;
 
-    constexpr  size_t dimLength = 200;
+    constexpr  size_t dimLength = 250;//225 works
     constexpr size_t height = dimLength, width = dimLength, depth = dimLength, size = height * width * depth;
     constexpr double frontFaceVal = 1;
 
-    Mat<double> frontBack = Mat<double>::create(height, 2 * width),
-        leftRight = Mat<double>::create(height, 2 * depth),
-        topBottom = Mat<double>::create(depth, 2 * width);
+    auto boundaries = Mat<double>::create(std::max(depth, height), std::max(depth, width));
 
-    Vec<double> b = Vec<double>::create(size, hand.stream);
+    auto frontBack = boundaries.subMat(0, 0, height, 2*width),
+        leftRight = boundaries.subMat(0, frontBack._cols, height, 2 * depth),
+        topBottom = boundaries.subMat(0, frontBack._cols + leftRight._cols, depth, 2*width);
+
+    auto front = frontBack.subMat(0, 0, height, width),
+        back = frontBack.subMat(0, width, height, width),
+        top = topBottom.subMat(0, 0, depth, width),
+        bottom = topBottom.subMat(0, width, depth, width),
+        left = leftRight.subMat(0, 0, height, depth),
+        right = leftRight.subMat(0, depth, height, depth);
+
+    auto longVecs = Mat<double>::create(3 + numDiagonals, size);
+    auto b = longVecs.row(0);
     b.fill(0, hand.stream);
-    Vec<double> x = Vec<double>::create(size, hand.stream);
+    auto x = longVecs.row(1);
+    auto A = longVecs.subMat(2, 0, numDiagonals, size);
 
-    frontBack.subMat(0, 0, height, width).fill(frontFaceVal, hand.stream);
-    frontBack.subMat(0, width, height, width).fill(0, hand.stream);
+    front.fill(frontFaceVal, hand.stream);
+    back.fill(0, hand.stream);
+
     for (size_t layerInd = 0; layerInd < depth; ++layerInd) {
-        double val = (static_cast<double>(layerInd) + 1.0)/(depth + 1.0);
-        leftRight.col(layerInd).fill(val, hand.stream);
-        leftRight.col(layerInd + depth).fill(val, hand.stream);
-        topBottom.row(layerInd).subVec(0, width).fill(val, hand.stream);
-        topBottom.row(layerInd).subVec(width, 2 * width).fill(val, hand.stream);
+        double val = frontFaceVal * (static_cast<double>(layerInd) + 1.0)/(depth + 1.0);
+        left.col(layerInd).fill(val, hand.stream);
+        right.col(layerInd).fill(val, hand.stream);
+        top.row(layerInd).fill(val, hand.stream);
+        bottom.row(layerInd).fill(val, hand.stream);
     }
 
     PoissonFDM<double> solver(frontBack, leftRight, topBottom, b);
-    solver.solve(x, hand);
-    // std::cout << x << std::endl;
+
+    solver.solve(x, A, hand);
+    // x.get(std::cout, true, false, hand.stream);
 
     return 0;
 }

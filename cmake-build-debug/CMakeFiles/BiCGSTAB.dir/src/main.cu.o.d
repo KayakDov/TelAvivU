@@ -328,7 +328,7 @@ CMakeFiles/BiCGSTAB.dir/src/main.cu.o : /home/dov/Documents/LaplaceFiniteDiffere
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/squareMat.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/bandedMat.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/testMethods.cu \
-    /home/dov/Documents/LaplaceFiniteDifference/src/algorithms.cu \
+    /home/dov/Documents/LaplaceFiniteDifference/src/BiCGSTAB.cu \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/singleton.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/Event.h \
     /usr/include/c++/13/iostream \

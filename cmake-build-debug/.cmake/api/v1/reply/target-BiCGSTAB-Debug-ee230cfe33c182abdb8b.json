@@ -144,7 +144,6 @@
 			[
 				0,
 				1,
-				2,
 				3,
 				4,
 				5,
@@ -152,8 +151,9 @@
 				7,
 				8,
 				9,
-				11,
-				12
+				10,
+				12,
+				13
 			]
 		},
 		{
@@ -186,7 +186,8 @@
 			},
 			"sourceIndexes" : 
 			[
-				10
+				2,
+				11
 			]
 		}
 	],
@@ -309,7 +310,8 @@
 				9,
 				10,
 				11,
-				12
+				12,
+				13
 			]
 		}
 	],
@@ -325,6 +327,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "src/Event.cu",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "src/deviceArrays/DeviceMemory.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

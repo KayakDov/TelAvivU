@@ -11,6 +11,10 @@
 #include <fstream> // For file I/O
 #include <string> // For std::string
 #include "handle.h"
+#include <iostream>
+#include <iomanip>
+#include "deviceArrays/DeviceMemory.h"
+
 
 template <typename T> class GpuArray;
 template <typename T> class Vec;

@@ -2,8 +2,8 @@ BiCGSTAB: \
   /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/Scrt1.o \
   /usr/lib/gcc/x86_64-linux-gnu/13/../../../x86_64-linux-gnu/crti.o \
   /usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o \
+  CMakeFiles/BiCGSTAB.dir/src/BiCGSTAB.cu.o \
   CMakeFiles/BiCGSTAB.dir/src/Event.cu.o \
-  CMakeFiles/BiCGSTAB.dir/src/algorithms.cu.o \
   CMakeFiles/BiCGSTAB.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o \
   CMakeFiles/BiCGSTAB.dir/src/deviceArrays/defFiles/Mat.cu.o \
   CMakeFiles/BiCGSTAB.dir/src/deviceArrays/defFiles/Singleton.cu.o \
@@ -78,9 +78,9 @@ BiCGSTAB: \
 
 /usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o:
 
-CMakeFiles/BiCGSTAB.dir/src/Event.cu.o:
+CMakeFiles/BiCGSTAB.dir/src/BiCGSTAB.cu.o:
 
-CMakeFiles/BiCGSTAB.dir/src/algorithms.cu.o:
+CMakeFiles/BiCGSTAB.dir/src/Event.cu.o:
 
 CMakeFiles/BiCGSTAB.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o:
 

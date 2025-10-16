@@ -7,6 +7,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/PoissonFDM.dir/src/Event.cu.o.d"
   "CMakeFiles/PoissonFDM.dir/src/PoissonFDM.cu.o"
   "CMakeFiles/PoissonFDM.dir/src/PoissonFDM.cu.o.d"
+  "CMakeFiles/PoissonFDM.dir/src/deviceArrays/DeviceMemory.cpp.o"
+  "CMakeFiles/PoissonFDM.dir/src/deviceArrays/DeviceMemory.cpp.o.d"
   "CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o"
   "CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o.d"
   "CMakeFiles/PoissonFDM.dir/src/deviceArrays/defFiles/Mat.cu.o"

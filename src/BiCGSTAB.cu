@@ -17,19 +17,19 @@ using TimePoint = std::chrono::time_point<std::chrono::steady_clock>;
  * The implementation uses multiple CUDA streams and events to overlap communication,
  * computation, and I/O operations, improving overall solver efficiency.
  *
- * @tparam Float Floating-point type used for the computation (float or double).
+ * @tparam T Floating-point type used for the computation (float or double).
  */
-template <typename Float>
+template <typename T>
 class BiCGSTAB{
 private:
-    const Float tolerance;
+    const T tolerance;
     Handle handle[4]{};
     Event alphaReady, sReady, hReady, omegaReady, rReady, xReady, prodTS;
-    const Vec<Float> b;
-    Mat<Float> paM;
-    Vec<Float> r, r_tilde, p, v, s, t, h;
-    Vec<Float> paV;
-    Singleton<Float> rho, alpha, omega, rho_new, beta, temp;
+    const Vec<T> b;
+    Mat<T> paM;
+    Vec<T> r, r_tilde, p, v, s, t, h;
+    Vec<T> paV;
+    Singleton<T> rho, alpha, omega, rho_new, beta, temp;
 
     const size_t maxIterations;
 
@@ -81,10 +81,10 @@ private:
      * @param[in] streamInd The stream index to perform the operation on.
      * @return true if $\|\mathbf{v}\|^2 < \text{tolerance}$, false otherwise.
      */
-    bool isSmall(const Vec<Float>& v, const size_t streamInd){
-        Singleton<Float> vSquared = Singleton<Float>::create();
+    bool isSmall(const Vec<T>& v, const size_t streamInd){
+        Singleton<T> vSquared = Singleton<T>::create();
             v.mult(v, &vSquared, handle + streamInd);
-            Float vSq = vSquared.get(handle[streamInd].stream);
+            T vSq = vSquared.get(handle[streamInd].stream);
             synch(streamInd);
             return vSq < tolerance;
     }
@@ -96,7 +96,7 @@ private:
      * @param[in] src The source vector.
      * @param[in] streamInd The stream index to perform the copy on.
      */
-    void set(Vec<Float>& dst, const Vec<Float>& src, const size_t streamInd){
+    void set(Vec<T>& dst, const Vec<T>& src, const size_t streamInd){
         dst.set(src, handle[streamInd].stream);
     }
     /**
@@ -107,9 +107,9 @@ private:
      * @param[in] denom The denominator Singleton.
      * @param[in] streamInd The stream index to perform the operation on.
      */
-    void setQuotient(Singleton<Float>& dst, const Singleton<Float>& numerator, const Singleton<Float>& denom, const size_t streamInd){
+    void setQuotient(Singleton<T>& dst, const Singleton<T>& numerator, const Singleton<T>& denom, const size_t streamInd){
         dst.set(denom, handle[streamInd].stream);
-        dst.EBEPow(numerator, Singleton<Float>::MINUS_ONE, handle[streamInd].stream);
+        dst.EBEPow(numerator, Singleton<T>::MINUS_ONE, handle[streamInd].stream);
     }
 
 public:
@@ -125,19 +125,19 @@ public:
      * @param[in] preAllocated Optional pointer to a pre-allocated matrix for internal vectors.
      */
     explicit BiCGSTAB(
-        const Vec<Float>& b,
-        Float tolerance = std::is_same_v<Float,double> ? Float(1e-12) : Float(1e-6),
+        const Vec<T>& b,
+        T tolerance = std::is_same_v<T,double> ? T(1e-12) : T(1e-6),
         size_t maxIterations = 0,
-        Mat<Float>* preAllocated = nullptr
+        Mat<T>* preAllocated = nullptr
     ):tolerance(tolerance),
       b(b),
-      paM(preAllocated ? *preAllocated : Mat<Float>::create(b.size(), 7)),
+      paM(preAllocated ? *preAllocated : Mat<T>::create(b.size(), 7)),
       r(paM.col(0)), r_tilde(paM.col(1)), p(paM.col(2)), v(paM.col(3)), s(paM.col(4)), t(paM.col(5)), h(paM.col(6)),
-      paV(Vec<Float>::create(6, handle[0].stream)),
+      paV(Vec<T>::create(6, handle[0].stream)),
       rho(paV.get(0)), alpha(paV.get(1)), omega(paV.get(2)), rho_new(paV.get(3)), beta(paV.get(4)), temp(paV.get(5)),
       maxIterations(maxIterations <= 0 ? 5*b.size() : maxIterations)
     {
-        static_assert(std::is_same_v<Float,float> || std::is_same_v<Float,double>,
+        static_assert(std::is_same_v<T,float> || std::is_same_v<T,double>,
                 "Algorithms.cu unpreconditionedBiCGSTAB: T must be float or double");
         cudaDeviceSynchronize();
         for (const auto& h : handle)
@@ -145,28 +145,19 @@ public:
     }
 
     /**
-     * @brief Fills preaolcated memory of length size with random values.  If no p
-     * @param x Pre-allocated memory that will be filled with random values.  Pass nullptr to have this method allocate
-     * memory for you.
-     * @return A random initial guess for x.
-     */
-    Vec<Float> initialGuess(Vec<Float>* x) {
-        Vec<Float> result = x ? *x : Vec<Float>::create(b.size(), handle[0].stream);
-        result.fillRandom(&handle[0]); // set x randomly
-        record(0, xReady);
-        return result;
-    }
-
-    /**
      * @brief Initalizes variables r_tilde, r, b, p, and rho
-     * @param A The left hand side of the equation Ax = b
-     * @param result The x of the equation Ax = b
+     * @param A The left-hand side of the equation Ax = b
+     * @param x The x of the equation Ax = b
      */
-    void preamable(const BandedMat<Float>& A, Vec<Float>& result) {
+    void preamable(const BandedMat<T>& A, Vec<T>& x) {
+
+        x.fillRandom(&handle[0]); // set x randomly
+        record(0, xReady);
+
         r_tilde.fillRandom(&handle[0]); // set r_tilde randomly
 
         set(r, b, 0);
-        A.mult(result, &r, handle, &Singleton<Float>::MINUS_ONE, &Singleton<Float>::ONE); // r = b - A * x
+        A.mult(x, &r, handle, &Singleton<T>::MINUS_ONE, &Singleton<T>::ONE); // r = b - A * x
 
         set(p, r, 0);
 
@@ -188,11 +179,9 @@ public:
      * initial guess is generated and returned as the result.
      * @return The final solution vector $\mathbf{x}$.
      */
-    Vec<Float> solveUnpreconditionedBiCGSTAB(const BandedMat<Float>& A, Vec<Float>* x = nullptr){
+    Vec<T> solveUnpreconditionedBiCGSTAB(const BandedMat<T>& A, Vec<T>& x){
 
-        Vec<Float> result = initialGuess(x);
-
-        preamable(A, result);
+        preamable(A, x);
 
         double totalTime = 0;
         size_t numIterations = 0;
@@ -200,27 +189,27 @@ public:
 
             TimePoint start = std::chrono::steady_clock::now();
 
-            A.mult(p, &v, handle, &Singleton<Float>::ONE, &Singleton<Float>::ZERO); // v = A * p
+            A.mult(p, &v, handle, &Singleton<T>::ONE, &Singleton<T>::ZERO); // v = A * p
 
             r_tilde.mult(v, &alpha, handle);
-            alpha.EBEPow(rho, Singleton<Float>::MINUS_ONE, handle[0].stream); //alpha = rho / (r_tilde * v)
+            alpha.EBEPow(rho, Singleton<T>::MINUS_ONE, handle[0].stream); //alpha = rho / (r_tilde * v)
             record(0, {alphaReady});
 
             synch(1);
             omegaReady.renew();
             wait(1, {alphaReady});
 
-            set(h, result, 1);
+            set(h, x, 1);
             synch(1);
             renew({alphaReady, xReady});
             h.add(p, &alpha, handle + 1); // h = x + alpha * p
 
             temp.set(alpha, handle[0].stream);
-            temp.mult(Singleton<Float>::MINUS_ONE, handle);
-            s.setSum(r, v, &Singleton<Float>::ONE, &temp, handle); // s = r - alpha * v
+            temp.mult(Singleton<T>::MINUS_ONE, handle);
+            s.setSum(r, v, &Singleton<T>::ONE, &temp, handle); // s = r - alpha * v
             record(0, {sReady});
 
-            set(result, h, 1);
+            set(x, h, 1);
 
             wait(2, {sReady, hReady});
             if(isSmall(s, 2)) break;
@@ -232,19 +221,19 @@ public:
             record(3, {prodTS});
             t.mult(t, &omega, handle);
             wait(0, {prodTS});
-            omega.EBEPow(temp, Singleton<Float>::MINUS_ONE, handle[0].stream); //omega = t * s / t * t;
+            omega.EBEPow(temp, Singleton<T>::MINUS_ONE, handle[0].stream); //omega = t * s / t * t;
 
             record(0, {omegaReady});
 
             wait(1, {omegaReady});
-            result.add(s, &omega, handle + 1); // x = h + omega * s
+            x.add(s, &omega, handle + 1); // x = h + omega * s
             record(1, {xReady});
 
             synch(0);
             prodTS.renew();
             temp.set(omega, handle[0].stream);
-            temp.mult(Singleton<Float>::MINUS_ONE, handle);
-            r.setSum(s, t, &Singleton<Float>::ONE, &temp, handle); // r = s - omega * t
+            temp.mult(Singleton<T>::MINUS_ONE, handle);
+            r.setSum(s, t, &Singleton<T>::ONE, &temp, handle); // r = s - omega * t
             record(0, {rReady});
 
             wait(2, {xReady, rReady});
@@ -256,12 +245,12 @@ public:
 
             setQuotient(temp, rho_new, rho, 0);
             setQuotient(beta, alpha, omega, 0);
-            beta.EBEPow(temp, Singleton<Float>::ONE, handle[0].stream); // beta = (rho_new / rho) * (alpha / omega);
+            beta.EBEPow(temp, Singleton<T>::ONE, handle[0].stream); // beta = (rho_new / rho) * (alpha / omega);
 
             set(rho, rho_new, 0);
 
             p.mult(beta, handle);
-            p.add(r, &Singleton<Float>::ONE, handle); // p = r + beta * p
+            p.add(r, &Singleton<T>::ONE, handle); // p = r + beta * p
             temp.set(beta, handle[0].stream);
             temp.mult(omega, handle);
             p.sub(v, &temp, handle); // p = p - beta * omega * v
@@ -274,7 +263,7 @@ public:
         std::cout << "algorithms.cu unpreconditionedBiCGSTAB Number of iterations: " << numIterations << std::endl;
         std::cout << "algorithms.cu unpreconditionedBiCGSTAB Average time per iteration in milliseconds: " << totalTime / numIterations << std::endl;
         
-        return result;
+        return x;
     }
 
 };

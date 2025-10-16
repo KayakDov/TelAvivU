@@ -8,7 +8,7 @@
 
 
 template<typename T>
-Vec<T>::Vec(const size_t cols, const std::shared_ptr<T> ptr, const size_t stride): GpuArray<T>(static_cast<size_t>(1), cols, stride, ptr) {
+Vec<T>::Vec(const size_t size, const std::shared_ptr<T> ptr, const size_t stride): GpuArray<T>(static_cast<size_t>(1), size, stride, ptr) {
 }
 
 template <typename T>
@@ -239,20 +239,20 @@ void Vec<T>::mult(const Singleton<T>& alpha, Handle* handle) {
 }
 
 extern "C" __global__ void setup_kernel_float(curandState* state, unsigned long long seed, size_t size, size_t stride) {
-    if (unsigned int id = blockIdx.x * blockDim.x + threadIdx.x; id < size) curand_init(seed, id, 0, &state[id * stride]);
+    if (unsigned int id = blockIdx.x * blockDim.x + threadIdx.x; id < size) curand_init(seed, id, 0, &state[id]);
 }
 
 extern "C" __global__ void setup_kernel_double(curandState* state, unsigned long long seed, size_t size, size_t stride) {
-    if (unsigned int id = blockIdx.x * blockDim.x + threadIdx.x; id < size) curand_init(seed, id, 0, &state[id * stride]);
+    if (unsigned int id = blockIdx.x * blockDim.x + threadIdx.x; id < size) curand_init(seed, id, 0, &state[id]);
 
 }
 
 __global__ void fillRandomKernel_float(float* array, size_t size, size_t stride, curandState* state) {
-    if (unsigned int id = blockIdx.x * blockDim.x + threadIdx.x; id < size) array[id * stride] = curand_uniform(&state[id * stride]);
+    if (const size_t id = blockIdx.x * blockDim.x + threadIdx.x; id < size) array[id * stride] = curand_uniform(&state[id]);
 }
 
 __global__ void fillRandomKernel_double(double* array, size_t size, size_t stride, curandState* state) {
-    if (unsigned int id = blockIdx.x * blockDim.x + threadIdx.x; id < size) array[id * stride] = curand_uniform_double(&state[id * stride]);
+    if (unsigned int id = blockIdx.x * blockDim.x + threadIdx.x; id < size) array[id * stride] = curand_uniform_double(&state[id]);
 }
 
 template <typename T>

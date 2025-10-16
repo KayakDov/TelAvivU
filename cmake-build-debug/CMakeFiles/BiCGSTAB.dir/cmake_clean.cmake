@@ -7,6 +7,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/BiCGSTAB.dir/src/BiCGSTAB.cu.o.d"
   "CMakeFiles/BiCGSTAB.dir/src/Event.cu.o"
   "CMakeFiles/BiCGSTAB.dir/src/Event.cu.o.d"
+  "CMakeFiles/BiCGSTAB.dir/src/deviceArrays/DeviceMemory.cpp.o"
+  "CMakeFiles/BiCGSTAB.dir/src/deviceArrays/DeviceMemory.cpp.o.d"
   "CMakeFiles/BiCGSTAB.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o"
   "CMakeFiles/BiCGSTAB.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o.d"
   "CMakeFiles/BiCGSTAB.dir/src/deviceArrays/defFiles/Mat.cu.o"

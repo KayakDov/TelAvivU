@@ -82,12 +82,7 @@ void GpuArray<T>::mult(
 }
 
 // --- Helper Functions and Macros Definitions ---
-void checkCudaErrors(cudaError_t err, const char* file, int line) {
-    if (err != cudaSuccess) {
-        std::cerr << "CUDA Error: " << cudaGetErrorString(err) << " at " << file << ":" << line << std::endl;
-        exit(EXIT_FAILURE);
-    }
-}
+
 
 template <typename T>
 Mat<T>* GpuArray<T>::_get_or_create_target(size_t rows, size_t cols, Mat<T>* result, std::unique_ptr<Mat<T>>& out_ptr_unique) const {

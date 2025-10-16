@@ -1,5 +1,6 @@
 #include "../headers/handle.h"
 
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 
@@ -54,4 +55,11 @@ Handle::~Handle() {
 
 void Handle::synch() const {
     CHECK_CUDA_ERROR(cudaStreamSynchronize(this->stream));
+}
+
+void checkCudaErrors(cudaError_t err, const char* file, int line) {
+    if (err != cudaSuccess) {
+        std::cerr << "CUDA Error: " << cudaGetErrorString(err) << " at " << file << ":" << line << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }

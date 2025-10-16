@@ -379,7 +379,12 @@ Mat<T> Mat<T>::create(size_t rows, size_t cols){
     T* rawPtr = nullptr;
     size_t pitch = 0;
 
+    std::cout << DeviceMemory() << std::endl;
+    std::cout << "allocating " << cols * 256 * sizeof(T)/BYTES_PER_GB << " GB." << std::endl;
+
     CHECK_CUDA_ERROR(cudaMallocPitch(&rawPtr, &pitch, rows * sizeof(T), cols));//Note: there does not seem to be an asynchronos version of this method.
+
+    std::cout << "Mat::create memory allocated." << std::endl;
 
     return Mat<T>(rows, cols, pitch / sizeof(T), std::shared_ptr<T>(rawPtr, cudaFreeDeleter));;
 }

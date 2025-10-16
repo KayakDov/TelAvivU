@@ -92,7 +92,7 @@ template <typename T>
 void solveAndWriteOutput(BandedMat<T>& A, Vec<T>& b, const string& x_dest_file, const bool isText, size_t maxIter, double epsilon, Handle& handle) {
     Vec<T> x = Vec<T>::create(b.size(), handle.stream);
     BiCGSTAB setup(b, static_cast<T>(epsilon), maxIter);
-    setup.solveUnpreconditionedBiCGSTAB(A, &x);
+    setup.solveUnpreconditionedBiCGSTAB(A, x);
 
     ofstream x_fs(x_dest_file);
     if (!x_fs.is_open()) throw runtime_error("Could not open destination file: " + x_dest_file);
@@ -207,32 +207,17 @@ int useCommandLineArgs(int argc, char const* argv[]){
 
 int main(int argc, char const* argv[]) {
 
-    Handle hand;
-    int32_t hostInds[] = {-1};
-    auto inds = Vec<int32_t>::create(1, hand.stream);
+    size_t size = 20;
 
-    inds.set(hostInds, hand.stream);
+    Mat<double> mat = Mat<double>::create(size, 2 * size);
+    for (size_t i = 0; i < mat._cols; i++) {
+        Handle hand;
+        mat.col(i).fill(i, hand.stream);
+    }
 
-    auto dense = SquareMat<double>::create(4);
+    cudaDeviceSynchronize();
 
-    const double hostData[] = {
-        0, 1, 0, 0,
-        0, 0, 2, 0,
-        0, 0, 0, 3,
-        0, 0, 0, 0
-    };
-
-    dense.set(hostData, hand.stream);
-
-    BandedMat<double> banded = BandedMat<double>::create(1, 4, inds);
-
-    banded.setFromDense(dense, &hand);
-
-    banded.getDense(dense, &hand);
-
-    std::cout << "mat = \n" << dense << std::endl;
-    std::cout << "banded = \n" << banded << std::endl;
-
+    mat.get(std::cout, true, false, nullptr);
 
     // return useCommandLineArgs(argc, argv);
 

@@ -38,11 +38,11 @@ protected:
     /**
      * @brief Protected constructor for internal use or friend classes.
      * 
-     * @param cols Length of the vector.
+     * @param size Length of the vector.
      * @param _ptr Shared pointer to underlying GPU memory.
      * @param stride Stride for elements (for views/subvectors).
      */
-    Vec(size_t cols, std::shared_ptr<T> _ptr, size_t stride);
+    Vec(size_t size, std::shared_ptr<T> _ptr, size_t stride);
 
 public:
     /**
