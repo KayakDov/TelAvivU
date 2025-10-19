@@ -35,7 +35,7 @@ void readAndPrint(GpuArray<T>& array, const string& fileName, const bool isText,
     if(!reader.is_open())
         throw runtime_error("Could not open " + fileName);
 
-    array.set(reader, isText, !isText, hand.stream);
+    array.set(reader, isText, true, hand.stream);
     reader.close();
 
     cout << "Read matrix "<< fileName <<" from file." << endl;
@@ -122,7 +122,7 @@ void solveSystem(int argc, char const* argv[], bool isText, size_t maxIter, doub
 
     Vec<T> b = Vec<T>::create(width, hand.stream);
     Vec<int> diags = Vec<int>::create(numDiags, hand.stream);
-    BandedMat<T> A = BandedMat<T>::create(numDiags, width, diags);
+    BandedMat<T> A = BandedMat<T>::create(width, numDiags, diags);
 
     readAndPrint(diags, diags_file, isText, hand);
     readAndPrint(A, a_file, isText, hand);
@@ -203,22 +203,42 @@ int useCommandLineArgs(int argc, char const* argv[]){
 
     return 0;
 }
-
+//TODO: change this class so that it reflects the diagonal -> column nature of BandedMat.
 
 int main(int argc, char const* argv[]) {
 
-    size_t size = 20;
-
-    Mat<double> mat = Mat<double>::create(size, 2 * size);
-    for (size_t i = 0; i < mat._cols; i++) {
-        Handle hand;
-        mat.col(i).fill(i, hand.stream);
-    }
-
-    cudaDeviceSynchronize();
-
-    mat.get(std::cout, true, false, nullptr);
-
-    // return useCommandLineArgs(argc, argv);
+    // Handle hand;
+    //
+    // size_t heightWidth = 4;
+    // size_t numDiags = 2;
+    //
+    // auto indices = Vec<int>::create(numDiags, hand.stream);
+    // indices.get(0).set(-1, hand.stream);
+    // indices.get(1).set(1, hand.stream);
+    //
+    // auto banded = BandedMat<double>::create(heightWidth, numDiags, indices);
+    // banded.Mat<double>::col(0).fill(1.0, hand.stream);
+    // banded.Mat<double>::col(1).fill(2, hand.stream);
+    //
+    // auto x = Vec<double>::create(heightWidth, hand.stream);
+    // double xCpu[] = {1 , 2, 3, 4};
+    // x.set(xCpu, hand.stream);
+    //
+    // auto y = Vec<double>::create(heightWidth, hand.stream);
+    //
+    // banded.mult(x, &y, &hand, nullptr, nullptr, false);
+    //
+    // auto dense = SquareMat<double>::create(heightWidth);
+    // banded.getDense(dense, &hand);
+    //
+    // std::cout << "banded:\n" << std::endl;
+    // dense.get(std::cout, true, false, hand.stream);
+    //
+    // std::cout << "x:\n" << std::endl;
+    // x.get(std::cout, true, false, hand.stream);
+    //
+    // std::cout << "y:\n" << std::endl;
+    // y.get(std::cout, true, false, hand.stream);
+    return useCommandLineArgs(argc, argv);
 
 }

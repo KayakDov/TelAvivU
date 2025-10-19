@@ -149,7 +149,7 @@ void Vec<T>::get(GpuArray<T>& dst, cudaStream_t stream) const {
 }
 
 template <typename T>
-void Vec<T>::set(std::istream& input_stream, bool isText, bool, cudaStream_t stream) {
+void Vec<T>::set(std::istream& input_stream, bool isText, bool isColMjr, cudaStream_t stream) {
     StreamSet<T> helper(this->_rows, this->_cols, input_stream);
     while (helper.hasNext()) {
         helper.readChunk(isText);

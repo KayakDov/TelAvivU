@@ -149,7 +149,7 @@ template <typename T>
 class Set0 {
 private:
     T* __restrict__ A;
-    const size_t ldA, idGrid, widthA, colXLda;
+    const size_t ldA, idGrid, heightA;
 public:
     /**
      * @brief Constructs the Set0 functor.
@@ -161,7 +161,7 @@ public:
      * @param[in] widthA The width (number of columns) of A, equal to gridSize.
      */
     __device__ Set0(T* __restrict__ A, const size_t ldA, const size_t idGrid, const size_t widthA) :
-        A(A), ldA(ldA), idGrid(idGrid), widthA(widthA), colXLda(idGrid * ldA) {}
+        A(A), ldA(ldA), idGrid(idGrid), heightA(widthA) {}
 
     /**
      * @brief Sets the corresponding off-diagonal entry to 0 or NAN based on boundary condition logic.
@@ -171,12 +171,12 @@ public:
      *
      * @param[in] diagIndex The diagonal index (offset) corresponding to the neighbor being checked.
      */
-    __device__ void operator()(const int32_t diagIndex, const size_t rowIndex) {
+    __device__ void operator()(const int32_t diagIndex, const size_t colInd) {
 
-        const size_t col = ((static_cast<int32_t>(idGrid) + min(diagIndex , 0)) % static_cast<int32_t>(widthA) + static_cast<int32_t>(widthA)) % widthA;
-        const size_t indexA = col * ldA + rowIndex;
+        const size_t rowInd = ((static_cast<int32_t>(idGrid) + min(diagIndex , 0)) % static_cast<int32_t>(heightA) + static_cast<int32_t>(heightA)) % heightA;
+        const size_t indexA = colInd * ldA + rowInd;
 
-        if (col < widthA - abs(diagIndex)) A[indexA] = static_cast<T>(0);
+        if (rowInd < heightA - abs(diagIndex)) A[indexA] = static_cast<T>(0);
         else A[indexA] = NAN;
     }
 };
@@ -198,22 +198,22 @@ struct Adjacency {
  * @tparam T Floating-point type (float or double).
  * @param[out] A Pointer to the banded (or dense) matrix storage on the device.
  * @param[in] ldA The leading dimension of the matrix A.
- * @param[in] widthA The width (number of columns) of A, equal to gridSize.
+ * @param[in] heightA The width (number of columns) of A, equal to gridSize.
  * @param[in] gHeight Interior grid height.
  * @param[in] gWidth Interior grid width.
  * @param[in] gDepth Interior grid depth.
  * @param[in] mapDiagIndextoARow A device array mapping the diagonal index offset to the row index within the banded storage format of A.
  */
 template <typename T>
-__global__ void setAKernel(T* __restrict__ A, const size_t ldA, const size_t widthA,
+__global__ void setAKernel(T* __restrict__ A, const size_t ldA, const size_t heightA,
     const size_t gHeight, const size_t gWidth, const size_t gDepth,
-    const size_t hereRow,
-    const size_t upRow,
-    const size_t downRow,
-    const size_t leftRow,
-    const size_t rightRow,
-    const size_t frontRow,
-    const size_t backRow
+    const size_t hereCol,
+    const size_t upCol,
+    const size_t downCol,
+    const size_t leftCol,
+    const size_t rightCol,
+    const size_t frontCol,
+    const size_t backCol
     ) {
     const size_t gCol = blockIdx.x * blockDim.x + threadIdx.x;
     const size_t gRow = blockIdx.y * blockDim.y + threadIdx.y;
@@ -223,15 +223,15 @@ __global__ void setAKernel(T* __restrict__ A, const size_t ldA, const size_t wid
 
     const size_t idGrid = (gLayer * gWidth + gCol) * gHeight + gRow;
 
-    A[idGrid*ldA + hereRow] = -6;
-    Set0<T> set0(A, ldA, idGrid, widthA);
+    A[hereCol * ldA + idGrid] = -6;
+    Set0<T> set0(A, ldA, idGrid, heightA);
 
-    if (gRow == 0) set0(-1, upRow);
-    else if (gRow == gHeight - 1) set0(1, downRow);
-    if (gCol == 0) set0(-static_cast<int32_t>(gHeight), leftRow);
-    else if (gCol == gWidth - 1) set0(gHeight, rightRow);
-    if (gLayer == 0) set0(-static_cast<int32_t>(gWidth * gHeight), frontRow);
-    else if (gLayer == gDepth - 1) set0(gWidth * gHeight, backRow);
+    if (gRow == 0) set0(-1, upCol);
+    else if (gRow == gHeight - 1) set0(1, downCol);
+    if (gCol == 0) set0(-static_cast<int32_t>(gHeight), leftCol);
+    else if (gCol == gWidth - 1) set0(gHeight, rightCol);
+    if (gLayer == 0) set0(-static_cast<int32_t>(gWidth * gHeight), frontCol);
+    else if (gLayer == gDepth - 1) set0(gWidth * gHeight, backCol);
 
 }
 
@@ -298,16 +298,17 @@ private:
      */
     void setA(Handle& handle, Mat<T>& A) {
 
-        A.template Mat<T>::subMat(1, 0, A._rows - 1, A._cols).fill(1, handle.stream);
+        A.template Mat<T>::subMat(0, 1, A._rows, A._cols - 1).fill(1, handle.stream);
 
         dim3 block(8, 8, 8);
         dim3 grid = makeGridDim( _cols, _rows, _layers, block);
 
         setAKernel<T><<<grid, block, 0, handle.stream>>>(
-            A.data(), A._ld, A._cols,
+            A.data(), A._ld, A._rows,
             _rows, _cols, _layers,
             here.row, up.row, down.row, left.row, right.row, front.row, back.row
         );
+
         CHECK_CUDA_ERROR(cudaGetLastError());
 
     }
@@ -371,13 +372,13 @@ public:
         BandedMat<T> ABanded(A, mapARowToDiagonalInd);
 
         setA(hand, ABanded);
+
         setB(hand.stream);
 
         BiCGSTAB<T> solver(_b);
 
         solver.solveUnpreconditionedBiCGSTAB(ABanded, x);
     }
-
 };
 
 /**
@@ -393,7 +394,7 @@ public:
 int main(int argc, char *argv[]) {
     Handle hand;
 
-    constexpr  size_t dimLength = 250;//225 works
+    constexpr  size_t dimLength = 2;//225 works
     constexpr size_t height = dimLength, width = dimLength, depth = dimLength, size = height * width * depth;
     constexpr double frontFaceVal = 1;
 
@@ -410,12 +411,6 @@ int main(int argc, char *argv[]) {
         left = leftRight.subMat(0, 0, height, depth),
         right = leftRight.subMat(0, depth, height, depth);
 
-    auto longVecs = Mat<double>::create(3 + numDiagonals, size);
-    auto b = longVecs.row(0);
-    b.fill(0, hand.stream);
-    auto x = longVecs.row(1);
-    auto A = longVecs.subMat(2, 0, numDiagonals, size);
-
     front.fill(frontFaceVal, hand.stream);
     back.fill(0, hand.stream);
 
@@ -427,10 +422,16 @@ int main(int argc, char *argv[]) {
         bottom.row(layerInd).fill(val, hand.stream);
     }
 
+    auto longVecs = Mat<double>::create(size, 3 + numDiagonals);
+    auto b = longVecs.col(0);
+    b.fill(0, hand.stream);
+    auto x = longVecs.col(1);
+    auto A = longVecs.subMat(0, 2, size, numDiagonals);
+
     PoissonFDM<double> solver(frontBack, leftRight, topBottom, b);
 
     solver.solve(x, A, hand);
-    // x.get(std::cout, true, false, hand.stream);
+    x.get(std::cout, true, false, hand.stream);
 
     return 0;
 }

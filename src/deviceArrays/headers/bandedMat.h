@@ -47,13 +47,13 @@ public:
     /**
     * @brief Allocates a new banded matrix on device memory.
     *
+    * @param rows          Dimension of the original square matrix (number of columns).
     * @param numDiagonals  Number of diagonals to store (height of the banded matrix).
-    * @param cols          Dimension of the original square matrix (number of columns).
     * @param indices       Vector of size @p numDiagonals specifying diagonal offsets.
     *
     * @return A newly allocated @c BandedMat with zero-initialized data.
     */
-    static BandedMat create(size_t numDiagonals, size_t cols, const Vec<int32_t> &indices);
+    static BandedMat create(size_t rows, size_t numDiagonals, const Vec<int32_t> &indices);
 
     /**
     * @brief Extracts diagonals from a dense square matrix and writes them

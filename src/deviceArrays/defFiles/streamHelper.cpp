@@ -44,19 +44,18 @@ StreamSet<T>::StreamSet(size_t rows, size_t cols, std::istream& input_stream)
     : StreamHelper<T>(rows, cols), _input_stream(input_stream) {}
 
 template <typename T>
-void StreamSet<T>::readChunk(bool isRowMajor) {
+void StreamSet<T>::readChunk(bool isText) {
     
     size_t num_elements = this->getChunkWidth() * this->_rows;
     size_t current_chunk_bytes = num_elements * sizeof(T);
     
-    if(isRowMajor) {
+    if(isText) {
         for (size_t i = 0; i < num_elements; ++i) 
             if (!(this->_input_stream >> this->_hostBuffer[i]))
                 throw std::runtime_error("Failed to read enough elements. Failed at index " + std::to_string(i));
     } else this->_input_stream.read(reinterpret_cast<char*>(this->_hostBuffer.data()), current_chunk_bytes);
 
     if (!this->_input_stream) throw std::runtime_error("Stream read error or premature end of stream.");
-    
 }
 
 // --- GetToFile Definitions ---

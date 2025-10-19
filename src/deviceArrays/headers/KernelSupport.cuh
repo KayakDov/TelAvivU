@@ -30,10 +30,10 @@ public:
      * Computes the corresponding row and column in the dense square matrix.
      * @note This function is intended for device code (__device__).
      */
-    __device__ DenseInd(size_t bandedRow, size_t bandedCol, const int32_t* indices):
-        d(indices[bandedRow]),
-        row(static_cast<int32_t>(d > 0 ? bandedCol : bandedCol - d)),
-        col(static_cast<int32_t>(d > 0 ? bandedCol + d : bandedCol))
+    __device__ DenseInd(const size_t bandedRow, const size_t bandedCol, const int32_t* indices):
+        d(indices[bandedCol]),
+        row(static_cast<int32_t>(d > 0 ? bandedRow : bandedRow - d)),
+        col(static_cast<int32_t>(d > 0 ? bandedRow + d : bandedRow))
     {}
 
     /**

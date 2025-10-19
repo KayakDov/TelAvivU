@@ -239,8 +239,19 @@ CMakeFiles/BiCGSTAB.dir/src/deviceArrays/defFiles/streamHelper.cpp.o: \
  /usr/local/cuda-12.9/targets/x86_64-linux/include/cusolverDn.h \
  /usr/local/cuda-12.9/targets/x86_64-linux/include/cublas_v2.h \
  /usr/local/cuda-12.9/targets/x86_64-linux/include/cusolver_common.h \
- /usr/include/inttypes.h /usr/include/c++/13/algorithm \
- /usr/include/c++/13/bits/stl_algo.h \
+ /usr/include/inttypes.h /usr/include/c++/13/iostream \
+ /usr/include/c++/13/iomanip /usr/include/c++/13/locale \
+ /usr/include/c++/13/bits/locale_facets_nonio.h /usr/include/c++/13/ctime \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/13/bits/locale_facets_nonio.tcc \
+ /usr/include/c++/13/bits/locale_conv.h \
+ /usr/include/c++/13/bits/quoted_string.h /usr/include/c++/13/sstream \
+ /usr/include/c++/13/bits/sstream.tcc \
+ /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/DeviceMemory.h \
+ /usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_runtime_api.h \
+ /usr/local/cuda-12.9/targets/x86_64-linux/include/driver_types.h \
+ /usr/include/c++/13/algorithm /usr/include/c++/13/bits/stl_algo.h \
  /usr/include/c++/13/bits/algorithmfwd.h \
  /usr/include/c++/13/bits/stl_heap.h \
  /usr/include/c++/13/bits/uniform_int_dist.h \

@@ -129,13 +129,12 @@ void Mat<T>::get(GpuArray<T>& dst, cudaStream_t cuStream) const {
  * Note, if set from text will read data as row major and is much slower.  If set from binary data, will read as column major and is fast.
  */
 template <typename T>
-void Mat<T>::set(std::istream& input_stream, bool isText, bool readColMajor, cudaStream_t cuStream) {
+void Mat<T>::set(std::istream& input_stream, bool isText, bool isColMjr, cudaStream_t cuStream) {
 
     Handle hand(cuStream);
-    if(!readColMajor){
+    if(!isColMjr){
         Mat<T> temp = Mat<T>::create(this->_cols, this->_rows);
-        temp.set(input_stream, isText, true, cuStream);
-
+        temp.set(input_stream, isText, !isColMjr, cuStream);
         temp.transpose(*this, &hand);
         return;
     }
@@ -144,7 +143,7 @@ void Mat<T>::set(std::istream& input_stream, bool isText, bool readColMajor, cud
 
     while (helper.hasNext()) {
         helper.readChunk(isText);//This will either be a set of columns or a set of rows.
-        Mat<T> subMat = this->subMat(
+        Mat<T> subMat = this->Mat<T>::subMat(
             0,
             helper.getColsProcessed(),
             this->_rows,
@@ -379,12 +378,9 @@ Mat<T> Mat<T>::create(size_t rows, size_t cols){
     T* rawPtr = nullptr;
     size_t pitch = 0;
 
-    std::cout << DeviceMemory() << std::endl;
-    std::cout << "allocating " << cols * 256 * sizeof(T)/BYTES_PER_GB << " GB." << std::endl;
+    // std::cout << "Mat.cu::create " << DeviceMemory() << std::endl;
 
     CHECK_CUDA_ERROR(cudaMallocPitch(&rawPtr, &pitch, rows * sizeof(T), cols));//Note: there does not seem to be an asynchronos version of this method.
-
-    std::cout << "Mat::create memory allocated." << std::endl;
 
     return Mat<T>(rows, cols, pitch / sizeof(T), std::shared_ptr<T>(rawPtr, cudaFreeDeleter));;
 }

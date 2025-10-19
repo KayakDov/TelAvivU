@@ -57,7 +57,7 @@ public:
     /**
      * @copydoc GpuArray::set
      */
-    void set(std::istream& input_stream, bool isText, bool readColMjr, cudaStream_t stream) override;
+    void set(std::istream& input_stream, bool isText, bool isColMjr, cudaStream_t stream) override;
     /**
      * @copydoc GpuArray::get
      */

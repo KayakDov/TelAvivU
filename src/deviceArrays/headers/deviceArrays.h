@@ -334,7 +334,7 @@ public:
      *
      * @param input_stream The input stream from which the data is read.
      * @param isText A boolean indicating whether the input data is in text format (true) or binary format (false).
-     * @param isColMjr A boolean indicating whether the data is in column-major (true) or row-major (false) format.
+     * @param isColMjr
      * @param stream The CUDA stream used for data transfer and operations, ensuring asynchronous execution.
      */
     virtual void set(std::istream& input_stream, bool isText, bool isColMjr, cudaStream_t stream) = 0;

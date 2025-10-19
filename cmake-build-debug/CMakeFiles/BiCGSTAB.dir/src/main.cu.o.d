@@ -324,6 +324,20 @@ CMakeFiles/BiCGSTAB.dir/src/main.cu.o : /home/dov/Documents/LaplaceFiniteDiffere
     /usr/local/cuda-12.9/targets/x86_64-linux/include/cusolverDn.h \
     /usr/local/cuda-12.9/targets/x86_64-linux/include/cusolver_common.h \
     /usr/include/inttypes.h \
+    /usr/include/c++/13/iostream \
+    /usr/include/c++/13/iomanip \
+    /usr/include/c++/13/locale \
+    /usr/include/c++/13/bits/locale_facets_nonio.h \
+    /usr/include/c++/13/ctime \
+    /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h \
+    /usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h \
+    /usr/include/libintl.h \
+    /usr/include/c++/13/bits/locale_facets_nonio.tcc \
+    /usr/include/c++/13/bits/locale_conv.h \
+    /usr/include/c++/13/bits/quoted_string.h \
+    /usr/include/c++/13/sstream \
+    /usr/include/c++/13/bits/sstream.tcc \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/DeviceMemory.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Tensor.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/squareMat.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/bandedMat.h \
@@ -331,12 +345,10 @@ CMakeFiles/BiCGSTAB.dir/src/main.cu.o : /home/dov/Documents/LaplaceFiniteDiffere
     /home/dov/Documents/LaplaceFiniteDifference/src/BiCGSTAB.cu \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/singleton.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/Event.h \
-    /usr/include/c++/13/iostream \
     /usr/include/c++/13/chrono \
     /usr/include/c++/13/bits/chrono.h \
     /usr/include/c++/13/ratio \
     /usr/include/c++/13/cstdint \
-    /usr/include/c++/13/ctime \
     /usr/include/c++/13/bits/parse_numbers.h \
     /usr/include/c++/13/cstring \
     /usr/include/c++/13/functional \
@@ -353,15 +365,4 @@ CMakeFiles/BiCGSTAB.dir/src/main.cu.o : /home/dov/Documents/LaplaceFiniteDiffere
     /usr/include/c++/13/bits/stl_algo.h \
     /usr/include/c++/13/bits/algorithmfwd.h \
     /usr/include/c++/13/bits/stl_heap.h \
-    /usr/include/c++/13/bits/uniform_int_dist.h \
-    /usr/include/c++/13/iomanip \
-    /usr/include/c++/13/locale \
-    /usr/include/c++/13/bits/locale_facets_nonio.h \
-    /usr/include/x86_64-linux-gnu/c++/13/bits/time_members.h \
-    /usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h \
-    /usr/include/libintl.h \
-    /usr/include/c++/13/bits/locale_facets_nonio.tcc \
-    /usr/include/c++/13/bits/locale_conv.h \
-    /usr/include/c++/13/bits/quoted_string.h \
-    /usr/include/c++/13/sstream \
-    /usr/include/c++/13/bits/sstream.tcc
+    /usr/include/c++/13/bits/uniform_int_dist.h
