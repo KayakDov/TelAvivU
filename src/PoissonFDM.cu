@@ -128,11 +128,11 @@ __global__ void setRHSKernel3D(T* __restrict__ b, const size_t bStride,
 
     b[bStride * (row + (col + layer * gWidth) * gHeight)] -=
           (row == 0            ? topBottom[col*tbLd + (gDepth - 1 - layer)]                : 0)
-        + (row == gHeight - 1  ? topBottom[col*tbLd + (gDepth - 1 - layer) + gWidth*tbLd]  : 0)
+        + (row == gHeight - 1  ? topBottom[col*tbLd + (gDepth - 1 - layer) + gDepth]  : 0)
         + (col == 0            ? leftRight[(gDepth - 1 - layer)*lrLd + row]                : 0)
-        + (col == gWidth - 1   ? leftRight[(gDepth -1 - layer)*lrLd + row + gDepth*lrLd]   : 0)
+        + (col == gWidth - 1   ? leftRight[(gDepth -1 - layer)*lrLd + row + gHeight]   : 0)
         + (layer == 0          ? frontBack[col*fbLd + row]                                 : 0)
-        + (layer == gDepth - 1 ? frontBack[col*fbLd + row + gWidth * tbLd]                 : 0);
+        + (layer == gDepth - 1 ? frontBack[col*fbLd + row + gHeight]                 : 0);
 }
 
 /**
@@ -296,14 +296,14 @@ private:
      * @param handle contains the stream to run on.
      * @param A Provide prealocated memory here to be written to, numDiagonals x _b.size().
      */
-    void setA(Handle& handle, Mat<T>& A) {
+    void setA(cudaStream_t& stream, Mat<T>& A) {
 
-        A.template Mat<T>::subMat(0, 1, A._rows, A._cols - 1).fill(1, handle.stream);
+        A.template Mat<T>::subMat(0, 1, A._rows, A._cols - 1).fill(1, stream);
 
         dim3 block(8, 8, 8);
         dim3 grid = makeGridDim( _cols, _rows, _layers, block);
 
-        setAKernel<T><<<grid, block, 0, handle.stream>>>(
+        setAKernel<T><<<grid, block, 0, stream>>>(
             A.data(), A._ld, A._rows,
             _rows, _cols, _layers,
             here.row, up.row, down.row, left.row, right.row, front.row, back.row
@@ -342,9 +342,9 @@ public:
         _leftRight(leftRight),
         _topBottom(topBottom),
         _b(b),
-        _rows(frontBack._rows),
-        _cols(frontBack._cols/2),
-        _layers(topBottom._rows),
+        _rows(frontBack._rows/2),
+        _cols(frontBack._cols),
+        _layers(topBottom._rows/2),
         here(0, 0),
         up(1, 1),
         down(2, -1),
@@ -371,9 +371,15 @@ public:
 
         BandedMat<T> ABanded(A, mapARowToDiagonalInd);
 
-        setA(hand, ABanded);
+        setA(hand.stream, ABanded);
+
+        // std::cout << "PoissonFDM::solve  A:\n";
+        // A.get(std::cout, true, false, hand.stream);
 
         setB(hand.stream);
+
+        // std::cout << "PoissonFDM::solve  b:\n";
+        // _b.get(std::cout, true, false, hand.stream);
 
         BiCGSTAB<T> solver(_b);
 
@@ -390,7 +396,7 @@ public:
  * @param[in] argc Argument count (unused).
  * @param[in] argv Argument vector (unused).
  * @return 0 on successful execution.
- */
+ *///TODO:Similarly for any memory allocated by bicgstab.
 int main(int argc, char *argv[]) {
     Handle hand;
 
@@ -398,26 +404,26 @@ int main(int argc, char *argv[]) {
     constexpr size_t height = dimLength, width = dimLength, depth = dimLength, size = height * width * depth;
     constexpr double frontFaceVal = 1;
 
-    auto boundaries = Mat<double>::create(std::max(depth, height), std::max(depth, width));
+    auto boundaries = Mat<double>::create(
+        height * 4 + depth * 2,
+        std::max(depth, width)
+        );
 
-    auto frontBack = boundaries.subMat(0, 0, height, 2*width),
-        leftRight = boundaries.subMat(0, frontBack._cols, height, 2 * depth),
-        topBottom = boundaries.subMat(0, frontBack._cols + leftRight._cols, depth, 2*width);
+    auto frontBack = boundaries.subMat(0, 0, 2*height, width),
+        leftRight = boundaries.subMat(frontBack._rows, 0, 2 * height, depth),
+        topBottom = boundaries.subMat(frontBack._rows + leftRight._rows, 0, 2 * depth, width);
 
     auto front = frontBack.subMat(0, 0, height, width),
-        back = frontBack.subMat(0, width, height, width),
+        back = frontBack.subMat(height, 0, height, width),
         top = topBottom.subMat(0, 0, depth, width),
-        bottom = topBottom.subMat(0, width, depth, width),
-        left = leftRight.subMat(0, 0, height, depth),
-        right = leftRight.subMat(0, depth, height, depth);
+        bottom = topBottom.subMat(depth, 0, depth, width);
 
     front.fill(frontFaceVal, hand.stream);
     back.fill(0, hand.stream);
 
     for (size_t layerInd = 0; layerInd < depth; ++layerInd) {
         double val = frontFaceVal * (static_cast<double>(layerInd) + 1.0)/(depth + 1.0);
-        left.col(layerInd).fill(val, hand.stream);
-        right.col(layerInd).fill(val, hand.stream);
+        leftRight.col(layerInd).fill(val, hand.stream);
         top.row(layerInd).fill(val, hand.stream);
         bottom.row(layerInd).fill(val, hand.stream);
     }
@@ -431,7 +437,7 @@ int main(int argc, char *argv[]) {
     PoissonFDM<double> solver(frontBack, leftRight, topBottom, b);
 
     solver.solve(x, A, hand);
-    x.get(std::cout, true, false, hand.stream);
+    // x.get(std::cout, true, false, hand.stream);
 
     return 0;
 }
