@@ -18,7 +18,7 @@ SquareMat<T>::SquareMat(const size_t rowsCols, const size_t ld, std::shared_ptr<
 template<typename T>
 SquareMat<T> SquareMat<T>::create(size_t rowsCols) {
     Mat<T> mat = Mat<T>::create(rowsCols, rowsCols);
-    return SquareMat<T>(rowsCols, mat._ld, mat._ptr);
+    return SquareMat<T>(rowsCols, mat._ld, mat.ptr());
 }
 
 

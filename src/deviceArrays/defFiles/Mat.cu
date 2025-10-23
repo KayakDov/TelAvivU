@@ -34,10 +34,10 @@ Mat<T> Mat<T>::mult(
 
 
 template <typename T>
-Vec<T> Mat<T>::mult(
-    const Vec<T>& other,
-    Vec<T>* result,
-    Handle* handle,
+void Mat<T>::mult(
+    const Vec<T> &other,
+    Vec<T> &result,
+    Handle *handle,
     const Singleton<T> *alpha,
     const Singleton<T> *beta,
     bool transpose
@@ -45,20 +45,16 @@ Vec<T> Mat<T>::mult(
 ) const {
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
-    std::unique_ptr<Vec<T>> temp_res_ptr;
-    Vec<T>* resPtr = this->_get_or_create_target(this->_rows, result, temp_res_ptr, h->stream);
     std::unique_ptr<Singleton<T>> temp_a_ptr;
     const Singleton<T>* a = this->_get_or_create_target(1, *h, alpha, temp_a_ptr);
     std::unique_ptr<Singleton<T>> temp_b_ptr;
     const Singleton<T>* b = this->_get_or_create_target(0, *h, beta, temp_b_ptr);
 
     if constexpr(std::is_same_v<T, float>)
-        cublasSgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, a->data(), this->data(), this->_ld, other.data(), other._ld, b->data(), resPtr->data(), resPtr->_ld);
+        cublasSgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, a->data(), this->data(), this->_ld, other.data(), other._ld, b->data(), result.data(), result._ld);
     else if constexpr(std::is_same_v<T, double>)
-        cublasDgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, a->data(), this->data(), this->_ld, other.data(), other._ld, b->data(), resPtr->data(), resPtr->_ld);
+        cublasDgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, a->data(), this->data(), this->_ld, other.data(), other._ld, b->data(), result.data(), result._ld);
     else throw std::invalid_argument("Unsupported type.");
-        
-    return *resPtr;
 }
 
 template <typename T>
@@ -68,7 +64,9 @@ Mat<T> Mat<T>::operator*(const Mat<T>& other) const {
 
 template <typename T>
 Vec<T> Mat<T>::operator*(const Vec<T>& other) const {
-    return this->mult(other, nullptr, nullptr, nullptr, nullptr, false);
+    Vec<T> result = Vec<T>::create(this->_rows, nullptr);
+    this->mult(other, result, nullptr, nullptr, nullptr, false);
+    return result;
 }
 
 template<typename T>
@@ -379,6 +377,7 @@ Mat<T> Mat<T>::create(size_t rows, size_t cols){
     size_t pitch = 0;
 
     // std::cout << "Mat.cu::create " << DeviceMemory() << std::endl;
+    // std::cout << "allocating " << rows * cols * sizeof(T) / BYTES_PER_GB << std::endl;
 
     CHECK_CUDA_ERROR(cudaMallocPitch(&rawPtr, &pitch, rows * sizeof(T), cols));//Note: there does not seem to be an asynchronos version of this method.
 

@@ -80,7 +80,9 @@ public:
     *
     * @return Result vector on device memory.
     */
-    Vec<T> mult(const Vec<T>& other, Vec<T>* result = nullptr, Handle* handle = nullptr, const Singleton<T> *alpha = nullptr, const Singleton<T> *beta = nullptr, bool transpose = false) const override;
+    void mult(const Vec<T> &other, Vec<T> &result, Handle *handle = nullptr, const
+              Singleton<T> *alpha = nullptr, const Singleton<T> *beta = nullptr, bool
+              transpose = false) const override;
 
     /**
     * @note This method is declared but not yet implemented. Calling it will result

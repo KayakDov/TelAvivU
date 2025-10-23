@@ -110,17 +110,18 @@ public:
      * @param transpose Whether to transpose this vector.
      * @return Vec<T> result of the multiplication.
      */
-    Vec<T> mult(const Mat<T>& other, Vec<T>* result = nullptr, Handle* handle = nullptr, const Singleton<T>* alpha = nullptr, const Singleton<T>* beta = nullptr, bool transpose = false) const;
+    void mult(const Mat<T> &other, Vec &result, Handle *handle = nullptr, const Singleton<T> *alpha = nullptr, const
+              Singleton<T> *beta = nullptr, bool transpose = false) const;
 
     /**
      * @brief Dot product with another vector.
      * 
      * @param other Vector to dot with.
-     * @param result Optional output Singleton<T> for result.
+     * @param result Output Singleton<T> for result.
      * @param handle Optional GPU handle.
      * @return Dot product value.
      */
-    T mult(const Vec<T>& other, Singleton<T>* result = nullptr, Handle* handle = nullptr) const;
+    void mult(const Vec<T>& other, Singleton<T> &result, Handle* handle = nullptr) const;
 
     /**
      * @brief Operator overload for multiplication with a matrix.

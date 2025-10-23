@@ -31,7 +31,12 @@ list(FILTER LIB_SOURCES EXCLUDE REGEX ".*main\\.cu$")
 # Production executable (uses main.cu)
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src)
-set_target_properties(${PROJECT_NAME} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES CUDA_SEPARABLE_COMPILATION OFF)
+target_compile_options(${PROJECT_NAME} PRIVATE
+        $<$<COMPILE_LANGUAGE:CUDA>:-G -lineinfo -Xcompiler -fno-inline>
+)
+
 find_package(CUDAToolkit REQUIRED)
 find_package(Threads REQUIRED)
 target_link_libraries(BiCGSTAB PRIVATE CUDA::cudart CUDA::cublas CUDA::cusolver)

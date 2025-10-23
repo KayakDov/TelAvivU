@@ -14,6 +14,7 @@
 			"target_link_libraries",
 			"find_package",
 			"_CUDAToolkit_find_and_add_import_lib",
+			"target_compile_options",
 			"target_include_directories"
 		],
 		"files" : 
@@ -35,13 +36,13 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 37,
+				"line" : 42,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 35,
+				"line" : 40,
 				"parent" : 0
 			},
 			{
@@ -105,6 +106,12 @@
 			{
 				"command" : 4,
 				"file" : 0,
+				"line" : 36,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 0,
 				"line" : 33,
 				"parent" : 0
 			}
@@ -117,12 +124,28 @@
 			[
 				{
 					"fragment" : "-g -std=c++17 -arch=native"
+				},
+				{
+					"backtrace" : 14,
+					"fragment" : "-G"
+				},
+				{
+					"backtrace" : 14,
+					"fragment" : "-lineinfo"
+				},
+				{
+					"backtrace" : 14,
+					"fragment" : "-Xcompiler"
+				},
+				{
+					"backtrace" : 14,
+					"fragment" : "-fno-inline"
 				}
 			],
 			"includes" : 
 			[
 				{
-					"backtrace" : 14,
+					"backtrace" : 15,
 					"path" : "/home/dov/Documents/LaplaceFiniteDifference/src"
 				},
 				{
@@ -166,7 +189,7 @@
 			"includes" : 
 			[
 				{
-					"backtrace" : 14,
+					"backtrace" : 15,
 					"path" : "/home/dov/Documents/LaplaceFiniteDifference/src"
 				},
 				{

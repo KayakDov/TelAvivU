@@ -39,8 +39,18 @@ void GpuArray<T>::fill(T val, cudaStream_t stream) {
 template <typename T>
 T* GpuArray<T>::data() { return _ptr.get(); }
 
+template<typename T>
+std::shared_ptr<T> GpuArray<T>::ptr() const{
+    return _ptr;
+}
+
 template <typename T>
 const T* GpuArray<T>::data() const {return _ptr.get(); }
+
+template<typename T>
+void GpuArray<T>::freeMem() {
+    _ptr.reset();
+}
 
 template <typename T>
 void GpuArray<T>::mult(

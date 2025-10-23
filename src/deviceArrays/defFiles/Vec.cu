@@ -29,9 +29,9 @@ Vec<T> Vec<T>::subVec(const size_t offset, const size_t length, const size_t str
 }
 
 template <typename T>
-Vec<T> Vec<T>::mult(
+void Vec<T>::mult(
     const Mat<T>& other,
-    Vec<T>* result,
+    Vec<T>& result,
     Handle* handle,
     const Singleton<T>* alpha,
     const Singleton<T>* beta,
@@ -40,22 +40,19 @@ Vec<T> Vec<T>::mult(
 
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
-    std::unique_ptr<Vec<T>> temp_res_ptr;
-    Vec<T>* resPtr = this->_get_or_create_target(other._cols, result, temp_res_ptr, h->stream);
+
     std::unique_ptr<Singleton<T>> temp_a_ptr;
     const Singleton<T>* a = this->_get_or_create_target(static_cast<T>(1), *h, alpha, temp_a_ptr);
     std::unique_ptr<Singleton<T>> temp_b_ptr;
     const Singleton<T>* b = this->_get_or_create_target(static_cast<T>(0), *h, beta, temp_b_ptr);
     
-    other.mult(*this, resPtr, handle, a, b, !transpose);  
-    
-    return *resPtr;
+    other.mult(*this, result, handle, a, b, !transpose);
 }
 
 template <typename T>
-T Vec<T>::mult(
+void Vec<T>::mult(
     const Vec<T>& other,
-    Singleton<T>* result,
+    Singleton<T> &result,
     Handle* handle
 ) const {
     if (this->_cols != other._cols)
@@ -63,29 +60,29 @@ T Vec<T>::mult(
 
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
-    std::unique_ptr<Singleton<T>> temp_res_ptr;
-    Singleton<T>* resPtr = this->_get_or_create_target(result, temp_res_ptr, h->stream);
+
     
     if constexpr (std::is_same_v<T, float>)
-        cublasSdot(h->handle, this->_cols, this->data(), this->_ld, other.data(), other._ld, resPtr->data());
+        cublasSdot(h->handle, this->_cols, this->data(), this->_ld, other.data(), other._ld, result.data());
     else if constexpr (std::is_same_v<T, double>)
-        cublasDdot(h->handle, this->_cols, this->data(), this->_ld, other.data(), other._ld, resPtr->data());
+        cublasDdot(h->handle, this->_cols, this->data(), this->_ld, other.data(), other._ld, result.data());
     else static_assert(!std::is_same_v<T, float> && !std::is_same_v<T, double>, "Vec::add unsupported type.");
 
-    T scalar = resPtr->get();
-
-    return scalar;
 }
 
 
 template <typename T>
 Vec<T> Vec<T>::operator*(const Mat<T>& other) const {
-    return this->mult(other);
+    Vec<T> result = Vec<T>::create(this->_cols, nullptr);
+    this->mult(other, result);
+    return result;
 }
 
 template <typename T>
 T Vec<T>::operator*(const Vec<T>& other) const {
-    return this->mult(other);
+    Singleton<T> result = Singleton<T>::create();
+    this->mult(other, result);
+    return result.get();
 }
 
 template <typename T>
@@ -239,6 +236,7 @@ void Vec<T>::mult(const Singleton<T>& alpha, Handle* handle) {
     else throw std::invalid_argument("Unsupported type.");
 }
 
+
 extern "C" __global__ void setup_kernel_float(curandState* state, unsigned long long seed, size_t size, size_t stride) {
     if (unsigned int id = blockIdx.x * blockDim.x + threadIdx.x; id < size) curand_init(seed, id, 0, &state[id]);
 }
@@ -269,8 +267,6 @@ void Vec<T>::fillRandom(Handle* handle) {
 
     std::unique_ptr<curandState, decltype(&cudaFreeDeleter)>
         devStates(rawDevStates, &cudaFreeDeleter);
-
-    // std::cout << DeviceMemory() << std::endl << "memory used in rand:  " << this->_cols * sizeof(curandState) / BYTES_PER_GB << "GB";
 
     if constexpr (std::is_same_v<T, float>) {
         setup_kernel_float<<<numBlocks, threadsPerBlock, 0, h->stream>>>(devStates.get(), 0, this->size(), this->_ld);

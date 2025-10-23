@@ -181,10 +181,10 @@ public:
     }
 };
 
-struct Adjacency {
+struct AdjacencyIndexing {
     const size_t row;
     const int32_t diag;
-    Adjacency(const size_t row, const int32_t diag): row(row), diag(diag) {}
+    AdjacencyIndexing(const size_t row, const int32_t diag): row(row), diag(diag) {}
 };
 
 /**
@@ -250,13 +250,12 @@ constexpr  size_t numDiagonals = 7;
  */
 template <typename T>
 class PoissonFDM {
-private:
-    const Mat<T> _frontBack, _leftRight, _topBottom;
+private:    
     Vec<T> _b;
     const size_t _rows, _cols, _layers;
 
 public:
-    const Adjacency here, up, down, left, right, back, front;
+    const AdjacencyIndexing here, up, down, left, right, back, front;
     /**
      * @brief Calculates the total number of unknowns (interior points) in the 3D grid.
      * @return The total grid size: $\text{rows} \times \text{cols} \times \text{layers}$.
@@ -265,17 +264,19 @@ public:
         return _rows * _cols * _layers;
     }
 private:
-    void setB(cudaStream_t stream) {
-        const size_t totalThreadsNeeded = (_frontBack.size() + _leftRight.size() + _topBottom.size());
+    const BandedMat<T> A;
+    
+    void setB(const Mat<T>& frontBack, const Mat<T>& leftRight, const Mat<T>& topBottom, cudaStream_t stream) {
+        const size_t totalThreadsNeeded = (frontBack.size() + leftRight.size() + topBottom.size());
 
         constexpr size_t threadsPerBlock = 256;
         const size_t gridDim = (totalThreadsNeeded + threadsPerBlock - 1) / threadsPerBlock;
 
         setRHSKernel3D<<<gridDim, threadsPerBlock, 0, stream>>>(
             _b.data(), _b._ld,
-            _frontBack.data(), _frontBack._ld, _frontBack.size(),
-            _leftRight.data(), _leftRight._ld, _leftRight.size(),
-            _topBottom.data(), _topBottom._ld, _topBottom.size(),
+            frontBack.data(), frontBack._ld, frontBack.size(),
+            leftRight.data(), leftRight._ld, leftRight.size(),
+            topBottom.data(), topBottom._ld, topBottom.size(),
             _rows, _cols, _layers);
 
         CHECK_CUDA_ERROR(cudaGetLastError());
@@ -294,23 +295,26 @@ private:
      * @param numInds The number of indices.
      * @param mindices device pointer to the int32_t offsets array (length numNonZeroDiags).
      * @param handle contains the stream to run on.
-     * @param A Provide prealocated memory here to be written to, numDiagonals x _b.size().
+     * @param preAlocatedForA Provide prealocated memory here to be written to, numDiagonals x _b.size().
      */
-    void setA(cudaStream_t& stream, Mat<T>& A) {
+    BandedMat<T> setA(cudaStream_t& stream, Mat<T>& preAlocatedForA, Vec<int32_t>& prealocatedForIndices) {
 
-        A.template Mat<T>::subMat(0, 1, A._rows, A._cols - 1).fill(1, stream);
+        preAlocatedForA.subMat(0, 1, preAlocatedForA._rows, preAlocatedForA._cols - 1).fill(1, stream);
 
         dim3 block(8, 8, 8);
         dim3 grid = makeGridDim( _cols, _rows, _layers, block);
 
         setAKernel<T><<<grid, block, 0, stream>>>(
-            A.data(), A._ld, A._rows,
+            preAlocatedForA.data(), preAlocatedForA._ld, preAlocatedForA._rows,
             _rows, _cols, _layers,
             here.row, up.row, down.row, left.row, right.row, front.row, back.row
         );
 
         CHECK_CUDA_ERROR(cudaGetLastError());
 
+        loadMapRowToDiag(prealocatedForIndices, stream);
+
+        return BandedMat<T> (preAlocatedForA, prealocatedForIndices);
     }
 
     void loadMapRowToDiag(Vec<int32_t> diags, const cudaStream_t stream) const {
@@ -337,10 +341,7 @@ public:
     * @param[in] b The initial right-hand side vector, pre-loaded with the source term $f$.
     * This vector is modified by the solver to include boundary contributions.
     */
-    PoissonFDM(const Mat<T>& frontBack, const Mat<T>& leftRight, const Mat<T>& topBottom, const Vec<T> b):
-        _frontBack(frontBack),
-        _leftRight(leftRight),
-        _topBottom(topBottom),
+    PoissonFDM(const Mat<T>& frontBack, const Mat<T>& leftRight, const Mat<T>& topBottom, const Vec<T> b, Mat<T>& preAlocatedForBandedA, Vec<int32_t>& prealocatedForIndices, cudaStream_t stream):
         _b(b),
         _rows(frontBack._rows/2),
         _cols(frontBack._cols),
@@ -348,12 +349,14 @@ public:
         here(0, 0),
         up(1, 1),
         down(2, -1),
-        left(3, -_rows),
-        right(4, _rows),
+        right(3, _rows),
+        left(4, -_rows),
         back(5, _rows*_cols),
-        front(6, -_rows*_cols)
+        front(6, -_rows*_cols),
+        A(setA(stream, preAlocatedForBandedA, prealocatedForIndices))
     {
-
+        // A.Mat<T>::get(std::cout, true, false, stream);
+        setB(frontBack, leftRight, topBottom, stream);
     }
     /**
      * @brief Solves the Poisson equation for the grid.
@@ -364,44 +367,40 @@ public:
      * @param A Pre-allocated memory that will be used to compute the solution.  It should be numDiagonals rows and _b.size() columns.
      * @param[in] hand The CUDA handle (stream/context) to manage the computation.
      */
-    void solve(Vec<T>& x, const Mat<T>& A, Mat<T> prealocatedForBiCGSTAB, Handle& hand) {
-
-        Vec<int32_t> mapARowToDiagonalInd = Vec<int32_t>::create(numDiagonals, hand.stream);
-        loadMapRowToDiag(mapARowToDiagonalInd, hand.stream);
-
-        BandedMat<T> ABanded(A, mapARowToDiagonalInd);
-
-        setA(hand.stream, ABanded);
-
-        // std::cout << "PoissonFDM::solve  A:\n";
-        // A.get(std::cout, true, false, hand.stream);
-
-        setB(hand.stream);
-
-        // std::cout << "PoissonFDM::solve  b:\n";
-        // _b.get(std::cout, true, false, hand.stream);
+    void solve(Vec<T>& x, Mat<T> prealocatedForBiCGSTAB) {
 
         BiCGSTAB<T> solver(_b, &prealocatedForBiCGSTAB);
 
-        solver.solveUnpreconditionedBiCGSTAB(ABanded, x);
+        solver.solveUnpreconditionedBiCGSTAB(A, x);
     }
 };
 
 /**
- * @brief Main execution function for the Poisson FDM solver example.
+ * @brief Calls releaseResources() on an arbitrary number of Mat<T> views.
  *
- * Sets up a simple 3D grid problem with constant boundary conditions,
- * initializes the RHS and solution vectors, and calls the solver.
+ * This function is useful for explicitly nullifying the pointers in non-owning
+ * Mat<T> objects (views) to prevent their destructors from attempting a
+ * double-free, thereby freeing up the memory for the next operation.
  *
- * @param[in] argc Argument count (unused).
- * @param[in] argv Argument vector (unused).
- * @return 0 on successful execution.
- *///TODO:Similarly for any memory allocated by bicgstab.
-int main(int argc, char *argv[]) {
-    Handle hand;
+ * @tparam T The element type of the matrices.
+ * @tparam MatTs A variadic pack of Mat<T> types.
+ * @param matrices A reference pack of Mat<T> objects (views).
+ */
+template<typename T>
+void freeMat(const std::initializer_list<std::reference_wrapper<Mat<T>>> destructMe) {
+    for (auto& ref : destructMe)
+        ref.get().freeMem();
+}
 
-    constexpr  size_t dimLength = 250;//250 works
-    constexpr size_t height = dimLength, width = dimLength, depth = dimLength, size = height * width * depth;
+ /**
+  * Creates and solved an example Poisson class on a cube with the given side length.
+  * @param dimLength The length of an edge of the grid.  //up to 325 works on Dov's computer.  After that the size of
+  * the initally allocated memory exceeds the available memory on the gpu.
+  */
+ void testPoisson(const size_t dimLength, cudaStream_t& stream) {
+
+
+    const size_t height = dimLength, width = dimLength, depth = dimLength, size = height * width * depth;
     constexpr double frontFaceVal = 1;
 
     auto boundaries = Mat<double>::create(
@@ -418,27 +417,52 @@ int main(int argc, char *argv[]) {
         top = topBottom.subMat(0, 0, depth, width),
         bottom = topBottom.subMat(depth, 0, depth, width);
 
-    front.fill(frontFaceVal, hand.stream);
-    back.fill(0, hand.stream);
+    front.fill(frontFaceVal, stream);
+    back.fill(0, stream);
 
     for (size_t layerInd = 0; layerInd < depth; ++layerInd) {
         double val = frontFaceVal * (static_cast<double>(layerInd) + 1.0)/(depth + 1.0);
-        leftRight.col(layerInd).fill(val, hand.stream);
-        top.row(layerInd).fill(val, hand.stream);
-        bottom.row(layerInd).fill(val, hand.stream);
+        leftRight.col(layerInd).fill(val, stream);
+        top.row(layerInd).fill(val, stream);
+        bottom.row(layerInd).fill(val, stream);
     }
 
-    auto longVecs = Mat<double>::create(size, 32+ numDiagonals + 7);
+    auto longVecs = Mat<double>::create(size, 2+ numDiagonals + 7);
     auto b = longVecs.col(0);
-    b.fill(0, hand.stream);
+    b.fill(0, stream);
     auto x = longVecs.col(1);
     auto A = longVecs.subMat(0, 2, size, numDiagonals);
     auto prealocatedForBiCGSTAB = longVecs.subMat(0, 2 + numDiagonals, size, 7);
 
-    PoissonFDM<double> solver(frontBack, leftRight, topBottom, b);
+    auto diagonalInds = Vec<int32_t>::create(numDiagonals);
 
-    solver.solve(x, A, prealocatedForBiCGSTAB, hand);
-    // x.get(std::cout, true, false, hand.stream);
+    PoissonFDM<double> solver(frontBack, leftRight, topBottom, b, A, diagonalInds, stream);
+
+    freeMat<double>({boundaries, frontBack, leftRight, topBottom, front, back, top, bottom});
+
+    solver.solve(x, prealocatedForBiCGSTAB);
+}
+
+/**
+ * @brief Main execution function for the Poisson FDM solver example.
+ *
+ * Sets up a simple 3D grid problem with constant boundary conditions,
+ * initializes the RHS and solution vectors, and calls the solver.
+ *
+ * @param[in] argc Argument count (unused).
+ * @param[in] argv Argument vector (unused).
+ * @return 0 on successful execution.
+ *///TODO:Similarly for any memory allocated by bicgstab.
+int main(int argc, char *argv[]) {
+
+    Handle hand;
+
+    std::cout << "dimension size, number of iterations, total time" << std::endl;
+    for (size_t i = 2; i < 350; ++i) {
+        std::cout << i << ", ";
+        testPoisson(i, hand.stream);
+        cudaDeviceSynchronize();
+    }
 
     return 0;
 }

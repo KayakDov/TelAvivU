@@ -76,9 +76,9 @@ __global__ void multVecKernel(
  *
  */
 template <typename T>
-Vec<T> BandedMat<T>::mult(
+void BandedMat<T>::mult(
     const Vec<T>& other,
-    Vec<T>* result,
+    Vec<T>& result,
     Handle* handle,
     const Singleton<T> *alpha,
     const Singleton<T> *beta,
@@ -89,8 +89,6 @@ Vec<T> BandedMat<T>::mult(
 
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
-    std::unique_ptr<Vec<T>> temp_res_ptr;
-    Vec<T>* resPtr = this->_get_or_create_target(this->_rows, result, temp_res_ptr, h->stream);
     std::unique_ptr<Singleton<T>> temp_a_ptr;
     const Singleton<T>* a = this->_get_or_create_target(static_cast<T>(1), *h, alpha, temp_a_ptr);
     std::unique_ptr<Singleton<T>> temp_b_ptr;
@@ -102,15 +100,13 @@ Vec<T> BandedMat<T>::mult(
         this->data(), this->_rows, this->_ld,
         _indices.data(), this->_cols,
         other.data(), other._ld,
-        resPtr->data(),
-        resPtr->_ld,
+        result.data(),
+        result._ld,
         a->data(), b->data()
     );
 
     CHECK_CUDA_ERROR(cudaGetLastError());
     if (transpose) (const_cast<Vec<int32_t>&>(_indices)).mult(Singleton<int32_t>::MINUS_ONE, h);
-
-    return *resPtr;
 }
 
 template<typename T>
@@ -226,7 +222,7 @@ BandedMat<T>::BandedMat(size_t rows, size_t cols, size_t ld, std::shared_ptr<T> 
 
 template<typename T>
 BandedMat<T>::BandedMat(const Mat<T>& copyFrom, const Vec<int32_t>& indices):
-    BandedMat(copyFrom._rows, copyFrom._cols, copyFrom._ld, copyFrom._ptr, indices) {
+    BandedMat(copyFrom._rows, copyFrom._cols, copyFrom._ld, copyFrom.ptr(), indices) {
     if (indices.size() != copyFrom._cols) throw std::invalid_argument("indices must be the same length as the number of rows in the matrix");
 }
 

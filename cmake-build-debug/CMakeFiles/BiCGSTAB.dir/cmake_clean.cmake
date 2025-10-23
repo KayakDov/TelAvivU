@@ -2,7 +2,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/BiCGSTAB.dir/link.d"
   "BiCGSTAB"
   "BiCGSTAB.pdb"
-  "CMakeFiles/BiCGSTAB.dir/cmake_device_link.o"
   "CMakeFiles/BiCGSTAB.dir/src/BiCGSTAB.cu.o"
   "CMakeFiles/BiCGSTAB.dir/src/BiCGSTAB.cu.o.d"
   "CMakeFiles/BiCGSTAB.dir/src/Event.cu.o"

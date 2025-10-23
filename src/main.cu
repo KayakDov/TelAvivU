@@ -91,7 +91,7 @@ void showHelp() {
 template <typename T>
 void solveAndWriteOutput(BandedMat<T>& A, Vec<T>& b, const string& x_dest_file, const bool isText, size_t maxIter, double epsilon, Handle& handle) {
     Vec<T> x = Vec<T>::create(b.size(), handle.stream);
-    BiCGSTAB setup(b, static_cast<T>(epsilon), maxIter);
+    BiCGSTAB setup(b, nullptr, static_cast<T>(epsilon), maxIter);
     setup.solveUnpreconditionedBiCGSTAB(A, x);
 
     ofstream x_fs(x_dest_file);

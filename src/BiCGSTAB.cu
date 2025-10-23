@@ -29,7 +29,8 @@ private:
     Mat<T> paM;
     Vec<T> r, r_tilde, p, v, s, t, h;
     Vec<T> paV;
-    Singleton<T> rho, alpha, omega, rho_new, beta, temp;
+    Singleton<T> rho, alpha, omega, rho_new, beta;
+    Singleton<T> temp[4];//a temporary place for a single value on each stream.
 
     const size_t maxIterations;
 
@@ -42,7 +43,6 @@ private:
     void wait(const size_t streamIndex, const std::initializer_list<std::reference_wrapper<Event>> evs) const{
         for (auto& ref_e : evs)
             ref_e.get().wait(handle[streamIndex]);
-
     }
 
     /**
@@ -81,10 +81,10 @@ private:
      * @param[in] streamInd The stream index to perform the operation on.
      * @return true if $\|\mathbf{v}\|^2 < \text{tolerance}$, false otherwise.
      */
-    bool isSmall(const Vec<T>& v, const size_t streamInd){
-        Singleton<T> vSquared = Singleton<T>::create();
-            v.mult(v, &vSquared, handle + streamInd);
-            T vSq = vSquared.get(handle[streamInd].stream);
+    bool isSmall(const Vec<T>& v,  Singleton<T> preAlocated, const size_t streamInd){
+
+            v.mult(v, preAlocated, handle + streamInd);
+            T vSq = preAlocated.get(handle[streamInd].stream);
             synch(streamInd);
             return vSq < tolerance;
     }
@@ -133,14 +133,14 @@ public:
       b(b),
       paM(preAllocated ? *preAllocated : Mat<T>::create(b.size(), 7)),
       r(paM.col(0)), r_tilde(paM.col(1)), p(paM.col(2)), v(paM.col(3)), s(paM.col(4)), t(paM.col(5)), h(paM.col(6)),
-      paV(Vec<T>::create(6, handle[0].stream)),
-      rho(paV.get(0)), alpha(paV.get(1)), omega(paV.get(2)), rho_new(paV.get(3)), beta(paV.get(4)), temp(paV.get(5)),
+      paV(Vec<T>::create(9, handle[0].stream)),
+      rho(paV.get(0)), alpha(paV.get(1)), omega(paV.get(2)), rho_new(paV.get(3)), beta(paV.get(4)), temp({paV.get(5), paV.get(6), paV.get(7), paV.get(8)}),
       maxIterations(maxIterations <= 0 ? 5*b.size() : maxIterations)
     {
         static_assert(std::is_same_v<T,float> || std::is_same_v<T,double>,
                 "Algorithms.cu unpreconditionedBiCGSTAB: T must be float or double");
         cudaDeviceSynchronize();
-        for (const auto& h : handle)
+        for (auto& h : handle)
             cublasSetPointerMode(h.handle, CUBLAS_POINTER_MODE_DEVICE);
     }
 
@@ -157,11 +157,11 @@ public:
         r_tilde.fillRandom(&handle[0]); // set r_tilde randomly
 
         set(r, b, 0);
-        A.mult(x, &r, handle, &Singleton<T>::MINUS_ONE, &Singleton<T>::ONE); // r = b - A * x
+        A.mult(x, r, handle, &Singleton<T>::MINUS_ONE, &Singleton<T>::ONE); // r = b - A * x
 
         set(p, r, 0);
 
-        r_tilde.mult(r, &rho, handle);
+        r_tilde.mult(r, rho, handle);
 
         wait(1, {xReady});
     }
@@ -189,9 +189,9 @@ public:
 
             TimePoint start = std::chrono::steady_clock::now();
 
-            A.mult(p, &v, handle, &Singleton<T>::ONE, &Singleton<T>::ZERO); // v = A * p
+            A.mult(p, v, handle, &Singleton<T>::ONE, &Singleton<T>::ZERO); // v = A * p
 
-            r_tilde.mult(v, &alpha, handle);
+            r_tilde.mult(v, alpha, handle);
             alpha.EBEPow(rho, Singleton<T>::MINUS_ONE, handle[0].stream); //alpha = rho / (r_tilde * v)
             record(0, {alphaReady});
 
@@ -204,24 +204,24 @@ public:
             renew({alphaReady, xReady});
             h.add(p, &alpha, handle + 1); // h = x + alpha * p
 
-            temp.set(alpha, handle[0].stream);
-            temp.mult(Singleton<T>::MINUS_ONE, handle);
-            s.setSum(r, v, &Singleton<T>::ONE, &temp, handle); // s = r - alpha * v
+            temp[0].set(alpha, handle[0].stream);
+            temp[0].mult(Singleton<T>::MINUS_ONE, handle);
+            s.setSum(r, v, &Singleton<T>::ONE, temp, handle); // s = r - alpha * v
             record(0, {sReady});
 
             set(x, h, 1);
 
             wait(2, {sReady, hReady});
-            if(isSmall(s, 2)) break;
+            if(isSmall(s, temp[2], 2)) break;
             renew({sReady, hReady});
 
-            A.mult(s, &t, handle); // t = A * s
+            A.mult(s, t, handle); // t = A * s
 
-            t.mult(s, &temp, handle + 3);
+            t.mult(s, temp[3], handle + 3);
             record(3, {prodTS});
-            t.mult(t, &omega, handle);
+            t.mult(t, omega, handle);
             wait(0, {prodTS});
-            omega.EBEPow(temp, Singleton<T>::MINUS_ONE, handle[0].stream); //omega = t * s / t * t;
+            omega.EBEPow(temp[3], Singleton<T>::MINUS_ONE, handle[0].stream); //omega = t * s / t * t;
 
             record(0, {omegaReady});
 
@@ -231,37 +231,36 @@ public:
 
             synch(0);
             prodTS.renew();
-            temp.set(omega, handle[0].stream);
-            temp.mult(Singleton<T>::MINUS_ONE, handle);
-            r.setSum(s, t, &Singleton<T>::ONE, &temp, handle); // r = s - omega * t
+            temp[0].set(omega, handle[0].stream);
+            temp[0].mult(Singleton<T>::MINUS_ONE, handle);
+            r.setSum(s, t, &Singleton<T>::ONE, temp, handle); // r = s - omega * t
             record(0, {rReady});
 
             wait(2, {xReady, rReady});
 
-            if(isSmall(r, 2)) break;
+            if(isSmall(r, temp[2],2)) break;
             rReady.renew();
 
-            r_tilde.mult(r, &rho_new, handle);
+            r_tilde.mult(r, rho_new, handle);
 
-            setQuotient(temp, rho_new, rho, 0);
+            setQuotient(temp[0], rho_new, rho, 0);
             setQuotient(beta, alpha, omega, 0);
-            beta.EBEPow(temp, Singleton<T>::ONE, handle[0].stream); // beta = (rho_new / rho) * (alpha / omega);
+            beta.EBEPow(temp[0], Singleton<T>::ONE, handle[0].stream); // beta = (rho_new / rho) * (alpha / omega);
 
             set(rho, rho_new, 0);
 
             p.mult(beta, handle);
             p.add(r, &Singleton<T>::ONE, handle); // p = r + beta * p
-            temp.set(beta, handle[0].stream);
-            temp.mult(omega, handle);
-            p.sub(v, &temp, handle); // p = p - beta * omega * v
+            temp[0].set(beta, handle[0].stream);
+            temp[0].mult(omega, handle);
+            p.sub(v, temp, handle); // p = p - beta * omega * v
 
             TimePoint end = std::chrono::steady_clock::now();
             double iterationTime = (static_cast<std::chrono::duration<double, std::milli>>(end - start)).count();
             totalTime += iterationTime;
         }
 
-        std::cout << "algorithms.cu unpreconditionedBiCGSTAB Number of iterations: " << numIterations << std::endl;
-        std::cout << "algorithms.cu unpreconditionedBiCGSTAB Average time per iteration in milliseconds: " << totalTime / numIterations << std::endl;
+        std::cout << numIterations << ", " << totalTime << std::endl;
         
         return x;
     }

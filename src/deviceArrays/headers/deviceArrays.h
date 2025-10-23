@@ -74,17 +74,6 @@ public:
      * GpuArray instance.
      */
     const size_t _cols;
-    /**
-     * @brief Shared pointer managing the memory associated with the GpuArray instance.
-     *
-     * This pointer is responsible for managing the lifetime of the GPU memory block
-     * containing the data represented by the GpuArray.
-     *
-     * @note The pointer is immutable once set during the construction of the
-     * GpuArray instance and is shared to facilitate memory reuse and resource
-     * management among related instances or derived classes.
-     */
-    const std::shared_ptr<T> _ptr;
 
     /**
      * @brief Represents the leading dimension of a GpuArray instance.
@@ -98,6 +87,17 @@ public:
      */
     const size_t _ld;
 protected:
+    /**
+     * @brief Shared pointer managing the memory associated with the GpuArray instance.
+     *
+     * This pointer is responsible for managing the lifetime of the GPU memory block
+     * containing the data represented by the GpuArray.
+     *
+     * @note The pointer is immutable once set during the construction of the
+     * GpuArray instance and is shared to facilitate memory reuse and resource
+     * management among related instances or derived classes.
+     */
+    std::shared_ptr<T> _ptr;
     /**
      * @brief Constructs a GpuArray instance with specified dimensions, leading dimension,
      * and memory pointer.
@@ -116,6 +116,7 @@ protected:
      *             for the GpuArray.
      */
     GpuArray(size_t rows, size_t cols, size_t ld, std::shared_ptr<T> _ptr);
+
 
     /**
      * @brief Retrieves or creates a target matrix with the specified dimensions.
@@ -394,6 +395,12 @@ public:
     T* data();
 
     /**
+     * The shared pointer to the gpu data.
+     * @return The shared pointer to the data.
+     */
+    std::shared_ptr<T> ptr() const;
+
+    /**
      * @brief Retrieves the pointer to the underlying data stored in GPU memory.
      *
      * This method provides access to the raw GPU memory containing the array elements.
@@ -408,6 +415,11 @@ public:
      */
     [[nodiscard]] const T* data() const;
 
+    /**
+     * Severs the connection to the gou memory.  If this is the last array using that block of memory, then the memory
+     * is freed.
+     */
+    void freeMem();
     
 };
 

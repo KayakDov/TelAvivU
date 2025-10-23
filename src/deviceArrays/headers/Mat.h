@@ -86,8 +86,8 @@ public:
      * @brief Multiply this matrix with a vector.
      * @copydoc GpuArray::mult
      */
-    virtual Vec<T> mult(const Vec<T>& other, Vec<T>* result, Handle* handle, const Singleton<T> *alpha, const
-                        Singleton<T> *beta, bool transpose) const;
+    virtual void mult(const Vec<T> &other, Vec<T> &result, Handle *handle, const Singleton<T> *alpha, const Singleton<T> *beta, bool
+                      transpose) const;
     /**
      * @brief Multiply this matrix with a vector (operator overload).
      * @copydoc Mat::mult(const Vec<T>&, Vec<T>*, Handle*, const Singleton<T>*, const Singleton<T>*, bool) const
