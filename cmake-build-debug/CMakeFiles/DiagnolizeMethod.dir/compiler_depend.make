@@ -8,6 +8,7 @@ CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o: /hom
   /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Tensor.h \
   /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/deviceArrays.h \
   /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/handle.h \
+  /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/singleton.h \
   /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/squareMat.h \
   /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/vec.h \
   /usr/include/alloca.h \
@@ -490,10 +491,6 @@ CMakeFiles/DiagnolizeMethod.dir/cmake_device_link.o:
 
 /usr/local/cuda-12.9/targets/x86_64-linux/include/cuComplex.h:
 
-/lib64/ld-linux-x86-64.so.2:
-
-/usr/local/cuda-12.9/targets/x86_64-linux/include/crt/sm_80_rt.hpp:
-
 /usr/local/cuda-12.9/targets/x86_64-linux/include/crt/sm_80_rt.h:
 
 /usr/local/cuda-12.9/targets/x86_64-linux/include/surface_indirect_functions.h:
@@ -556,11 +553,7 @@ CMakeFiles/DiagnolizeMethod.dir/cmake_device_link.o:
 
 /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h:
 
-/usr/include/c++/13/new:
-
-/usr/include/c++/13/ext/alloc_traits.h:
-
-/usr/include/inttypes.h:
+/usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h:
 
 /usr/include/c++/13/math.h:
 
@@ -661,8 +654,6 @@ CMakeFiles/DiagnolizeMethod.dir/cmake_device_link.o:
 /usr/include/x86_64-linux-gnu/bits/floatn.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
-
-/usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h:
 
 /usr/include/c++/13/bits/new_allocator.h:
 
@@ -772,6 +763,38 @@ CMakeFiles/DiagnolizeMethod.dir/cmake_device_link.o:
 
 /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/vec.h:
 
+/usr/include/c++/13/backward/auto_ptr.h:
+
+/usr/include/assert.h:
+
+/usr/include/c++/13/bits/stl_vector.h:
+
+/usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_bf16.hpp:
+
+/usr/include/c++/13/bits/stl_tempbuf.h:
+
+/lib64/ld-linux-x86-64.so.2:
+
+/usr/local/cuda-12.9/targets/x86_64-linux/include/crt/sm_80_rt.hpp:
+
+/home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/singleton.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
+
+/usr/include/c++/13/bits/codecvt.h:
+
+/usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_fp16.h:
+
+/usr/include/c++/13/bits/locale_classes.tcc:
+
+/home/dov/Documents/LaplaceFiniteDifference/src/Poisson/GridDim.h:
+
+/usr/include/c++/13/bits/stl_relops.h:
+
+/usr/include/x86_64-linux-gnu/bits/mathcalls.h:
+
 /usr/include/c++/13/bits/shared_ptr.h:
 
 /usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
@@ -812,6 +835,12 @@ CMakeFiles/DiagnolizeMethod.dir/cmake_device_link.o:
 
 /usr/include/x86_64-linux-gnu/bits/time64.h:
 
+/usr/include/c++/13/ext/alloc_traits.h:
+
+/usr/include/c++/13/new:
+
+/usr/include/inttypes.h:
+
 /usr/include/c++/13/bits/alloc_traits.h:
 
 /usr/include/c++/13/bits/concept_check.h:
@@ -825,32 +854,6 @@ CMakeFiles/DiagnolizeMethod.dir/cmake_device_link.o:
 /usr/include/x86_64-linux-gnu/sys/select.h:
 
 /usr/include/c++/13/cwchar:
-
-/usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_fp16.h:
-
-/usr/include/c++/13/bits/locale_classes.tcc:
-
-/home/dov/Documents/LaplaceFiniteDifference/src/Poisson/GridDim.h:
-
-/usr/include/c++/13/bits/stl_relops.h:
-
-/usr/include/x86_64-linux-gnu/bits/mathcalls.h:
-
-/usr/include/c++/13/backward/auto_ptr.h:
-
-/usr/include/assert.h:
-
-/usr/include/c++/13/bits/stl_vector.h:
-
-/usr/local/cuda-12.9/targets/x86_64-linux/include/cuda_bf16.hpp:
-
-/usr/include/c++/13/bits/stl_tempbuf.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
-
-/usr/include/c++/13/bits/codecvt.h:
 
 /usr/include/c++/13/ostream:
 

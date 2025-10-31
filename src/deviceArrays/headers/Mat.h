@@ -68,11 +68,11 @@ public:
     /**
      * @copydoc GpuArray::set
      */
-    void set(std::istream& input_stream, bool isText, bool isColMjr, cudaStream_t stream) override;
+    void set(std::istream &input_stream, bool isText, bool isColMjr, Handle *hand) override;
     /**
      * @copydoc GpuArray::get
      */
-    void get(std::ostream& output_stream, bool isText, bool printColMjr, cudaStream_t stream) const override;
+    void get(std::ostream &output_stream, bool isText, bool printColMajor, Handle *hand) const override;
     /**
      * @brief Access an element of the matrix as a Singleton.
      * @param row Row index.

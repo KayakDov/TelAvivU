@@ -132,13 +132,15 @@ void Mat<T>::get(GpuArray<T>& dst, cudaStream_t cuStream) const {
  * Note, if set from text will read data as row major and is much slower.  If set from binary data, will read as column major and is fast.
  */
 template <typename T>
-void Mat<T>::set(std::istream& input_stream, bool isText, bool isColMjr, cudaStream_t cuStream) {
+void Mat<T>::set(std::istream& input_stream, bool isText, bool isColMjr, Handle* hand) {
 
-    Handle hand(cuStream);
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(hand, temp_hand_ptr);
+
     if(!isColMjr){
         Mat<T> temp = Mat<T>::create(this->_cols, this->_rows);
-        temp.set(input_stream, isText, !isColMjr, cuStream);
-        temp.transpose(*this, &hand);
+        temp.set(input_stream, isText, !isColMjr, h);
+        temp.transpose(*this, h);
         return;
     }
 
@@ -153,9 +155,9 @@ void Mat<T>::set(std::istream& input_stream, bool isText, bool isColMjr, cudaStr
             helper.getChunkWidth()
         );
 
-        subMat.set(helper.getBuffer().data(), cuStream);
+        subMat.set(helper.getBuffer().data(), h->stream);
 
-        hand.synch();//TODO: this might be avoidable with multi threading
+        h->synch();//TODO: this might be avoidable with multi threading
 
         helper.updateProgress();
     }
@@ -165,15 +167,17 @@ void Mat<T>::set(std::istream& input_stream, bool isText, bool isColMjr, cudaStr
  * Note, if gets to text, will print data as row major and is much slower.  If gets to binary data, will write as column major and is fast.
  */
 template <typename T>
-void Mat<T>::get(std::ostream& output_stream, bool isText, bool printColMajor, cudaStream_t stream) const {
+void Mat<T>::get(std::ostream& output_stream, bool isText, bool printColMajor, Handle* hand) const {
+
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(hand, temp_hand_ptr);
 
     StreamGet<T> helper(this->_rows, this->_cols, output_stream);
-    Handle handle(stream);
 
     if(!printColMajor) {
-        Mat<T> mat = Mat<T>::create(this->_cols, this->_rows);
-        this -> transpose(mat, &handle);
-        mat.get(output_stream, isText, true, stream);
+        Mat<T> transposed = Mat<T>::create(this->_cols, this->_rows);
+        this -> transpose(transposed, h);
+        transposed.get(output_stream, isText, true, h);
         return;        
     }
     
@@ -185,8 +189,8 @@ void Mat<T>::get(std::ostream& output_stream, bool isText, bool printColMajor, c
             helper.getChunkWidth()
         );
 
-        subMat.get(helper.getBuffer().data(), stream);
-        handle.synch();//TODO: this might be avoidable with multi threading
+        subMat.get(helper.getBuffer().data(), h->stream);
+        h->synch();//TODO: this might be avoidable with multi threading
 
         helper.writeChunk(isText);
         helper.updateProgress();
@@ -270,7 +274,7 @@ Mat<T> Mat<T>::minus(
 }
 
 template <typename T>
-__global__ void scaleKernel(T* matrix, size_t rows, size_t cols, size_t ld, const T* alpha) {
+__global__ void scaleKernel(T* __restrict__  matrix, size_t rows, size_t cols, size_t ld, const T* alpha) {
     size_t col = blockIdx.x * blockDim.x + threadIdx.x;
     size_t row = blockIdx.y * blockDim.y + threadIdx.y;
 
@@ -320,8 +324,6 @@ void Mat<T>::transpose(
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
 
     if constexpr (std::is_same_v<T, float>) {
-        Singleton<T> alpha = Singleton<T>::create(static_cast<T>(1), h->stream);
-        Singleton<T> beta = Singleton<T>::create(static_cast<T>(0), h->stream);
 
         cublasSgeam(
             h->handle, 
@@ -329,23 +331,21 @@ void Mat<T>::transpose(
             CUBLAS_OP_N, // Don't transpose B (it's not used)
             this->_cols, // Result rows
             this->_rows, // Result columns
-            alpha.data(), 
+            Singleton<T>::ONE.data(),
             this->data(), this->_ld,
-            beta.data(), nullptr, this->_ld, // B is not referenced since beta=0
+            Singleton<T>::ZERO.data(), nullptr, this->_ld, // B is not referenced since beta=0
             result.data(), result._ld
         );
     } else if constexpr (std::is_same_v<T, double>) {
-        double alpha = 1.0;
-        double beta = 0.0;
         cublasDgeam(
             h->handle, 
             CUBLAS_OP_T, 
             CUBLAS_OP_N,
             this->_cols,
             this->_rows,
-            &alpha, 
+            Singleton<T>::ONE.data(),
             this->data(), this->_ld,
-            &beta, nullptr, this->_ld,
+            Singleton<T>::ZERO.data(), nullptr, this->_ld,
             result.data(), result._ld
         );
     }

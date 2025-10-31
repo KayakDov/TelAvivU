@@ -35,7 +35,7 @@ void readAndPrint(GpuArray<T>& array, const string& fileName, const bool isText,
     if(!reader.is_open())
         throw runtime_error("Could not open " + fileName);
 
-    array.set(reader, isText, true, hand.stream);
+    array.set(reader, isText, true, TODO);
     reader.close();
 
     cout << "Read matrix "<< fileName <<" from file." << endl;
@@ -97,7 +97,7 @@ void solveAndWriteOutput(BandedMat<T>& A, Vec<T>& b, const string& x_dest_file, 
     ofstream x_fs(x_dest_file);
     if (!x_fs.is_open()) throw runtime_error("Could not open destination file: " + x_dest_file);
 
-    x.get(x_fs, isText, !isText, handle.stream);
+    x.get(x_fs, isText, !isText, &handle);
     x_fs.close();
     cout << "Wrote solution vector x to file: " << x_dest_file << endl;
     if(x.size() < 1000) cout << "x:\n" << x << endl;

@@ -18,32 +18,23 @@ using TimePoint = std::chrono::time_point<std::chrono::steady_clock>;
  *
  * @tparam T Floating point type.
  * @param d_p The P vector (input/output).
- * @param d_r The R residual vector (input).
- * @param d_v The V vector (input).
- * @param d_beta Device pointer to the scalar beta (input).
- * @param d_omega Device pointer to the scalar omega (input).
+ * @param r The R residual vector (input).
+ * @param v The V vector (input).
+ * @param beta Device pointer to the scalar beta (input).
+ * @param omega Device pointer to the scalar omega (input).
  * @param N The size of the vectors.
  */
 template <typename T>
 __global__ void updatePKernel(
     T* d_p,
-    const T* d_r,
-    const T* d_v,
-    const T* d_beta,
-    const T* d_omega,
+    const T* __restrict__ r,
+    const T* __restrict__ v,
+    const T* __restrict__ beta,
+    const T* __restrict__ omega,
     const int N)
 {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-
-    if (idx < N) {
-        // Read the scalars from device memory once
-        const T beta_val = *d_beta;
-        const T omega_val = *d_omega;
-
-        // p[i] = r[i] + beta_val * (p[i] - omega_val * v[i])
-        // The original p[i] is used on the RHS and overwritten on the LHS.
-        d_p[idx] = d_r[idx] + beta_val * (d_p[idx] - omega_val * d_v[idx]);
-    }
+    if (const size_t idx = blockIdx.x * blockDim.x + threadIdx.x; idx < N)
+        d_p[idx] = r[idx] + *beta * (d_p[idx] - *omega * v[idx]);
 }
 
 /**
@@ -187,8 +178,6 @@ public:
         static_assert(std::is_same_v<T,float> || std::is_same_v<T,double>,
                 "Algorithms.cu unpreconditionedBiCGSTAB: T must be float or double");
         cudaDeviceSynchronize();
-        for (auto& h : handle)
-            cublasSetPointerMode(h.handle, CUBLAS_POINTER_MODE_DEVICE);
     }
 
     /**

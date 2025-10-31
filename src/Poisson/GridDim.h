@@ -5,7 +5,7 @@
 #ifndef BICGSTAB_GRIDBOUNDARY_H
 #define BICGSTAB_GRIDBOUNDARY_H
 
-#include "deviceArrays/headers/Mat.h"
+#include <deviceArrays/headers/Mat.h>
 
 class GridDim {
 

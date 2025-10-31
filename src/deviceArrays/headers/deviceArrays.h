@@ -338,9 +338,9 @@ public:
      * @param input_stream The input stream from which the data is read.
      * @param isText A boolean indicating whether the input data is in text format (true) or binary format (false).
      * @param isColMjr
-     * @param stream The CUDA stream used for data transfer and operations, ensuring asynchronous execution.
+     * @param hand
      */
-    virtual void set(std::istream& input_stream, bool isText, bool isColMjr, cudaStream_t stream) = 0;
+    virtual void set(std::istream &input_stream, bool isText, bool isColMjr, Handle *hand) = 0;
 
 
     /**
@@ -353,9 +353,9 @@ public:
      * @param output_stream The output stream to which the data will be written.
      * @param isText Specifies whether the data should be written in a textual format.
      *               If true, data is formatted as text; otherwise, it will be written in a binary format.
-     * @param isColMjr Indicates whether the data should be stored in column-major order.
+     * @param printColMajor Indicates whether the data should be stored in column-major order.
      *                 If true, data is arranged column-major; otherwise, row-major order is used.
-     * @param stream The CUDA stream that will be used to execute the data retrieval operation asynchronously.
+     * @param hand The CUDA stream that will be used to execute the data retrieval operation asynchronously.
      *
      * @note Proper synchronization is required if other operations depend on the retrieved data.
      * Ensure the CUDA stream is active and valid when calling this function.
@@ -363,7 +363,7 @@ public:
      * @warning Attempting to retrieve data from an uninitialized or invalid GPU array
      * may result in undefined behavior.
      */
-    virtual void get(std::ostream& output_stream, bool isText, bool isColMjr, cudaStream_t stream) const = 0;
+    virtual void get(std::ostream &output_stream, bool isText, bool printColMajor, Handle *hand) const = 0;
 
     /**
      * @brief Fills the GpuArray with the specified value on a given CUDA stream.

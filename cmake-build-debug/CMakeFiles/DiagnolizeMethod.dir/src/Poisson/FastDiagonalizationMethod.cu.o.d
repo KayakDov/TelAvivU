@@ -342,4 +342,5 @@ CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o : /ho
     /usr/include/c++/13/compare \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Tensor.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/Poisson/GridDim.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/squareMat.h
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/squareMat.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/singleton.h

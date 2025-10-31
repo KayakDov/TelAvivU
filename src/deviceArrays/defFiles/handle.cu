@@ -6,6 +6,7 @@
 
 Handle::Handle(cudaStream_t user_stream) {
     if (cublasCreate(&handle) != CUBLAS_STATUS_SUCCESS) throw std::runtime_error("Failed to create cuBLAS handle");
+
     if (cusolverDnCreate(&cusolverHandle) != CUSOLVER_STATUS_SUCCESS) {
         cublasDestroy(handle);
         throw std::runtime_error("Failed to create cuSOLVER handle");
@@ -33,6 +34,7 @@ Handle::Handle(cudaStream_t user_stream) {
         if (this->isOwner) cudaStreamDestroy(this->stream);
         throw std::runtime_error("Failed to set cuSOLVER stream");
     }
+    cublasSetPointerMode(handle, CUBLAS_POINTER_MODE_DEVICE);
 }
 Handle* Handle::_get_or_create_handle(Handle* handle, std::unique_ptr<Handle>& out_ptr_unique) {
     if (handle) return handle;

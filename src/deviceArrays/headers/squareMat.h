@@ -52,7 +52,8 @@ public:
      * 
      * @param eVals Vector to store the computed eigenvalues.
      * @param eVecs Pointer to a SquareMat to store eigenvectors, or nullptr if eigenvectors are not needed.
-     * @param temp Optional temporary Mat used for internal computations (can be nullptr).
+     * @param temp Optional temporary Mat used for internal computations (can be nullptr).  It should be the same size
+     * as this matrix.
      * @param handle Optional GPU Handle for cuBLAS/cuSOLVER operations (can be nullptr to create a temporary handle).
      * 
      * @note This function assumes the matrix is square.

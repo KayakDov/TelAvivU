@@ -148,7 +148,11 @@ void Vec<T>::get(GpuArray<T> &dst, cudaStream_t stream) const {
 }
 
 template<typename T>
-void Vec<T>::set(std::istream &input_stream, bool isText, bool isColMjr, cudaStream_t stream) {
+void Vec<T>::set(std::istream &input_stream, bool isText, bool isColMjr, Handle* hand) {
+
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle* h = Handle::_get_or_create_handle(hand, temp_hand_ptr);
+
     StreamSet<T> helper(this->_rows, this->_cols, input_stream);
     while (helper.hasNext()) {
         helper.readChunk(isText);
@@ -157,13 +161,13 @@ void Vec<T>::set(std::istream &input_stream, bool isText, bool isColMjr, cudaStr
             helper.getChunkWidth(),
             1
         );
-        subVec.set(helper.getBuffer().data(), stream);
+        subVec.set(helper.getBuffer().data(), h->stream);
         helper.updateProgress();
     }
 }
 
 template<typename T>
-void Vec<T>::get(std::ostream &output_stream, bool isText, bool, cudaStream_t stream) const {
+void Vec<T>::get(std::ostream &output_stream, bool isText, bool printColMajor, Handle *hand) const {
     StreamGet<T> helper(this->_rows, this->_cols, output_stream);
     while (helper.hasNext()) {
         Vec<T> subArray = this->subVec(
@@ -171,7 +175,7 @@ void Vec<T>::get(std::ostream &output_stream, bool isText, bool, cudaStream_t st
             helper.getChunkWidth(),
             1
         );
-        subArray.get(helper.getBuffer().data(), stream);
+        subArray.get(helper.getBuffer().data(), hand->stream);
         helper.writeChunk(isText);
         helper.updateProgress();
     }

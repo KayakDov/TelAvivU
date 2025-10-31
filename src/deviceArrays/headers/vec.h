@@ -80,10 +80,10 @@ public:
     void get(GpuArray<T>& dst, cudaStream_t stream) const override;
 
     /// @copydoc GpuArray::set(std::istream&, bool, bool, cudaStream_t)
-    void set(std::istream& input_stream, bool isText, bool isColMjr, cudaStream_t stream) override;
+    void set(std::istream &input_stream, bool isText, bool isColMjr, Handle *hand) override;
 
     /// @copydoc GpuArray::get(std::ostream&, bool, bool, cudaStream_t) const
-    void get(std::ostream& output_stream, bool isText, bool isColMjr, cudaStream_t stream) const override;
+    void get(std::ostream &output_stream, bool isText, bool printColMajor, Handle *hand) const override;
 
     /// @copydoc GpuArray::fill
     void fill(T val, cudaStream_t stream) override;

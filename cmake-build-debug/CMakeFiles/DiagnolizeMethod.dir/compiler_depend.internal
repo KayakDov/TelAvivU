@@ -9,6 +9,7 @@ CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o
  /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Tensor.h
  /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/deviceArrays.h
  /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/handle.h
+ /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/singleton.h
  /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/squareMat.h
  /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/vec.h
  /usr/include/alloca.h
