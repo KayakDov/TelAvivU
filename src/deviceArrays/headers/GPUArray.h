@@ -7,14 +7,12 @@
 #include <vector> // For std::vector
 #include <memory> // For std::shared_ptr
 #include <stdexcept> // For std::runtime_error
-#include <cuda_runtime.h> // For CUDA runtime API
 #include <fstream> // For file I/O
-#include <string> // For std::string
 #include "handle.h"
 #include <iostream>
 #include <iomanip>
 #include "DeviceMemory.h"
-#include <array>
+#include "DeviceData2d.cuh"
 
 
 template <typename T> class GpuArray;
@@ -35,10 +33,10 @@ inline void cudaFreeDeleter(void* ptr) {
  */
 template <typename T>
 /**
- * @brief A class representing a GPU-accelerated multi-dimensional array.
+ * @brief A class representing a GPU-accelerated multidimensional array.
  *
  * The GpuArray class provides functionality for creating, managing, and performing
- * computations on multi-dimensional arrays in GPU memory. It is designed for high
+ * computations on multidimensional arrays in GPU memory. It is designed for high
  * performance computational tasks that benefit from GPU acceleration.
  *
  * The class ensures efficient memory allocation, transfer, and synchronization
@@ -245,14 +243,12 @@ public:
     [[nodiscard]] virtual size_t size() const = 0;
 
     /**
-     * @brief Retrieves the size in bytes of the memory required or occupied.
-     *
-     * This method is used to determine the amount of memory, in bytes, associated
-     * with the object or data structure implementing this interface.
+     * @brief Retrieves the size in bytes of the memory required.  Note that because of pitch, the memory occupied may
+     * be greater.
      *
      * @return The size in bytes as a `size_t` value.
      */
-    [[nodiscard]] virtual size_t bytes() const = 0;
+    [[nodiscard]] size_t bytes() const;
 
     /**
      * @brief Virtual method to copy data from host memory to device memory.
@@ -394,7 +390,7 @@ public:
      * @return A pointer to the GPU memory holding the array's data.
      * The pointer is valid as long as the GpuArray instance remains valid.
      */
-    T* data();
+    virtual DeviceData2d<T> toKernel();
 
     /**
      * The shared pointer to the gpu data.
@@ -415,7 +411,7 @@ public:
      * @warning Direct manipulation of the returned pointer should be done with caution
      *          to avoid data corruption or undefined behavior.
      */
-    [[nodiscard]] const T* data() const;
+    [[nodiscard]] DeviceData2d<T> toKernel() const;
 
     /**
      * Severs the connection to the gou memory.  If this is the last array using that block of memory, then the memory
@@ -574,6 +570,5 @@ std::ostream& operator<<(std::ostream& os, const GpuArray<T>& arr) {
     else throw std::runtime_error("Unable to detect the type of array, 1d or 2d.");
     return os;
 }
-
 
 #endif // DEVICEARRAYS_H

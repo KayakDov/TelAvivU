@@ -5,12 +5,15 @@
  * This class represents a 3-dimensional tensor (rows x cols x layers) and provides
  * methods to access layers, columns, and individual elements. It inherits from Mat<T>
  * and supports GPU storage and operations.
+ *
+ * Memory layout has each layer above subsequent layers.  So if this were a matrix, then the first column would include
+ * the first columns of each layer.
  */
 
 #ifndef BICGSTAB_TENSOR_H
 #define BICGSTAB_TENSOR_H
 
-#include "deviceArrays.h"
+#include "GPUArray.h"
 
 /**
  * @class Tensor
@@ -20,11 +23,15 @@
  * access methods for 3D data. It supports row/column/depth access and allows
  * retrieving individual elements as Singleton<T>.
  *
+ *Warning: many methods are not yet implemented.
+ *
  * @tparam T The data type of tensor elements (e.g., float, double, int32_t).
  */
 template <typename T>
-class Tensor final : public Mat<T> {
+class Tensor final : public GpuArray<T> {
 private:
+
+    Mat<T> utilityMatrix;
     /**
      * @brief Private constructor for internal use.
      *
@@ -40,10 +47,19 @@ private:
     Tensor(size_t rows, size_t cols, size_t layers, size_t ld, std::shared_ptr<T> _ptr);
 
 public:
+
+    const size_t _layers;
     /**
      * @brief Inherit get() methods from Mat<T> to avoid hiding them.
      */
     using Mat<T>::get;
+
+    /**
+     * This method is a bit dangerous to call without understanding data layout, so bet to see if one of the other layer
+     * methods meets your needs first.
+     * @return A matrix extracted from this tensor.
+     */
+    Mat<T> subMatrix(size_t startRow, size_t startCol, size_t startLayer, size_t height, size_t width, size_t ld);
 
     /**
      * @brief Factory method to create a Tensor of given dimensions.
@@ -61,10 +77,21 @@ public:
     /**
      * @brief Returns a specific layer of the tensor as a Mat<T>.
      *
-     * @param index Layer index (0-based).
+     * @param deptIndex Layer index (0-based).
      * @return Mat<T> representing the requested layer.
      */
-    Mat<T> layer(size_t index);
+    Mat<T> layerRowCol(size_t deptIndex);
+
+    /**
+     * @brief Returns a specific layer of the tensor as a Mat<T>.  This layer is perpendicular
+     * to the standard layer, and is the set cross product of a column and a depth.
+     *
+     * For indexing, the column index is the layer and the row index is the row index.
+     *
+     * @param colIndex The index of the column.(0-based).
+     * @return Mat<T> representing the requested layer.
+     */
+    Mat<T> layerColDepth(size_t colIndex);
 
     /**
      * @brief Returns a column-depth vector at the given row and column.
@@ -74,6 +101,22 @@ public:
      * @return Vec<T> representing the depth vector at the specified position.
      */
     Vec<T> depth(size_t row, size_t col);
+    /**
+     * @brief Returns a column-depth vector at the given row and column.
+     *
+     * @param row Row index (0-based).
+     * @param col Column index (0-based).
+     * @return Vec<T> representing the depth vector at the specified position.
+     */
+    Vec<T> row(size_t row, size_t layer);
+    /**
+     * @brief Returns a column-depth vector at the given row and column.
+     *
+     * @param row Row index (0-based).
+     * @param col Column index (0-based).
+     * @return Vec<T> representing the depth vector at the specified position.
+     */
+    Vec<T> col(size_t col, size_t layer);
 
     /**
      * @brief Returns a single element of the tensor as a Singleton<T>.
@@ -84,6 +127,35 @@ public:
      * @return Singleton<T> representing the single element at the specified location.
      */
     Singleton<T> get(size_t row, size_t col, size_t layer);
+
+    /**
+     * @return The size of a layer
+     */
+    [[nodiscard]] size_t layerSize() const;
+
+    /**
+     * The data for this destined for a kernel.
+     * @return
+     */
+    DeviceData3d<T> toKernel() override;
+
+    /**
+     *
+     * @return The size of this entire tensor.
+     */
+    [[nodiscard]] size_t size() const override;
+
+    void set(const T *hostData, cudaStream_t stream) override;
+
+    void get(T *hostData, cudaStream_t stream) const override;
+
+    void set(const GpuArray<T> &src, cudaStream_t stream) override;
+
+    void get(GpuArray<T> &dst, cudaStream_t stream) const override;
+
+    void set(std::istream &input_stream, bool isText, bool isColMjr, Handle *hand) override;
+
+    void get(std::ostream &output_stream, bool isText, bool printColMajor, Handle *hand) const override;
 };
 
 #endif //BICGSTAB_TENSOR_H

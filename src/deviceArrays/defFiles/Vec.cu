@@ -63,9 +63,9 @@ void Vec<T>::mult(
 
 
     if constexpr (std::is_same_v<T, float>)
-        cublasSdot(h->handle, this->_cols, this->data(), this->_ld, other.data(), other._ld, result.data());
+        cublasSdot(h->handle, this->_cols, this->data(), this->_ld, other.toKernel(), other._ld, result.toKernel());
     else if constexpr (std::is_same_v<T, double>)
-        cublasDdot(h->handle, this->_cols, this->data(), this->_ld, other.data(), other._ld, result.data());
+        cublasDdot(h->handle, this->_cols, this->data(), this->_ld, other.toKernel(), other._ld, result.toKernel());
     else static_assert(!std::is_same_v<T, float> && !std::is_same_v<T, double>, "Vec::add unsupported type.");
 }
 
@@ -122,11 +122,11 @@ void Vec<T>::get(T *hostData, cudaStream_t stream) const {
 template<typename T>
 void Vec<T>::set(const GpuArray<T> &src, cudaStream_t stream) {
     if (this->_ld == 1 && src._ld == 1) {
-        cudaMemcpyAsync(this->_ptr.get(), src.data(), bytes(), cudaMemcpyDeviceToDevice, stream);
+        cudaMemcpyAsync(this->_ptr.get(), src.toKernel(), bytes(), cudaMemcpyDeviceToDevice, stream);
     } else {
         cudaMemcpy2DAsync(
             this->_ptr.get(), this->_ld * sizeof(T),
-            src.data(), src._ld * sizeof(T),
+            src.toKernel(), src._ld * sizeof(T),
             sizeof(T), this->_cols,
             cudaMemcpyDeviceToDevice, stream
         );
@@ -136,10 +136,10 @@ void Vec<T>::set(const GpuArray<T> &src, cudaStream_t stream) {
 template<typename T>
 void Vec<T>::get(GpuArray<T> &dst, cudaStream_t stream) const {
     if (this->_ld == 1 && dst._ld == 1) {
-        cudaMemcpyAsync(dst.data(), this->_ptr.get(), bytes(), cudaMemcpyDeviceToDevice, stream);
+        cudaMemcpyAsync(dst.toKernel(), this->_ptr.get(), bytes(), cudaMemcpyDeviceToDevice, stream);
     } else {
         cudaMemcpy2DAsync(
-            dst.data(), dst._ld * sizeof(T),
+            dst.toKernel(), dst._ld * sizeof(T),
             this->_ptr.get(), this->_ld * sizeof(T),
             sizeof(T), this->_cols,
             cudaMemcpyDeviceToDevice, stream
@@ -161,7 +161,7 @@ void Vec<T>::set(std::istream &input_stream, bool isText, bool isColMjr, Handle*
             helper.getChunkWidth(),
             1
         );
-        subVec.set(helper.getBuffer().data(), h->stream);
+        subVec.set(helper.getBuffer().toKernel(), h->stream);
         helper.updateProgress();
     }
 }
@@ -175,16 +175,15 @@ void Vec<T>::get(std::ostream &output_stream, bool isText, bool printColMajor, H
             helper.getChunkWidth(),
             1
         );
-        subArray.get(helper.getBuffer().data(), hand->stream);
+        subArray.get(helper.getBuffer().toKernel(), hand->stream);
         helper.writeChunk(isText);
         helper.updateProgress();
     }
 }
 
 template<typename T>
-__global__ void fill1dKernel(T *__restrict__ a, const size_t size, const T val, const size_t stride) {
-    if (const size_t idx = blockIdx.x * blockDim.x + threadIdx.x; idx < size)
-        a[idx * stride] = val;
+__global__ void fill1dKernel(DeviceData1d<T> a, const T val) {
+    if (const size_t idx = blockIdx.x * blockDim.x + threadIdx.x; idx < a.cols) a[idx] = val;
 }
 
 
@@ -216,9 +215,9 @@ void Vec<T>::add(const Vec<T> &x, const Singleton<T> *alpha, Handle *handle) {
     const Singleton<T> *a = this->_get_or_create_target(static_cast<T>(1), *h, alpha, temp_a_ptr);
 
     if constexpr (std::is_same_v<T, float>)
-        cublasSaxpy(h->handle, this->_cols, a->data(), x.data(), x._ld, this->data(), this->_ld);
+        cublasSaxpy(h->handle, this->_cols, a->data(), x.toKernel(), x._ld, this->data(), this->_ld);
     else if constexpr (std::is_same_v<T, double>)
-        cublasDaxpy(h->handle, this->_cols, a->data(), x.data(), x._ld, this->data(), this->_ld);
+        cublasDaxpy(h->handle, this->_cols, a->data(), x.toKernel(), x._ld, this->data(), this->_ld);
     else throw std::invalid_argument("Vec::add unsupported type.");
 }
 
@@ -237,9 +236,9 @@ void Vec<T>::mult(const Singleton<T> &alpha, Handle *handle) {
     Handle *h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
 
     if constexpr (std::is_same_v<T, float>)
-        cublasSscal(h->handle, this->_cols, alpha.data(), this->data(), this->_ld);
+        cublasSscal(h->handle, this->_cols, alpha.toKernel(), this->data(), this->_ld);
     else if constexpr (std::is_same_v<T, double>)
-        cublasDscal(h->handle, this->_cols, alpha.data(), this->data(), this->_ld);
+        cublasDscal(h->handle, this->_cols, alpha.toKernel(), this->data(), this->_ld);
     else throw std::invalid_argument("Unsupported type.");
 }
 
@@ -253,14 +252,14 @@ setup_kernel_double(curandState *state, unsigned long long seed, size_t size, si
     if (unsigned int id = blockIdx.x * blockDim.x + threadIdx.x; id < size) curand_init(seed, id, 0, &state[id]);
 }
 
-__global__ void fillRandomKernel_float(float *array, size_t size, size_t stride, curandState *state) {
-    if (const size_t id = blockIdx.x * blockDim.x + threadIdx.x; id < size)
-        array[id * stride] = curand_uniform(&state[id]);
+__global__ void fillRandomKernel_float(DeviceData1d<float> array, curandState *state) {
+    if (const size_t id = blockIdx.x * blockDim.x + threadIdx.x; id < array.cols)
+        array[id] = curand_uniform(&state[id]);
 }
 
-__global__ void fillRandomKernel_double(double *array, size_t size, size_t stride, curandState *state) {
-    if (unsigned int id = blockIdx.x * blockDim.x + threadIdx.x; id < size)
-        array[id * stride] = curand_uniform_double(&state[id]);
+__global__ void fillRandomKernel_double(DeviceData1d<double> array, curandState *state) {
+    if (unsigned int id = blockIdx.x * blockDim.x + threadIdx.x; id < array.cols)
+        array[id] = curand_uniform_double(&state[id]);
 }
 
 template<typename T>
@@ -281,22 +280,20 @@ void Vec<T>::fillRandom(Handle *handle) {
         setup_kernel_float<<<numBlocks, threadsPerBlock, 0, h->stream>>>(devStates.get(), 0, this->size(), this->_ld);
         h->synch();
         fillRandomKernel_float<<<numBlocks, threadsPerBlock, 0, h->stream>>>(
-            this->data(), this->_cols, this->_ld, devStates.get());
+            this->data(), devStates.get());
     } else if constexpr (std::is_same_v<T, double>) {
         setup_kernel_double<<<numBlocks, threadsPerBlock, 0, h->stream>>>(devStates.get(), 0, this->size(), this->_ld);
         h->synch();
         fillRandomKernel_double<<<numBlocks, threadsPerBlock, 0, h->stream>>>(
-            this->data(), this->_cols, this->_ld, devStates.get());
+            this->data(),  devStates.get());
     } else throw std::invalid_argument("Unsupported type.");
 }
 
 
 template<typename T>
-__global__ void EBEPowKernel(T *data, size_t size, size_t stride, const T *t, const T *n) {
-    if (size_t idx = blockIdx.x * blockDim.x + threadIdx.x; idx < size) {
-        size_t offset = idx * stride;
-        data[offset] = (*t) * pow(data[offset], *n);
-    }
+__global__ void EBEPowKernel(DeviceData1d<T> data, const T *t, const T *n) {
+    if (size_t idx = blockIdx.x * blockDim.x + threadIdx.x; idx < data.cols)
+        data[idx] = (*t) * pow(data[idx], *n);
 }
 
 template<typename T>
@@ -307,8 +304,8 @@ void Vec<T>::EBEPow(const Singleton<T> &t, const Singleton<T> &n, cudaStream_t s
     int gridSize = (this->_cols + blockSize - 1) / blockSize;
 
     EBEPowKernel<<<gridSize, blockSize, 0, stream>>>(
-        this->data(), this->_cols, this->_ld,
-        t.data(), n.data()
+        this->data(),
+        t.toKernel(), n.toKernel()
     );
 
     CHECK_CUDA_ERROR(cudaGetLastError());
@@ -316,10 +313,10 @@ void Vec<T>::EBEPow(const Singleton<T> &t, const Singleton<T> &n, cudaStream_t s
 
 
 template<typename T>
-__global__ void setSumKernel(T *d_result, const T *d_a, const T *d_b, const T *alpha, const T *beta,
+__global__ void setSumKernel(DeviceData1d<T> result, DeviceData1d<T> a, DeviceData1d<T> b, const T *alpha, const T *beta,
                              const size_t size) {
     if (size_t idx = blockIdx.x * blockDim.x + threadIdx.x; idx < size)
-        d_result[idx] = *alpha * d_a[idx] + *beta * d_b[idx];
+        result[idx] = *alpha * a[idx] + *beta * b[idx];
 }
 
 template<typename T>
@@ -332,11 +329,11 @@ void Vec<T>::setSum(const Vec<T> &a, const Vec<T> &b, const Singleton<T> &alpha,
     int numBlocks = (this->size() + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
 
     setSumKernel<<<numBlocks, THREADS_PER_BLOCK, 0, h->stream>>>(
-        this->data(), // Destination: 'this' vector
-        a.data(), // Input 1: 'a' vector
-        b.data(), // Input 2: 'b' vector
-        alpha.data(), // Scalar alpha (passed by value)
-        beta.data(), // Scalar beta (passed by value)
+        this->toKernel(), // Destination: 'this' vector
+        a.toKernel(), // Input 1: 'a' vector
+        b.toKernel(), // Input 2: 'b' vector
+        alpha.toKernel(), // Scalar alpha (passed by value)
+        beta.toKernel(), // Scalar beta (passed by value)
         this->size() // Size
     );
 }
@@ -360,12 +357,17 @@ void Vec<T>::setDifference(const Vec<T> &a, const Vec<T> &b, const Singleton<T> 
 
     setDifferenceKernel<<<numBlocks, THREADS_PER_BLOCK, 0, h->stream>>>(
         this->data(), // Destination: 'this' vector
-        a.data(), // Input 1: 'a' vector
-        b.data(), // Input 2: 'b' vector
-        alpha.data(), // Scalar alpha (passed by value)
-        beta.data(), // Scalar beta (passed by value)
+        a.toKernel(), // Input 1: 'a' vector
+        b.toKernel(), // Input 2: 'b' vector
+        alpha.toKernel(), // Scalar alpha (passed by value)
+        beta.toKernel(), // Scalar beta (passed by value)
         this->size() // Size
     );
+}
+
+template<typename T>
+DeviceData1d<T> Vec<T>::toKernel() {
+    return DeviceData1d<T>(this->size(), this->_ld, this->_ptr.get());
 }
 
 

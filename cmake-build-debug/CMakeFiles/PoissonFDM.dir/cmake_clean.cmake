@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/PoissonFDM.dir/link.d"
   "CMakeFiles/PoissonFDM.dir/cmake_device_link.o"
-  "CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o"
-  "CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o.d"
+  "CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o"
+  "CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o.d"
   "PoissonFDM"
   "PoissonFDM.pdb"
 )

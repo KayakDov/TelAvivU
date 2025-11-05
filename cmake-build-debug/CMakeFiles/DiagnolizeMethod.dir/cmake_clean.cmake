@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/DiagnolizeMethod.dir/link.d"
   "CMakeFiles/DiagnolizeMethod.dir/cmake_device_link.o"
-  "CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o"
-  "CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o.d"
+  "CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o"
+  "CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o.d"
   "DiagnolizeMethod"
   "DiagnolizeMethod.pdb"
 )

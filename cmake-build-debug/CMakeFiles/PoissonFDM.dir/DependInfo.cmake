@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/dov/Documents/LaplaceFiniteDifference/src/Poisson/FiniteDiffMethodPoisson.cu" "CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o" "gcc" "CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o.d"
+  "/home/dov/Documents/LaplaceFiniteDifference/src/Poisson/DirectSolver.cu" "CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o" "gcc" "CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o.d"
   "" "PoissonFDM" "gcc" "CMakeFiles/PoissonFDM.dir/link.d"
   )
 

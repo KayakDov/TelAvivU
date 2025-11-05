@@ -61,7 +61,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 
 # --- 3. Test Executable (PoissonFDM) ---
 # Use only 'src/Poisson/FiniteDiffMethodPoisson.cu' and link the shared library.
-add_executable(PoissonFDM src/Poisson/FiniteDiffMethodPoisson.cu)
+add_executable(PoissonFDM src/Poisson/DirectSolver.cu)
 target_include_directories(PoissonFDM PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(PoissonFDM PRIVATE BiCGSTAB_LIB)
 
@@ -71,7 +71,7 @@ set_target_properties(PoissonFDM PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 # --- 4. Test Executable (DiagnolizeMethod) ---
 # Use only 'src/Poisson/FastDiagonalizationMethod.cu' and link the shared library.
-add_executable(DiagnolizeMethod src/Poisson/FastDiagonalizationMethod.cu)
+add_executable(DiagnolizeMethod src/Poisson/FastDiagonalization.cu)
 target_include_directories(DiagnolizeMethod PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(DiagnolizeMethod PRIVATE BiCGSTAB_LIB)
 

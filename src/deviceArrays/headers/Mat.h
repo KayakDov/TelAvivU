@@ -2,7 +2,7 @@
 #ifndef BICGSTAB_MAT_H
 #define BICGSTAB_MAT_H
 
-#include "deviceArrays.h"
+#include "GPUArray.h"
 
 /**
  * @brief Abstract base class for GPU-backed matrices.
@@ -30,6 +30,7 @@ protected:
     Mat(size_t rows, size_t cols, size_t ld, std::shared_ptr<T> _ptr);
 
 public:
+    ~Mat() override = default;
 
     /**
      * Creates a vector that is a window into part of this matrix, or the underlying data.
@@ -191,6 +192,20 @@ public:
      * @note Not yet implemented.
      */
     virtual void normalizeCols(size_t setRowTo1, Handle* handle);
+
+
+    /**
+     * Creates a tensor that is a window into this data.
+     * @param layers The number of layers in the tensor.  Be sure that layers is divisible by _rows.
+     * @return a tensor that is a window into this data.
+     */
+    Tensor<T> tensor(size_t layers);
+
+
+    static void batchMult(const Singleton<T> &alpha, const Mat &a1, size_t strideA,
+                          const Mat &b1, size_t strideB, const Singleton<T> &beta,
+                          Mat &c1, size_t strideC,
+                          bool transposeA, bool transposeB, Handle &hand, size_t batchCount);
 
 };
 #endif //BICGSTAB_MAT_H

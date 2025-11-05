@@ -8,6 +8,8 @@
 
 #include <iostream>
 
+#include "../headers/GridDim.h"
+
 template <typename T>
 Mat<T> Mat<T>::mult(
     const Mat<T>& other,
@@ -51,9 +53,9 @@ void Mat<T>::mult(
     const Singleton<T>* b = this->_get_or_create_target(0, *h, beta, temp_b_ptr);
 
     if constexpr(std::is_same_v<T, float>)
-        cublasSgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, a->data(), this->data(), this->_ld, other.data(), other._ld, b->data(), result.data(), result._ld);
+        cublasSgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, a->data(), this->data(), this->_ld, other.toKernel(), other._ld, b->data(), result.toKernel(), result._ld);
     else if constexpr(std::is_same_v<T, double>)
-        cublasDgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, a->data(), this->data(), this->_ld, other.data(), other._ld, b->data(), result.data(), result._ld);
+        cublasDgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, a->data(), this->data(), this->_ld, other.toKernel(), other._ld, b->data(), result.toKernel(), result._ld);
     else throw std::invalid_argument("Unsupported type.");
 }
 
@@ -112,7 +114,7 @@ template <typename T>
 void Mat<T>::set(const GpuArray<T>& src, cudaStream_t stream) {
     cudaMemcpy2DAsync(
         this->_ptr.get(), this->_ld * sizeof(T),
-        src.data(), src._ld * sizeof(T),
+        src.toKernel(), src._ld * sizeof(T),
         this->_rows * sizeof(T), this->_cols,
         cudaMemcpyDeviceToDevice, stream
     );
@@ -121,7 +123,7 @@ void Mat<T>::set(const GpuArray<T>& src, cudaStream_t stream) {
 template <typename T>
 void Mat<T>::get(GpuArray<T>& dst, cudaStream_t cuStream) const {
     cudaMemcpy2DAsync(
-        dst.data(), dst._ld * sizeof(T),
+        dst.toKernel(), dst._ld * sizeof(T),
         this->_ptr.get(), this->_ld * sizeof(T),
         this->_rows * sizeof(T), this->_cols,
         cudaMemcpyDeviceToDevice, cuStream
@@ -155,7 +157,7 @@ void Mat<T>::set(std::istream& input_stream, bool isText, bool isColMjr, Handle*
             helper.getChunkWidth()
         );
 
-        subMat.set(helper.getBuffer().data(), h->stream);
+        subMat.set(helper.getBuffer().toKernel(), h->stream);
 
         h->synch();//TODO: this might be avoidable with multi threading
 
@@ -189,7 +191,7 @@ void Mat<T>::get(std::ostream& output_stream, bool isText, bool printColMajor, H
             helper.getChunkWidth()
         );
 
-        subMat.get(helper.getBuffer().data(), h->stream);
+        subMat.get(helper.getBuffer().toKernel(), h->stream);
         h->synch();//TODO: this might be avoidable with multi threading
 
         helper.writeChunk(isText);
@@ -225,25 +227,25 @@ Mat<T> Mat<T>::plus(
     const Singleton<T>* b = this->_get_or_create_target(0, *h, beta, temp_b_ptr);
     
     if constexpr (std::is_same_v<T, float>)
-        cublasSgeam(
+        CHECK_CUDA_ERROR(cublasSgeam(
             h->handle, 
             transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
             transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
             this->_rows, this->_cols, 
-            a->data(), x.data(), x._ld,
-            b->data(), this->data(), this->_ld,
+            a->toKernel(), x.toKernel(), x._ld,
+            b->toKernel(), this->data(), this->_ld,
             resPtr->data(), resPtr->_ld
-        );
+        ));
     else if constexpr (std:: is_same_v<T, double>)
-        cublasDgeam(
+        CHECK_CUDA_ERROR(cublasDgeam(
             h->handle, 
             transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
             transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
             this->_rows, this->_cols, 
-            a->data(), x.data(), x._ld,
+            a->data(), x.toKernel(), x._ld,
             b->data(), this->data(), this->_ld,
             resPtr->data(), resPtr->_ld
-        );
+        ));
     else throw std::invalid_argument("Unsupported type.");
 
     return *resPtr;
@@ -267,21 +269,13 @@ Mat<T> Mat<T>::minus(
     std::unique_ptr<Singleton<T>> temp_b_ptr;
     const Singleton<T>* b = this->_get_or_create_target(beta ? -(beta->get()) : static_cast<T>(-1), *h, beta, temp_b_ptr);
 
-
-
-
     return this->plus(x, result, a, b, transposeA, transposeB, h);
 }
 
 template <typename T>
-__global__ void scaleKernel(T* __restrict__  matrix, size_t rows, size_t cols, size_t ld, const T* alpha) {
-    size_t col = blockIdx.x * blockDim.x + threadIdx.x;
-    size_t row = blockIdx.y * blockDim.y + threadIdx.y;
-
-    if (row < rows && col < cols) matrix[row + col * ld] *= *alpha;
-    
+__global__ void scaleKernel(DeviceData2d<T>  matrix, const T* alpha) {
+    if (GridInd2d ind; ind < matrix) matrix(ind) *= *alpha;
 }
-
 
 template <typename T>
 void Mat<T>::mult(const Singleton<T>& alpha, Handle* handle) {
@@ -297,11 +291,8 @@ void Mat<T>::mult(const Singleton<T>& alpha, Handle* handle) {
     );
 
     scaleKernel<<<numBlocks, threadsPerBlock, 0, h->stream>>>(
-        this->data(),
-        this->_rows,
-        this->_cols,
-        this->_ld,
-        alpha.data()
+        this->toKernel(),
+        alpha.toKernel()
     );
 }
 
@@ -325,29 +316,29 @@ void Mat<T>::transpose(
 
     if constexpr (std::is_same_v<T, float>) {
 
-        cublasSgeam(
+        CHECK_CUDA_ERROR(cublasSgeam(
             h->handle, 
             CUBLAS_OP_T, // Transpose A
             CUBLAS_OP_N, // Don't transpose B (it's not used)
             this->_cols, // Result rows
             this->_rows, // Result columns
-            Singleton<T>::ONE.data(),
+            Singleton<T>::ONE.toKernel(),
             this->data(), this->_ld,
-            Singleton<T>::ZERO.data(), nullptr, this->_ld, // B is not referenced since beta=0
-            result.data(), result._ld
-        );
+            Singleton<T>::ZERO.toKernel(), nullptr, this->_ld, // B is not referenced since beta=0
+            result.toKernel(), result._ld
+        ));
     } else if constexpr (std::is_same_v<T, double>) {
-        cublasDgeam(
+        CHECK_CUDA_ERROR(cublasDgeam(
             h->handle, 
             CUBLAS_OP_T, 
             CUBLAS_OP_N,
             this->_cols,
             this->_rows,
-            Singleton<T>::ONE.data(),
+            Singleton<T>::ONE.toKernel(),
             this->data(), this->_ld,
-            Singleton<T>::ZERO.data(), nullptr, this->_ld,
-            result.data(), result._ld
-        );
+            Singleton<T>::ZERO.toKernel(), nullptr, this->_ld,
+            result.toKernel(), result._ld
+        ));
     }
 }
 
@@ -424,14 +415,6 @@ Vec<T> Mat<T>::diag(int32_t index) {
     }
 }
 
-// Assuming you have a standard Deleter for cudaFree
-struct cudaFreeDeleter {
-    void operator()(void* ptr) const {
-        if (ptr) cudaFree(ptr);
-    }
-};
-
-
 /**
  * This method multiplies each column by a constant so that the selected row has a 1 in it.
  * @tparam T  The type of data.
@@ -443,18 +426,13 @@ struct cudaFreeDeleter {
  */
 template <typename T>
 __global__ void normalizeByRowKernel(
-    T* __restrict__ A,
-    const size_t normalizeByRow,
-    const size_t height, const size_t width, const size_t ld
+    DeviceData2d<T> A,
+    const size_t normalizeByRow
 ) {
-    const size_t row = blockIdx.y * blockDim.y + threadIdx.y;
-    const size_t col = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if (row < height && col < width){
-        const size_t colInd = col * ld;
-        const T val = A[colInd + normalizeByRow];
-        if (val != 0) A[colInd + row] *= ( static_cast<T>(1) / val );
-    }
+    if (const GridInd2d ind; ind < A)
+        if (const T val = A(normalizeByRow, ind.col); val != 0) A(ind) *= ( static_cast<T>(1) / val );
+
 }
 
 template <typename T>
@@ -469,13 +447,41 @@ void Mat<T>::normalizeCols(size_t setRowTo1, Handle* handle) {
         (this->_rows + blockDim.y - 1) / blockDim.y
     );
 
-    normalizeByRowKernel<T><<<gridDim, blockDim, 0, h->stream>>>(
-        this->data(),
-        setRowTo1,
-        this->_rows,
-        this ->_cols,
-        this->_ld
-    );
+    normalizeByRowKernel<T><<<gridDim, blockDim, 0, h->stream>>>(this->data(), setRowTo1);
+}
+
+template<typename T>
+void Mat<T>::batchMult(
+    const Singleton<T>& alpha,
+    const Mat<T>& a1, const size_t strideA,
+    const Mat<T>& b1, const size_t strideB,
+    const Singleton<T>& beta,
+    Mat<T>& c1, const size_t strideC,
+    const bool transposeA, const bool transposeB,
+    Handle& hand, const size_t batchCount
+    ) {
+
+    const size_t m = transposeA ? a1._cols : a1._rows,
+        n = transposeB ? b1._rows : b1._cols,
+        k = transposeA ? a1._rows : a1._cols;
+
+    cublasOperation_t transA = transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
+        transB = transposeB ? CUBLAS_OP_T : CUBLAS_OP_N;
+
+    if constexpr (std::is_same_v<T, float>) {
+        CHECK_CUDA_ERROR(cublasSgemmStridedBatched(hand, transA, transB, m, n, k,
+            alpha.toKernel(), a1.toKernel(), a1._ld, strideA,
+            b1.toKernel(), b1._ld, strideB, beta.toKernel(),
+            c1.toKernel(), c1._ld, strideC, batchCount));
+    }
+
+    else if constexpr (std:: is_same_v<T, double>){
+        CHECK_CUDA_ERROR(cublasDgemmStridedBatched(hand, transA, transB, m, n, k,
+            alpha.toKernel(), a1.toKernel(), a1._ld, strideA,
+            b1.toKernel(), b1._ld, strideB, beta.toKernel(),
+            c1.toKernel(), c1._ld, strideC, batchCount));
+    }
+    else throw std::invalid_argument("Unsupported type.");
 }
 
 template class Mat<float>;

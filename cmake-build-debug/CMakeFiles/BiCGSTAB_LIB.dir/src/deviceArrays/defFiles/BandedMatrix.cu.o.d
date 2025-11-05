@@ -281,7 +281,7 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o : /home/
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/bandedMat.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/vec.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/Mat.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/deviceArrays.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/GPUArray.h \
     /usr/include/c++/13/vector \
     /usr/include/c++/13/bits/stl_uninitialized.h \
     /usr/include/c++/13/bits/stl_vector.h \
@@ -339,8 +339,9 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o : /home/
     /usr/include/c++/13/sstream \
     /usr/include/c++/13/bits/sstream.tcc \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/DeviceMemory.h \
-    /usr/include/c++/13/array \
-    /usr/include/c++/13/compare \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/DeviceData2d.cuh \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/GridDim.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Mat.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/Tensor.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/KernelSupport.cuh \
     /usr/include/c++/13/cstdint \

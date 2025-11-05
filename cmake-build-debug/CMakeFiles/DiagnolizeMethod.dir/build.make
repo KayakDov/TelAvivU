@@ -72,29 +72,29 @@ include CMakeFiles/DiagnolizeMethod.dir/flags.make
 CMakeFiles/DiagnolizeMethod.dir/codegen:
 .PHONY : CMakeFiles/DiagnolizeMethod.dir/codegen
 
-CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o: CMakeFiles/DiagnolizeMethod.dir/flags.make
-CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o: CMakeFiles/DiagnolizeMethod.dir/includes_CUDA.rsp
-CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o: /home/dov/Documents/LaplaceFiniteDifference/src/Poisson/FastDiagonalizationMethod.cu
-CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o: CMakeFiles/DiagnolizeMethod.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dov/Documents/LaplaceFiniteDifference/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CUDA object CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o"
-	/usr/local/cuda-12.9/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o -MF CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o.d -x cu -rdc=true -c /home/dov/Documents/LaplaceFiniteDifference/src/Poisson/FastDiagonalizationMethod.cu -o CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o
+CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o: CMakeFiles/DiagnolizeMethod.dir/flags.make
+CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o: CMakeFiles/DiagnolizeMethod.dir/includes_CUDA.rsp
+CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o: /home/dov/Documents/LaplaceFiniteDifference/src/Poisson/FastDiagonalization.cu
+CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o: CMakeFiles/DiagnolizeMethod.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dov/Documents/LaplaceFiniteDifference/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CUDA object CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o"
+	/usr/local/cuda-12.9/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o -MF CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o.d -x cu -rdc=true -c /home/dov/Documents/LaplaceFiniteDifference/src/Poisson/FastDiagonalization.cu -o CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o
 
-CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CUDA source to CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.i"
+CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CUDA source to CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.i"
 	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_PREPROCESSED_SOURCE
 
-CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CUDA source to assembly CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.s"
+CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CUDA source to assembly CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.s"
 	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
 
 # Object files for target DiagnolizeMethod
 DiagnolizeMethod_OBJECTS = \
-"CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o"
+"CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o"
 
 # External object files for target DiagnolizeMethod
 DiagnolizeMethod_EXTERNAL_OBJECTS =
 
-CMakeFiles/DiagnolizeMethod.dir/cmake_device_link.o: CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o
+CMakeFiles/DiagnolizeMethod.dir/cmake_device_link.o: CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o
 CMakeFiles/DiagnolizeMethod.dir/cmake_device_link.o: CMakeFiles/DiagnolizeMethod.dir/build.make
 CMakeFiles/DiagnolizeMethod.dir/cmake_device_link.o: CMakeFiles/DiagnolizeMethod.dir/compiler_depend.ts
 CMakeFiles/DiagnolizeMethod.dir/cmake_device_link.o: libBiCGSTAB_LIB.a
@@ -118,12 +118,12 @@ CMakeFiles/DiagnolizeMethod.dir/build: CMakeFiles/DiagnolizeMethod.dir/cmake_dev
 
 # Object files for target DiagnolizeMethod
 DiagnolizeMethod_OBJECTS = \
-"CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o"
+"CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o"
 
 # External object files for target DiagnolizeMethod
 DiagnolizeMethod_EXTERNAL_OBJECTS =
 
-DiagnolizeMethod: CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o
+DiagnolizeMethod: CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o
 DiagnolizeMethod: CMakeFiles/DiagnolizeMethod.dir/build.make
 DiagnolizeMethod: CMakeFiles/DiagnolizeMethod.dir/compiler_depend.ts
 DiagnolizeMethod: libBiCGSTAB_LIB.a

@@ -8,6 +8,7 @@
 #include "../headers/singleton.h"
 #include "../headers/vec.h"
 #include "../headers/bandedMat.h"
+#include "../headers/GridDim.h"
 
 
 template<typename T>
@@ -101,10 +102,10 @@ void SquareMat<T>::eigen(
     CHECK_CUSOLVER_ERROR(cusolverDnXgeev_bufferSize(
         h->cusolverHandle, nullptr,
         CUSOLVER_EIG_MODE_NOVECTOR, findVectors, n,
-        dataType, copy->data(), copy->_ld,
-        dataType, eValsPtr->data(),
+        dataType, copy->toKernel(), copy->_ld,
+        dataType, eValsPtr->toKernel(),
         dataType, nullptr, n,
-        dataType, eVecs == nullptr ? nullptr : eVecs->data(), eVecs == nullptr? n : eVecs->_ld,
+        dataType, eVecs == nullptr ? nullptr : eVecs->toKernel(), eVecs == nullptr? n : eVecs->_ld,
         dataType,
         &workDeviceBytes,
         &workHostBytes
@@ -117,28 +118,26 @@ void SquareMat<T>::eigen(
     CHECK_CUSOLVER_ERROR(cusolverDnXgeev(
         h->cusolverHandle, nullptr,
         CUSOLVER_EIG_MODE_NOVECTOR, findVectors, n,
-        dataType, copy->data(), copy->_ld,
-        dataType, eValsPtr->data(),
+        dataType, copy->toKernel(), copy->_ld,
+        dataType, eValsPtr->toKernel(),
         dataType, nullptr, n,
-        dataType, eVecs == nullptr ? nullptr : eVecs->data(), eVecs == nullptr ? n : eVecs->_ld,
+        dataType, eVecs == nullptr ? nullptr : eVecs->toKernel(), eVecs == nullptr ? n : eVecs->_ld,
         dataType,
-        workspaceDevice.data(),
+        workspaceDevice.toKernel(),
         workDeviceBytes,
         workspaceHost.data(),
         workHostBytes,
-        info_dev.data()
+        info_dev.toKernel()
     ));
 
     // processInfo(info_dev);
 }
 
 template <typename T>
-__global__ void setToIdentityKernel(T* __restrict__ mat, const size_t height, const size_t ld) {
-    const size_t row = blockIdx.y * blockDim.y + threadIdx.y;
-    const size_t col = blockIdx.x * blockDim.x + threadIdx.x;
+__global__ void setToIdentityKernel(DeviceData2d<T> mat) {
 
-    if (row < height && col < height)
-        mat[col * ld + row] = row == col ? 1 : 0;
+    if (const GridInd2d ind; ind < mat)
+        mat[ind] = ind.row == ind.col ? 1 : 0;
 
 }
 
@@ -153,9 +152,7 @@ SquareMat<T> SquareMat<T>::setToIdentity(cudaStream_t stream) {
     );
 
     setToIdentityKernel<T><<<gridDim, blockDim, 0, stream>>>(
-        this->data(),
-        this->_rows,
-        this->_ld
+        this->toKernel()
     );
     return *this;
 }

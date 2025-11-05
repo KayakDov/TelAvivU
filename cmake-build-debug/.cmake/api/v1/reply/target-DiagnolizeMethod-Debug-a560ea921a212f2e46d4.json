@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "PoissonFDM"
+			"path" : "DiagnolizeMethod"
 		}
 	],
 	"backtrace" : 1,
@@ -29,13 +29,13 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 64,
+				"line" : 74,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 66,
+				"line" : 76,
 				"parent" : 0
 			},
 			{
@@ -111,7 +111,7 @@
 			{
 				"command" : 4,
 				"file" : 0,
-				"line" : 65,
+				"line" : 75,
 				"parent" : 0
 			}
 		]
@@ -159,7 +159,7 @@
 			"id" : "BiCGSTAB_LIB::@6890427a1f51a3e7e1df"
 		}
 	],
-	"id" : "PoissonFDM::@6890427a1f51a3e7e1df",
+	"id" : "DiagnolizeMethod::@6890427a1f51a3e7e1df",
 	"link" : 
 	{
 		"commandFragments" : 
@@ -253,8 +253,8 @@
 		],
 		"language" : "CXX"
 	},
-	"name" : "PoissonFDM",
-	"nameOnDisk" : "PoissonFDM",
+	"name" : "DiagnolizeMethod",
+	"nameOnDisk" : "DiagnolizeMethod",
 	"paths" : 
 	{
 		"build" : ".",
@@ -275,7 +275,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "src/Poisson/FiniteDiffMethodPoisson.cu",
+			"path" : "src/Poisson/FastDiagonalization.cu",
 			"sourceGroupIndex" : 0
 		}
 	],

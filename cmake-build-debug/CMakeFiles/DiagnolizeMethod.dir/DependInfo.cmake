@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/dov/Documents/LaplaceFiniteDifference/src/Poisson/FastDiagonalizationMethod.cu" "CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o" "gcc" "CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o.d"
+  "/home/dov/Documents/LaplaceFiniteDifference/src/Poisson/FastDiagonalization.cu" "CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o" "gcc" "CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o.d"
   "" "DiagnolizeMethod" "gcc" "CMakeFiles/DiagnolizeMethod.dir/link.d"
   )
 

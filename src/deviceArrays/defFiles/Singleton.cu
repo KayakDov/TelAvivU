@@ -45,11 +45,11 @@ void Singleton<T>::setProductOfQutients(const Singleton<T> &numA, const Singleto
     int numBlocks = 1;
 
     setProductOfQutientsKernel<<<numBlocks, THREADS_PER_BLOCK, 0, stream>>>(
-        this->data(), // Destination: 'this' vector
-        numA.data(),     // Input 1: 'a' vector
-        denA.data(),     // Input 2: 'b' vector
-        numB.data(),            // Scalar alpha (passed by value)
-        denB.data()             // Scalar beta (passed by value)
+        this->data().data, // Destination: 'this' vector
+        numA.data().data,     // Input 1: 'a' vector
+        denA.data().data,     // Input 2: 'b' vector
+        numB.data().data,            // Scalar alpha (passed by value)
+        denB.data().data             // Scalar beta (passed by value)
     );
 }
 

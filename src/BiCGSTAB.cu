@@ -1,4 +1,4 @@
-#include "deviceArrays/headers/deviceArrays.h"
+#include "deviceArrays/headers/GPUArray.h"
 #include "deviceArrays/headers/singleton.h"
 #include <cmath>
 #include "Event.h"
@@ -141,11 +141,11 @@ private:
 
         // Kernel launch performs: p = r + beta * (p - omega * v)
         updatePKernel<<<numBlocks, THREADS_PER_BLOCK, 0, handle[streamInd].stream>>>(
-            p.data(),       // d_p (Input/Output)
-            r.data(),       // d_r
-            v.data(),       // d_v
-            beta.data(),            // d_beta (Device pointer from Singleton)
-            omega.data(),           // d_omega (Device pointer from Singleton)
+            p.toKernel(),       // d_p (Input/Output)
+            r.toKernel(),       // d_r
+            v.toKernel(),       // d_v
+            beta.toKernel(),            // d_beta (Device pointer from Singleton)
+            omega.toKernel(),           // d_omega (Device pointer from Singleton)
             N
         );
     }

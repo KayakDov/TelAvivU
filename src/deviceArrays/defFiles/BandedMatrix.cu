@@ -30,39 +30,34 @@
  */
 template <typename T>
 __global__ void multVecKernel(
-    const T* __restrict__ banded, // packed diagonals
-    const size_t heightDense, const size_t ld,
+    const DeviceData2d<T> banded, // packed diagonals
 
-    const int32_t* __restrict__ diags, // which diagonals
-    const size_t numDiags,
+    const int32_t* __restrict__ diags, // the number of diagonals is banded.cols
 
-    const T* __restrict__ x,      // input vector
-    const size_t strideX,
+    const DeviceData2d<T> x,      // input vector
 
-    T* __restrict__ result,       // output vecto
-    const size_t strideR,
+    DeviceData2d<T> result,
 
     const T* alpha,
     const T* beta
 ){
     const size_t rowX = blockIdx.x;
     const size_t bandedCol = threadIdx.x;
-    const bool isValid = rowX < heightDense && bandedCol < numDiags;
+
+    const bool isValid = rowX < x.cols && bandedCol < banded.cols;
     T val;
     if (isValid){//TODO: this condition can be removed by requiring input matrices have exactly 32 rows, with extra rows having all 0's.  This may give a small speed boost.
         const int32_t d = diags[bandedCol];
         int32_t bandedRow = rowX;
         if(d < 0) bandedRow += d;
-        val = 0 <= bandedRow && bandedRow < heightDense - abs(d) ?
-            banded[bandedCol*ld + bandedRow] * x[(rowX + d) * strideX] :
+        val = 0 <= bandedRow && bandedRow < banded.rows - abs(d) ?
+            banded(bandedRow, bandedCol) * x[rowX + d] :
             0;
     } else val = 0;
 
     for (int offset = 16; offset > 0; offset >>= 1) val += __shfl_down_sync(0xFFFFFFFF, val, offset);
 
-    size_t indR = rowX * strideR;
-
-    if(isValid && bandedCol == 0) result[indR] = *alpha * val + *beta * result[indR];
+    if(isValid && bandedCol == 0) result[rowX] = *alpha * val + *beta * result[rowX];
 }
 
 /**
@@ -96,12 +91,12 @@ void BandedMat<T>::mult(
     if (transpose) (const_cast<Vec<int32_t>&>(_indices)).mult(Singleton<int32_t>::MINUS_ONE, h);
 
     multVecKernel<<<this->_rows, this->_cols, 0, h->stream>>>(
-        this->data(), this->_rows, this->_ld,
-        _indices.data(), this->_cols,
-        other.data(), other._ld,
-        result.data(),
-        result._ld,
-        a->data(), b->data()
+        this->toKernel(),
+        _indices.toKernel().data,
+        other.toKernel(),
+        result.toKernel(),
+        a->toKernel().data,
+        b->toKernel().data
     );
 
     CHECK_CUDA_ERROR(cudaGetLastError());
@@ -118,18 +113,13 @@ Mat<T> BandedMat<T>::mult(const Mat<T> &other, Mat<T> *result, Handle *handle, c
 
 template <typename T>
 __global__ void mapToDenseKernel(
-    T* __restrict__ dense,
-    const size_t heightWidth, const size_t denseLd,
-    const T* __restrict__ banded,
-    const size_t numDiags, const size_t bandedLd,
+    DeviceData2d<T> denseSquare,
+    const DeviceData2d<T> banded,//num diagonals is width, length should be dense.width
     const int32_t* __restrict__ indices
 ) {
-    const size_t bandedRow = blockIdx.y * blockDim.y + threadIdx.y;
-    const size_t bandedCol = blockIdx.x * blockDim.x + threadIdx.x;
-
-    if (bandedCol < numDiags && bandedRow < heightWidth)
-        if (const DenseInd denseInd(bandedRow, bandedCol, indices); !denseInd.outOfBounds(heightWidth))
-            dense[denseInd.flat(denseLd)] = banded[bandedCol * bandedLd + bandedRow];
+    if (const GridInd2d bandedInd; bandedInd < banded)
+        if (const DenseInd denseInd(bandedInd, indices); !denseInd.outOfBounds(denseSquare.rows))
+            denseSquare(denseInd) = banded[bandedInd];
 }
 
 template<typename T>
@@ -145,13 +135,9 @@ void BandedMat<T>::getDense(SquareMat<T> dense, Handle *handle) const {//TODO: h
     );
 
     mapToDenseKernel<T><<<gridDim, blockDim, 0, h->stream>>>(
-        dense.data(),
-        dense._cols,
-        dense._ld,
-        this->data(),
-        this->_cols,
-        this->_ld,
-        this->_indices.data()
+        dense.toKernel(),
+        this->toKernel(),
+        this->_indices.toKernel()
     );
     CHECK_CUDA_ERROR(cudaGetLastError());
 }
@@ -232,20 +218,14 @@ BandedMat<T> BandedMat<T>::create(size_t rows, size_t numDiagonals, const Vec<in
 
 template <typename T>
 __global__ void mapDenseToBandedKernel(
-    const T* __restrict__ dense,
-    const size_t heightWidth, const size_t denseLd,
-    T* __restrict__ banded,
-    const size_t numDiags, const size_t bandedLd,
+    const DeviceData2d<T> dense,
+    DeviceData2d<T> banded,
     const int32_t* __restrict__ indices
 ) {
-    const size_t bandedRow = blockIdx.y * blockDim.y + threadIdx.y;
-    const size_t bandedCol = blockIdx.x * blockDim.x + threadIdx.x;
+    if (const GridInd2d bandedInd; bandedInd < banded){
 
-    if (bandedCol < numDiags && bandedRow < heightWidth){
-        const size_t writeTo = bandedCol*bandedLd + bandedRow;
-        if (const DenseInd denseInd(bandedRow, bandedCol, indices); denseInd.outOfBounds(heightWidth))
-            banded[writeTo] = NAN;
-        else banded[writeTo] = dense[denseInd.flat(denseLd)];
+        if (const DenseInd denseInd(bandedInd, indices); denseInd >= dense) banded[bandedInd] = NAN;
+        else banded[bandedInd] = dense[denseInd];
     }
 }
 
@@ -263,13 +243,9 @@ void BandedMat<T>::setFromDense(const SquareMat<T> &denseMat, Handle *handle) {
     );
 
     mapDenseToBandedKernel<T><<<gridDim, blockDim, 0, h->stream>>>(
-        denseMat.data(),
-        denseMat._rows,
-        denseMat._ld,
-        this->data(),
-        this->_cols,
-        this->_ld,
-        this->_indices.data()
+        denseMat.toKernel(),
+        this->toKernel(),
+        this->_indices.toKernel()
     );
     CHECK_CUDA_ERROR(cudaGetLastError());
 }

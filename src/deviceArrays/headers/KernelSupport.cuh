@@ -15,11 +15,9 @@
  *
  * Provides bounds checking and flat indexing suitable for linear memory access.
  */
-class DenseInd {
+class DenseInd : public GridInd2d{
 public:
     const int32_t d;    ///< Diagonal index for the current banded row. 0 = main diagonal, >0 = upper, <0 = lower
-    const int32_t row;  ///< Row index in the dense matrix corresponding to this banded row
-    const int32_t col;  ///< Column index in the dense matrix corresponding to this banded row
 
     /**
      * @brief Constructor for DenseInd.
@@ -30,10 +28,11 @@ public:
      * Computes the corresponding row and column in the dense square matrix.
      * @note This function is intended for device code (__device__).
      */
-    __device__ DenseInd(const size_t bandedRow, const size_t bandedCol, const int32_t* indices):
-        d(indices[bandedCol]),
-        row(static_cast<int32_t>(d > 0 ? bandedRow : bandedRow - d)),
-        col(static_cast<int32_t>(d > 0 ? bandedRow + d : bandedRow))
+    __device__ DenseInd(const GridInd2d bandedInd, const int32_t* indices):
+        GridInd2d(
+            static_cast<int32_t>(indices[bandedInd.col] > 0 ? bandedInd.row : bandedInd.row - indices[bandedInd.col]),
+            static_cast<int32_t>(indices[bandedInd.col] > 0 ? bandedInd.row + indices[bandedInd.col] : bandedInd.row)),
+        d(indices[bandedInd.col])
     {}
 
     /**
@@ -43,15 +42,6 @@ public:
      */
     __device__ bool outOfBounds(size_t max) const {
         return row < 0 || row >= max || col < 0 || col >= max;
-    }
-
-    /**
-     * @brief Returns the flattened index for linear memory access in column-major order.
-     * @param denseLd Leading dimension (stride) of the dense matrix
-     * @return Flattened index suitable for accessing dense matrix memory
-     */
-    __device__ size_t flat(const size_t denseLd) const {
-        return col * denseLd + row;
     }
 };
 

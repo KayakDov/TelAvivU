@@ -9,7 +9,7 @@
 #ifndef BICGSTAB_SQUAREMAT_H
 #define BICGSTAB_SQUAREMAT_H
 
-#include "deviceArrays.h"
+#include "GPUArray.h"
 
 /**
  * @class SquareMat

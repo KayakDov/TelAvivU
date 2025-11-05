@@ -10,7 +10,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/dov/Documents/LaplaceFiniteDifference/src/BiCGSTAB.cu" "CMakeFiles/BiCGSTAB_LIB.dir/src/BiCGSTAB.cu.o" "gcc" "CMakeFiles/BiCGSTAB_LIB.dir/src/BiCGSTAB.cu.o.d"
   "/home/dov/Documents/LaplaceFiniteDifference/src/Event.cu" "CMakeFiles/BiCGSTAB_LIB.dir/src/Event.cu.o" "gcc" "CMakeFiles/BiCGSTAB_LIB.dir/src/Event.cu.o.d"
+  "/home/dov/Documents/LaplaceFiniteDifference/src/Poisson/CubeBoundary.cu" "CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/CubeBoundary.cu.o" "gcc" "CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/CubeBoundary.cu.o.d"
+  "/home/dov/Documents/LaplaceFiniteDifference/src/Poisson/DirectSolver.cu" "CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/DirectSolver.cu.o" "gcc" "CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/DirectSolver.cu.o.d"
+  "/home/dov/Documents/LaplaceFiniteDifference/src/Poisson/FastDiagonalization.cu" "CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/FastDiagonalization.cu.o" "gcc" "CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/FastDiagonalization.cu.o.d"
+  "/home/dov/Documents/LaplaceFiniteDifference/src/Poisson/Poisson.cu" "CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/Poisson.cu.o" "gcc" "CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/Poisson.cu.o.d"
   "/home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/BandedMatrix.cu" "CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o" "gcc" "CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o.d"
+  "/home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/DeviceData.cu" "CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/DeviceData.cu.o" "gcc" "CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/DeviceData.cu.o.d"
   "/home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/Mat.cu" "CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Mat.cu.o" "gcc" "CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Mat.cu.o.d"
   "/home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/Singleton.cu" "CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Singleton.cu.o" "gcc" "CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Singleton.cu.o.d"
   "/home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/SquareMat.cu" "CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/SquareMat.cu.o" "gcc" "CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/SquareMat.cu.o.d"

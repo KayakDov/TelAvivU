@@ -185,7 +185,7 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/BiCGSTAB.cu.o : /home/dov/Documents/LaplaceFinit
     /usr/include/c++/13/utility \
     /usr/include/c++/13/bits/stl_relops.h \
     /usr/include/c++/13/initializer_list \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/deviceArrays.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/GPUArray.h \
     /usr/include/c++/13/vector \
     /usr/include/c++/13/bits/allocator.h \
     /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h \
@@ -336,11 +336,11 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/BiCGSTAB.cu.o : /home/dov/Documents/LaplaceFinit
     /usr/include/c++/13/sstream \
     /usr/include/c++/13/bits/sstream.tcc \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/DeviceMemory.h \
-    /usr/include/c++/13/array \
-    /usr/include/c++/13/compare \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/DeviceData2d.cuh \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/GridDim.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Mat.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/singleton.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/vec.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Mat.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Tensor.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/Event.h \
     /usr/include/c++/13/chrono \

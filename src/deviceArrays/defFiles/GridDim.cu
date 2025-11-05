@@ -1,0 +1,62 @@
+
+#include "../headers/GridDim.h"
+
+#include <device_launch_parameters.h>
+
+__device__ GridInd2d::GridInd2d(const size_t row, const size_t col): row(row), col(col) {
+}
+
+GridInd2d::GridInd2d():
+    row(blockIdx.y * blockDim.y + threadIdx.y),
+    col(blockIdx.x * blockDim.x + threadIdx.x) {
+}
+
+__device__ GridInd3d::GridInd3d(size_t row, size_t col, size_t layer): GridInd2d(row, col), layer(layer) {
+}
+__device__ GridInd3d::GridInd3d() : GridInd2d(), layer(blockIdx.z * blockDim.z + threadIdx.z) {
+}
+
+__device__ __host__ GridDim::GridDim(const size_t height, const size_t width, const size_t depth): cols(width), rows(height), layers(depth), layerSize(rows * cols) {}
+
+__device__ __host__ size_t GridDim::size() const {
+    return layers * layerSize;
+}
+
+__device__ size_t GridDim::operator()(const size_t row, const size_t col, const size_t layer) const {
+    return layer * (rows * cols) + col * rows + row;
+}
+
+__device__ GridInd3d GridDim::operator[](size_t idx) const {
+    return {idx % rows, (idx / rows) % cols, idx/(layerSize)};
+}
+
+__device__ size_t GridDim::operator[](const GridInd3d& ind) const {
+    return this->operator()(ind.row, ind.col, ind.layer);
+}
+
+__device__ bool operator<(const GridInd3d &ind, const GridDim &dim) {
+    return ind.row < dim.rows && ind.col < dim.cols && ind.layer < dim.layers;
+}
+template<typename T>
+__device__ bool operator<(const GridInd2d &ind, const DeviceData2d<T> &dim) {
+    return ind.row < dim.rows && ind.col < dim.cols;
+}
+
+__device__ bool operator>=(const GridInd3d &ind, const GridDim &dim) {
+    return !(ind < dim);
+}
+
+template<typename T>
+__device__ bool operator>=(const GridInd2d &ind, const DeviceData2d<T> &dim) {
+    return !(ind < dim);
+}
+
+template<typename T>
+__device__ bool operator<(const GridInd3d &ind, const DeviceData3d<T> &dim) {
+    return ind.row < dim.rows && ind.col < dim.cols && ind.layer < dim.layers;
+}
+
+template<typename T>
+__device__ bool operator>=(const GridInd3d &ind, const DeviceData3d<T> &dim) {
+    return !(ind < dim);
+}

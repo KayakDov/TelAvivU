@@ -216,53 +216,83 @@ src/Event.cu.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/Event.cu.s
 .PHONY : src/Event.cu.s
 
-src/Poisson/FastDiagonalizationMethod.o: src/Poisson/FastDiagonalizationMethod.cu.o
-.PHONY : src/Poisson/FastDiagonalizationMethod.o
+src/Poisson/CubeBoundary.o: src/Poisson/CubeBoundary.cu.o
+.PHONY : src/Poisson/CubeBoundary.o
 
 # target to build an object file
-src/Poisson/FastDiagonalizationMethod.cu.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DiagnolizeMethod.dir/build.make CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.o
-.PHONY : src/Poisson/FastDiagonalizationMethod.cu.o
+src/Poisson/CubeBoundary.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/CubeBoundary.cu.o
+.PHONY : src/Poisson/CubeBoundary.cu.o
 
-src/Poisson/FastDiagonalizationMethod.i: src/Poisson/FastDiagonalizationMethod.cu.i
-.PHONY : src/Poisson/FastDiagonalizationMethod.i
+src/Poisson/CubeBoundary.i: src/Poisson/CubeBoundary.cu.i
+.PHONY : src/Poisson/CubeBoundary.i
 
 # target to preprocess a source file
-src/Poisson/FastDiagonalizationMethod.cu.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DiagnolizeMethod.dir/build.make CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.i
-.PHONY : src/Poisson/FastDiagonalizationMethod.cu.i
+src/Poisson/CubeBoundary.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/CubeBoundary.cu.i
+.PHONY : src/Poisson/CubeBoundary.cu.i
 
-src/Poisson/FastDiagonalizationMethod.s: src/Poisson/FastDiagonalizationMethod.cu.s
-.PHONY : src/Poisson/FastDiagonalizationMethod.s
+src/Poisson/CubeBoundary.s: src/Poisson/CubeBoundary.cu.s
+.PHONY : src/Poisson/CubeBoundary.s
 
 # target to generate assembly for a file
-src/Poisson/FastDiagonalizationMethod.cu.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/DiagnolizeMethod.dir/build.make CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalizationMethod.cu.s
-.PHONY : src/Poisson/FastDiagonalizationMethod.cu.s
+src/Poisson/CubeBoundary.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/CubeBoundary.cu.s
+.PHONY : src/Poisson/CubeBoundary.cu.s
 
-src/Poisson/FiniteDiffMethodPoisson.o: src/Poisson/FiniteDiffMethodPoisson.cu.o
-.PHONY : src/Poisson/FiniteDiffMethodPoisson.o
+src/Poisson/DirectSolver.o: src/Poisson/DirectSolver.cu.o
+.PHONY : src/Poisson/DirectSolver.o
 
 # target to build an object file
-src/Poisson/FiniteDiffMethodPoisson.cu.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoissonFDM.dir/build.make CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o
-.PHONY : src/Poisson/FiniteDiffMethodPoisson.cu.o
+src/Poisson/DirectSolver.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/DirectSolver.cu.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoissonFDM.dir/build.make CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o
+.PHONY : src/Poisson/DirectSolver.cu.o
 
-src/Poisson/FiniteDiffMethodPoisson.i: src/Poisson/FiniteDiffMethodPoisson.cu.i
-.PHONY : src/Poisson/FiniteDiffMethodPoisson.i
+src/Poisson/DirectSolver.i: src/Poisson/DirectSolver.cu.i
+.PHONY : src/Poisson/DirectSolver.i
 
 # target to preprocess a source file
-src/Poisson/FiniteDiffMethodPoisson.cu.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoissonFDM.dir/build.make CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.i
-.PHONY : src/Poisson/FiniteDiffMethodPoisson.cu.i
+src/Poisson/DirectSolver.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/DirectSolver.cu.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoissonFDM.dir/build.make CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.i
+.PHONY : src/Poisson/DirectSolver.cu.i
 
-src/Poisson/FiniteDiffMethodPoisson.s: src/Poisson/FiniteDiffMethodPoisson.cu.s
-.PHONY : src/Poisson/FiniteDiffMethodPoisson.s
+src/Poisson/DirectSolver.s: src/Poisson/DirectSolver.cu.s
+.PHONY : src/Poisson/DirectSolver.s
 
 # target to generate assembly for a file
-src/Poisson/FiniteDiffMethodPoisson.cu.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoissonFDM.dir/build.make CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.s
-.PHONY : src/Poisson/FiniteDiffMethodPoisson.cu.s
+src/Poisson/DirectSolver.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/DirectSolver.cu.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PoissonFDM.dir/build.make CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.s
+.PHONY : src/Poisson/DirectSolver.cu.s
+
+src/Poisson/FastDiagonalization.o: src/Poisson/FastDiagonalization.cu.o
+.PHONY : src/Poisson/FastDiagonalization.o
+
+# target to build an object file
+src/Poisson/FastDiagonalization.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/FastDiagonalization.cu.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DiagnolizeMethod.dir/build.make CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.o
+.PHONY : src/Poisson/FastDiagonalization.cu.o
+
+src/Poisson/FastDiagonalization.i: src/Poisson/FastDiagonalization.cu.i
+.PHONY : src/Poisson/FastDiagonalization.i
+
+# target to preprocess a source file
+src/Poisson/FastDiagonalization.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/FastDiagonalization.cu.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DiagnolizeMethod.dir/build.make CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.i
+.PHONY : src/Poisson/FastDiagonalization.cu.i
+
+src/Poisson/FastDiagonalization.s: src/Poisson/FastDiagonalization.cu.s
+.PHONY : src/Poisson/FastDiagonalization.s
+
+# target to generate assembly for a file
+src/Poisson/FastDiagonalization.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/FastDiagonalization.cu.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/DiagnolizeMethod.dir/build.make CMakeFiles/DiagnolizeMethod.dir/src/Poisson/FastDiagonalization.cu.s
+.PHONY : src/Poisson/FastDiagonalization.cu.s
 
 src/Poisson/GridDim.o: src/Poisson/GridDim.cpp.o
 .PHONY : src/Poisson/GridDim.o
@@ -288,6 +318,30 @@ src/Poisson/GridDim.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/GridDim.cpp.s
 .PHONY : src/Poisson/GridDim.cpp.s
 
+src/Poisson/Poisson.o: src/Poisson/Poisson.cu.o
+.PHONY : src/Poisson/Poisson.o
+
+# target to build an object file
+src/Poisson/Poisson.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/Poisson.cu.o
+.PHONY : src/Poisson/Poisson.cu.o
+
+src/Poisson/Poisson.i: src/Poisson/Poisson.cu.i
+.PHONY : src/Poisson/Poisson.i
+
+# target to preprocess a source file
+src/Poisson/Poisson.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/Poisson.cu.i
+.PHONY : src/Poisson/Poisson.cu.i
+
+src/Poisson/Poisson.s: src/Poisson/Poisson.cu.s
+.PHONY : src/Poisson/Poisson.s
+
+# target to generate assembly for a file
+src/Poisson/Poisson.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/Poisson.cu.s
+.PHONY : src/Poisson/Poisson.cu.s
+
 src/deviceArrays/defFiles/BandedMatrix.o: src/deviceArrays/defFiles/BandedMatrix.cu.o
 .PHONY : src/deviceArrays/defFiles/BandedMatrix.o
 
@@ -311,6 +365,30 @@ src/deviceArrays/defFiles/BandedMatrix.s: src/deviceArrays/defFiles/BandedMatrix
 src/deviceArrays/defFiles/BandedMatrix.cu.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/BandedMatrix.cu.s
 .PHONY : src/deviceArrays/defFiles/BandedMatrix.cu.s
+
+src/deviceArrays/defFiles/DeviceData.o: src/deviceArrays/defFiles/DeviceData.cu.o
+.PHONY : src/deviceArrays/defFiles/DeviceData.o
+
+# target to build an object file
+src/deviceArrays/defFiles/DeviceData.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/DeviceData.cu.o
+.PHONY : src/deviceArrays/defFiles/DeviceData.cu.o
+
+src/deviceArrays/defFiles/DeviceData.i: src/deviceArrays/defFiles/DeviceData.cu.i
+.PHONY : src/deviceArrays/defFiles/DeviceData.i
+
+# target to preprocess a source file
+src/deviceArrays/defFiles/DeviceData.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/DeviceData.cu.i
+.PHONY : src/deviceArrays/defFiles/DeviceData.cu.i
+
+src/deviceArrays/defFiles/DeviceData.s: src/deviceArrays/defFiles/DeviceData.cu.s
+.PHONY : src/deviceArrays/defFiles/DeviceData.s
+
+# target to generate assembly for a file
+src/deviceArrays/defFiles/DeviceData.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/DeviceData.cu.s
+.PHONY : src/deviceArrays/defFiles/DeviceData.cu.s
 
 src/deviceArrays/defFiles/DeviceMemory.o: src/deviceArrays/defFiles/DeviceMemory.cpp.o
 .PHONY : src/deviceArrays/defFiles/DeviceMemory.o
@@ -594,18 +672,27 @@ help:
 	@echo "... src/Event.o"
 	@echo "... src/Event.i"
 	@echo "... src/Event.s"
-	@echo "... src/Poisson/FastDiagonalizationMethod.o"
-	@echo "... src/Poisson/FastDiagonalizationMethod.i"
-	@echo "... src/Poisson/FastDiagonalizationMethod.s"
-	@echo "... src/Poisson/FiniteDiffMethodPoisson.o"
-	@echo "... src/Poisson/FiniteDiffMethodPoisson.i"
-	@echo "... src/Poisson/FiniteDiffMethodPoisson.s"
+	@echo "... src/Poisson/CubeBoundary.o"
+	@echo "... src/Poisson/CubeBoundary.i"
+	@echo "... src/Poisson/CubeBoundary.s"
+	@echo "... src/Poisson/DirectSolver.o"
+	@echo "... src/Poisson/DirectSolver.i"
+	@echo "... src/Poisson/DirectSolver.s"
+	@echo "... src/Poisson/FastDiagonalization.o"
+	@echo "... src/Poisson/FastDiagonalization.i"
+	@echo "... src/Poisson/FastDiagonalization.s"
 	@echo "... src/Poisson/GridDim.o"
 	@echo "... src/Poisson/GridDim.i"
 	@echo "... src/Poisson/GridDim.s"
+	@echo "... src/Poisson/Poisson.o"
+	@echo "... src/Poisson/Poisson.i"
+	@echo "... src/Poisson/Poisson.s"
 	@echo "... src/deviceArrays/defFiles/BandedMatrix.o"
 	@echo "... src/deviceArrays/defFiles/BandedMatrix.i"
 	@echo "... src/deviceArrays/defFiles/BandedMatrix.s"
+	@echo "... src/deviceArrays/defFiles/DeviceData.o"
+	@echo "... src/deviceArrays/defFiles/DeviceData.i"
+	@echo "... src/deviceArrays/defFiles/DeviceData.s"
 	@echo "... src/deviceArrays/defFiles/DeviceMemory.o"
 	@echo "... src/deviceArrays/defFiles/DeviceMemory.i"
 	@echo "... src/deviceArrays/defFiles/DeviceMemory.s"

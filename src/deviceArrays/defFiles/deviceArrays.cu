@@ -20,11 +20,16 @@ GpuArray<T>::GpuArray(size_t rows, size_t cols, size_t ld, std::shared_ptr<T> _p
 template <typename T>
 GpuArray<T>::~GpuArray() = default;
 
-template <typename T>
-__global__ void fill2dKernel(T* __restrict__ a, const size_t height, const size_t width, const size_t ld, const T val){
+template<typename T>
+size_t GpuArray<T>::bytes() const {
+    return sizeof(T) * size();
+}
 
-    if (const size_t idx = blockIdx.x * blockDim.x + threadIdx.x; idx < height * width)
-        a[(idx / height) * ld + idx % height] = val;
+template <typename T>
+__global__ void fill2dKernel(DeviceData2d<T> a, const T val){
+
+    if (const size_t idx = blockIdx.x * blockDim.x + threadIdx.x; idx < a.cols * a.rows)
+        a[idx] = val;
 }
 
 template<typename T>
@@ -32,20 +37,22 @@ void GpuArray<T>::fill(T val, cudaStream_t stream) {
 
     constexpr size_t BLOCK_SIZE = 256;
     size_t num_blocks = (this->size() + BLOCK_SIZE - 1) / BLOCK_SIZE;
-    fill2dKernel<<<num_blocks, BLOCK_SIZE, 0, stream>>>(this->data(), this->_rows, this->_cols, this->_ld, val);
+    fill2dKernel<<<num_blocks, BLOCK_SIZE, 0, stream>>>(this->toKernel(), val);
     CHECK_CUDA_ERROR(cudaGetLastError());
 }
 
 template <typename T>
-T* GpuArray<T>::data() { return _ptr.get(); }
+DeviceData2d<T> GpuArray<T>::toKernel() { return DeviceData2d<T>(_rows, _cols, _ld, _ptr.get()); }
 
 template<typename T>
 std::shared_ptr<T> GpuArray<T>::ptr() const{
     return _ptr;
 }
 
-template <typename T>
-const T* GpuArray<T>::data() const {return _ptr.get(); }
+template<typename T>
+DeviceData2d<T> GpuArray<T>::toKernel() const {
+    return DeviceData2d<T>(_rows, _cols, _ld, _ptr.get());
+}
 
 template<typename T>
 void GpuArray<T>::freeMem() {
@@ -70,24 +77,27 @@ void GpuArray<T>::mult(
     std::unique_ptr<Singleton<T>> temp_b_ptr;
     const Singleton<T>* b = _get_or_create_target(static_cast<T>(0), *h, beta, temp_b_ptr);
 
+    cublasOperation_t transA = transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
+            transB = transposeB ? CUBLAS_OP_T : CUBLAS_OP_N;
+
     if constexpr (std::is_same_v<T, float>)
-        cublasSgemm(h->handle,
-        transposeA ? CUBLAS_OP_T : CUBLAS_OP_N, transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
+        CHECK_CUDA_ERROR(cublasSgemm(h->handle,
+        transA, transB,
         this->_rows, other._cols, this->_cols,
-        a->data(),
-        this->data(), this->_ld,
-        other.data(), other._ld,
-        b->data(),
-        result->data(), result->_ld);
+        a->toKernel(),
+        this->toKernel(), this->_ld,
+        other.toKernel(), other._ld,
+        b->toKernel(),
+        result->toKernel(), result->_ld));
     else if constexpr (std::is_same_v<T, double>)
-        cublasDgemm(h->handle,
-        transposeA ? CUBLAS_OP_T : CUBLAS_OP_N, transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
+        CHECK_CUDA_ERROR(cublasDgemm(h->handle,
+        transA, transB,
         this->_rows, other._cols, this->_cols,
-        a->data(),
-        this->data(), this->_ld,
-        other.data(), other._ld,
-        b->data(),
-        result->data(), result->_ld);
+        a->toKernel(),
+        this->toKernel(), this->_ld,
+        other.toKernel(), other._ld,
+        b->toKernel(),
+        result->toKernel(), result->_ld));
     else throw std::invalid_argument("Unsupported type.");
 }
 
@@ -150,35 +160,15 @@ Vec<T>* GpuArray<T>::_get_or_create_target(size_t length, Vec<T>* result, std::u
  *
  * @tparam T The data type of the matrix elements (e.g., float, double).
  * @param A Pointer to matrix A data on the device.
- * @param heightA Number of rows in A.
- * @param widthA Number of columns in A.
- * @param ldA Leading dimension of A (must be >= heightA).
  * @param B Pointer to matrix B data on the device.
- * @param heightB Number of rows in B.
- * @param widthB Number of columns in B.
- * @param ldB Leading dimension of B (must be >= heightB).
  * @param result Pointer to result matrix C data on the device.
- * @param heightR Number of rows in C (heightA * heightB).
- * @param widthR Number of columns in C (widthA * widthB).
- * @param ldR Leading dimension of C (must be >= heightR).
  */
 template <typename T>
-__global__ void kroneckerKernel(const T* A, size_t ldA,
-                                  const T* B, size_t heightB, size_t widthB, size_t ldB,
-                                  T* result, size_t heightR, size_t widthR, size_t ldR) {
+__global__ void kroneckerKernel(const DeviceData2d<T> a, const DeviceData2d<T> b, DeviceData2d<T> result) {
 
-    const size_t colR = blockIdx.x * blockDim.x + threadIdx.x; // Column index in C (0 to widthR - 1)
-    const size_t rowR = blockIdx.y * blockDim.y + threadIdx.y; // Row index in C (0 to heightR - 1)
+    if (const GridInd2d indR; indR < result)
+        result(indR) += a(indR.row / b.rows, indR.col / b.cols) * b(indR.row % b.rows, indR.col % b.cols);
 
-    if (rowR < heightR && colR < widthR) {
-
-        const size_t colA = colR / widthB;
-        const size_t rowA = rowR / heightB;
-        const size_t colB = colR % widthB;
-        const size_t rowB = rowR % heightB;
-
-        result[colR * ldR + rowR] += A[colA * ldA + rowA] * B[colB * ldB + rowB];
-    }
 }
 
 template<typename T>
@@ -193,9 +183,9 @@ void GpuArray<T>::multKronecker(const GpuArray<T>& other, GpuArray<T>& result, c
     dim3 gridSize(gridX, gridY);
 
     kroneckerKernel<<<gridSize, blockSize, 0, stream>>>(
-        this->data(), this->_ld,
-        other.data(), other._rows, other._cols, other._ld,
-        result.data(), result._rows, result._cols, result._ld
+        this->toKernel(),
+        other.toKernel(),
+        result.toKernel()
     );
 
     CHECK_CUDA_ERROR(cudaGetLastError());

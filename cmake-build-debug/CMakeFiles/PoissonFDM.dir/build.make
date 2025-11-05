@@ -72,29 +72,29 @@ include CMakeFiles/PoissonFDM.dir/flags.make
 CMakeFiles/PoissonFDM.dir/codegen:
 .PHONY : CMakeFiles/PoissonFDM.dir/codegen
 
-CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o: CMakeFiles/PoissonFDM.dir/flags.make
-CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o: CMakeFiles/PoissonFDM.dir/includes_CUDA.rsp
-CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o: /home/dov/Documents/LaplaceFiniteDifference/src/Poisson/FiniteDiffMethodPoisson.cu
-CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o: CMakeFiles/PoissonFDM.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dov/Documents/LaplaceFiniteDifference/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CUDA object CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o"
-	/usr/local/cuda-12.9/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o -MF CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o.d -x cu -rdc=true -c /home/dov/Documents/LaplaceFiniteDifference/src/Poisson/FiniteDiffMethodPoisson.cu -o CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o
+CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o: CMakeFiles/PoissonFDM.dir/flags.make
+CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o: CMakeFiles/PoissonFDM.dir/includes_CUDA.rsp
+CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o: /home/dov/Documents/LaplaceFiniteDifference/src/Poisson/DirectSolver.cu
+CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o: CMakeFiles/PoissonFDM.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dov/Documents/LaplaceFiniteDifference/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CUDA object CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o"
+	/usr/local/cuda-12.9/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o -MF CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o.d -x cu -rdc=true -c /home/dov/Documents/LaplaceFiniteDifference/src/Poisson/DirectSolver.cu -o CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o
 
-CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CUDA source to CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.i"
+CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CUDA source to CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.i"
 	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_PREPROCESSED_SOURCE
 
-CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CUDA source to assembly CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.s"
+CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CUDA source to assembly CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.s"
 	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
 
 # Object files for target PoissonFDM
 PoissonFDM_OBJECTS = \
-"CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o"
+"CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o"
 
 # External object files for target PoissonFDM
 PoissonFDM_EXTERNAL_OBJECTS =
 
-CMakeFiles/PoissonFDM.dir/cmake_device_link.o: CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o
+CMakeFiles/PoissonFDM.dir/cmake_device_link.o: CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o
 CMakeFiles/PoissonFDM.dir/cmake_device_link.o: CMakeFiles/PoissonFDM.dir/build.make
 CMakeFiles/PoissonFDM.dir/cmake_device_link.o: CMakeFiles/PoissonFDM.dir/compiler_depend.ts
 CMakeFiles/PoissonFDM.dir/cmake_device_link.o: libBiCGSTAB_LIB.a
@@ -118,12 +118,12 @@ CMakeFiles/PoissonFDM.dir/build: CMakeFiles/PoissonFDM.dir/cmake_device_link.o
 
 # Object files for target PoissonFDM
 PoissonFDM_OBJECTS = \
-"CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o"
+"CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o"
 
 # External object files for target PoissonFDM
 PoissonFDM_EXTERNAL_OBJECTS =
 
-PoissonFDM: CMakeFiles/PoissonFDM.dir/src/Poisson/FiniteDiffMethodPoisson.cu.o
+PoissonFDM: CMakeFiles/PoissonFDM.dir/src/Poisson/DirectSolver.cu.o
 PoissonFDM: CMakeFiles/PoissonFDM.dir/build.make
 PoissonFDM: CMakeFiles/PoissonFDM.dir/compiler_depend.ts
 PoissonFDM: libBiCGSTAB_LIB.a

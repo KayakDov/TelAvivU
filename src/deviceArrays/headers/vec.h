@@ -191,6 +191,18 @@ public:
      */
     void setSum(const Vec<T> &a, const Vec<T> &b, const Singleton<T> &alpha, const Singleton<T> &beta, Handle *handle);
     void setDifference(const Vec<T>& a, const Vec<T>& b, const Singleton<T>& alpha, const Singleton<T>& beta, Handle* handle);
+
+
+    /**
+     * Creates a tensor that is a window into this data.
+     * Be sure that size is divisible by height * layers.
+     * @param layers The number of layers in the tensor.
+     * @param height The length of each column.
+     * @return a tensor that is a window into this data.
+     */
+    Tensor<T> tensor(size_t height, size_t layers);
+
+    DeviceData1d<T> toKernel();
 };
 
 #endif //BICGSTAB_VEC_H
