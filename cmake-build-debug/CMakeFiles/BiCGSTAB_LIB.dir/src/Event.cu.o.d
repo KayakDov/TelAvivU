@@ -244,7 +244,9 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/Event.cu.o : /home/dov/Documents/LaplaceFiniteDi
     /usr/include/c++/13/bits/uses_allocator.h \
     /usr/include/c++/13/bits/uses_allocator_args.h \
     /usr/include/c++/13/tuple \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/GPUArray.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/GpuArray.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/DeviceData.cuh \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/GridDim.cuh \
     /usr/include/c++/13/memory \
     /usr/include/c++/13/bits/stl_tempbuf.h \
     /usr/include/c++/13/bits/stl_uninitialized.h \
@@ -328,5 +330,4 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/Event.cu.o : /home/dov/Documents/LaplaceFiniteDi
     /usr/include/c++/13/bits/istream.tcc \
     /usr/include/c++/13/bits/sstream.tcc \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/DeviceMemory.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/DeviceData.cuh \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/GridDim.h
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/KernelPrep.cuh

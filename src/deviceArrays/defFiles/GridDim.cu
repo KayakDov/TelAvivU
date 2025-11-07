@@ -1,5 +1,5 @@
 
-#include "../headers/GridDim.h"
+#include "../headers/GridDim.cuh"
 
 #include <device_launch_parameters.h>
 

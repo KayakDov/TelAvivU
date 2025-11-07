@@ -1,4 +1,4 @@
-#include "deviceArrays/headers/GPUArray.h"
+#include "deviceArrays/headers/GpuArray.h"
 #include "deviceArrays/headers/Singleton.h"
 #include <cmath>
 #include "Event.h"
@@ -17,7 +17,7 @@ using TimePoint = std::chrono::time_point<std::chrono::steady_clock>;
  * This operation is performed in place on d_p, which holds p_old.
  *
  * @tparam T Floating point type.
- * @param d_p The P vector (input/output).
+ * @param p The P vector (input/output).
  * @param r The R residual vector (input).
  * @param v The V vector (input).
  * @param beta Device pointer to the scalar beta (input).
@@ -26,15 +26,14 @@ using TimePoint = std::chrono::time_point<std::chrono::steady_clock>;
  */
 template <typename T>
 __global__ void updatePKernel(
-    T* d_p,
-    const T* __restrict__ r,
-    const T* __restrict__ v,
+    DeviceData1d<T> p,
+    const DeviceData1d<T> r,
+    const DeviceData1d<T> v,
     const T* __restrict__ beta,
-    const T* __restrict__ omega,
-    const int N)
+    const T* __restrict__ omega)
 {
-    if (const size_t idx = blockIdx.x * blockDim.x + threadIdx.x; idx < N)
-        d_p[idx] = r[idx] + *beta * (d_p[idx] - *omega * v[idx]);
+    if (const size_t idx = blockIdx.x * blockDim.x + threadIdx.x; idx < p.cols)
+        p[idx] = r[idx] + *beta * (p[idx] - *omega * v[idx]);
 }
 
 /**
@@ -135,18 +134,15 @@ private:
      * @param[in] streamInd The index of the stream handle to perform the operation on.
      */
     void pUpdate(const size_t streamInd) {
-        const int N = p.size();
-        constexpr int THREADS_PER_BLOCK = 256;
-        int numBlocks = (N + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
+        KernelPrep kp = p.kernelPrep();
 
         // Kernel launch performs: p = r + beta * (p - omega * v)
-        updatePKernel<<<numBlocks, THREADS_PER_BLOCK, 0, handle[streamInd].stream>>>(
-            p.toKernel(),       // d_p (Input/Output)
-            r.toKernel(),       // d_r
-            v.toKernel(),       // d_v
-            beta.toKernel(),            // d_beta (Device pointer from Singleton)
-            omega.toKernel(),           // d_omega (Device pointer from Singleton)
-            N
+        updatePKernel<<<kp.gridDim, kp.blockDim, 0, handle[streamInd].stream>>>(
+            p.toKernel1d(),       // d_p (Input/Output)
+            r.toKernel1d(),       // d_r
+            v.toKernel1d(),       // d_v
+            beta.data(),            // d_beta (Device pointer from Singleton)
+            omega.data()           // d_omega (Device pointer from Singleton)
         );
     }
 
@@ -273,7 +269,7 @@ public:
 
             r_tilde.mult(r, rho_new, handle);
 
-            beta.setProductOfQutients(rho_new, rho, alpha, omega, handle[0].stream); // beta = (rho_new / rho) * (alpha / omega);
+            beta.setProductOfQuotients(rho_new, rho, alpha, omega, handle[0].stream); // beta = (rho_new / rho) * (alpha / omega);
 
             set(rho, rho_new, 0);
 

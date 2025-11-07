@@ -81,6 +81,11 @@ public:
      */
     void synch() const;
 
+    operator cublasHandle_t() const;
+    operator cublasHandle_t();
+
+
+
 private:
     bool isOwner = false; ///< True if the Handle owns the CUDA stream and should destroy it
 };

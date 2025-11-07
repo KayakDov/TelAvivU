@@ -4,7 +4,7 @@
 
 #include "Singleton.h"
 #include "Tensor.h"
-#include "GPUArray.h"
+#include "GpuArray.h"
 #include "Vec.h"
 
 /**
@@ -228,5 +228,24 @@ public:
                           Mat &c1, size_t strideC,
                           bool transposeA, bool transposeB, Handle &hand, size_t batchCount);
 
+
+    KernelPrep kernelPrep();
+
+    /**
+     * @brief Retrieves a pointer to the underlying GPU memory data.
+     *
+     * This method provides access to the raw pointer of the memory allocated in the GPU
+     * for the current array instance. The returned pointer can be used for direct read
+     * or write operations on the GPU memory.
+     *
+     * @return A pointer to the GPU memory holding the array's data.
+     * The pointer is valid as long as the GpuArray instance remains valid.
+     */
+    DeviceData2d<T> toKernel2d();
+    DeviceData2d<T> toKernel2d() const;
+
+
+    __host__ __device__ operator DeviceData2d<T>();
+    __host__ __device__ operator DeviceData2d<T>() const;
 };
 #endif //BICGSTAB_MAT_H

@@ -10,7 +10,7 @@
 #define BICGSTAB_SQUAREMAT_H
 
 #include "Mat.h"
-#include "GPUArray.h"
+#include "GpuArray.h"
 
 
 /**

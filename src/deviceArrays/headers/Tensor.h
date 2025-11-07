@@ -14,7 +14,7 @@
 #define BICGSTAB_TENSOR_H
 
 #include "DeviceData.cuh"
-#include "GPUArray.h"
+#include "GpuArray.h"
 
 /**
  * @class Tensor
@@ -50,10 +50,6 @@ private:
 public:
 
     const size_t _layers;
-    /**
-     * @brief Inherit get() methods from Mat<T> to avoid hiding them.
-     */
-    using Mat<T>::get;
 
     /**
      * This method is a bit dangerous to call without understanding data layout, so bet to see if one of the other layer
@@ -139,6 +135,11 @@ public:
      * @return
      */
     DeviceData3d<T> toKernel3d();
+
+    operator DeviceData3d<T>();
+    operator DeviceData3d<T>() const;
+
+    KernelPrep kernelPrep();
 
     /**
      *

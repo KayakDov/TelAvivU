@@ -8,7 +8,7 @@
 #include "../headers/Singleton.h"
 #include "../headers/Vec.h"
 #include "../headers/bandedMat.h"
-#include "../headers/GridDim.h"
+#include "../headers/GridDim.cuh"
 
 
 template<typename T>
@@ -102,10 +102,10 @@ void SquareMat<T>::eigen(
     CHECK_CUSOLVER_ERROR(cusolverDnXgeev_bufferSize(
         h->cusolverHandle, nullptr,
         CUSOLVER_EIG_MODE_NOVECTOR, findVectors, n,
-        dataType, copy->toKernel(), copy->_ld,
-        dataType, eValsPtr->toKernel(),
+        dataType, copy->toKernel2d(), copy->_ld,
+        dataType, eValsPtr->toKernel1d(),
         dataType, nullptr, n,
-        dataType, eVecs == nullptr ? nullptr : eVecs->toKernel(), eVecs == nullptr? n : eVecs->_ld,
+        dataType, eVecs == nullptr ? nullptr : eVecs->data(), eVecs == nullptr? n : eVecs->_ld,
         dataType,
         &workDeviceBytes,
         &workHostBytes
@@ -118,16 +118,16 @@ void SquareMat<T>::eigen(
     CHECK_CUSOLVER_ERROR(cusolverDnXgeev(
         h->cusolverHandle, nullptr,
         CUSOLVER_EIG_MODE_NOVECTOR, findVectors, n,
-        dataType, copy->toKernel(), copy->_ld,
-        dataType, eValsPtr->toKernel(),
+        dataType, copy->toKernel2d(), copy->_ld,
+        dataType, eValsPtr->toKernel1d(),
         dataType, nullptr, n,
-        dataType, eVecs == nullptr ? nullptr : eVecs->toKernel(), eVecs == nullptr ? n : eVecs->_ld,
+        dataType, eVecs == nullptr ? nullptr : eVecs->data(), eVecs == nullptr ? n : eVecs->_ld,
         dataType,
-        workspaceDevice.toKernel(),
+        workspaceDevice.toKernel1d(),
         workDeviceBytes,
         workspaceHost.data(),
         workHostBytes,
-        info_dev.toKernel()
+        info_dev.toKernel1d()
     ));
 
     // processInfo(info_dev);
@@ -152,7 +152,7 @@ SquareMat<T> SquareMat<T>::setToIdentity(cudaStream_t stream) {
     );
 
     setToIdentityKernel<T><<<gridDim, blockDim, 0, stream>>>(
-        this->toKernel()
+        this->toKernel2d()
     );
     return *this;
 }

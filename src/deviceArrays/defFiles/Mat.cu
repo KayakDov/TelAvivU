@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-#include "../headers/GridDim.h"
+#include "../headers/GridDim.cuh"
 
 template <typename T>
 Mat<T> Mat<T>::mult(
@@ -48,9 +48,9 @@ void Mat<T>::mult(
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
     std::unique_ptr<Singleton<T>> temp_a_ptr;
-    const Singleton<T>* a = this->_get_or_create_target(1, *h, alpha, temp_a_ptr);
+    const Singleton<T>* a = Singleton<T>::_get_or_create_target(1, *h, alpha, temp_a_ptr);
     std::unique_ptr<Singleton<T>> temp_b_ptr;
-    const Singleton<T>* b = this->_get_or_create_target(0, *h, beta, temp_b_ptr);
+    const Singleton<T>* b = Singleton<T>::_get_or_create_target(0, *h, beta, temp_b_ptr);
 
     if constexpr(std::is_same_v<T, float>)
         cublasSgemv(h->handle, transpose ? CUBLAS_OP_T : CUBLAS_OP_N, this->_rows, this->_cols, a->toKernel1d(), this->toKernel2d(), this->_ld, other.toKernel1d(), other._ld, b->toKernel1d(), result.toKernel1d(), result._ld);
@@ -85,6 +85,12 @@ Mat<T>* Mat<T>::_get_or_create_target(const size_t rows, const size_t cols, Mat<
         return out_ptr_unique.get();
     }
 }
+
+template<typename T>
+KernelPrep Mat<T>::kernelPrep() {
+    return GpuArray<T>::kernelPrep();
+}
+
 
 template<typename T>
 Mat<T>::Mat(size_t rows, size_t cols, size_t ld, std::shared_ptr<T> _ptr): GpuArray<T>(rows, cols, ld, _ptr) {
@@ -123,8 +129,8 @@ void Mat<T>::get(T* dst, const cudaStream_t stream) const {
 template <typename T>
 void Mat<T>::set(const GpuArray<T>& src, cudaStream_t stream) {
     cudaMemcpy2DAsync(
-        this->_ptr.get(), this->_ld * sizeof(T),
-        src.toKernel2d(), src._ld * sizeof(T),
+        this->data(), this->_ld * sizeof(T),
+        src.data(), src._ld * sizeof(T),
         this->_rows * sizeof(T), this->_cols,
         cudaMemcpyDeviceToDevice, stream
     );
@@ -133,8 +139,8 @@ void Mat<T>::set(const GpuArray<T>& src, cudaStream_t stream) {
 template <typename T>
 void Mat<T>::get(GpuArray<T>& dst, cudaStream_t cuStream) const {
     cudaMemcpy2DAsync(
-        dst.toKernel2d(), dst._ld * sizeof(T),
-        this->toKernel2d(), this->_ld * sizeof(T),
+        dst.data(), dst._ld * sizeof(T),
+        this->data(), this->_ld * sizeof(T),
         this->_rows * sizeof(T), this->_cols,
         cudaMemcpyDeviceToDevice, cuStream
     );
@@ -228,16 +234,16 @@ Mat<T> Mat<T>::plus(
         throw std::invalid_argument("Matrix dimensions do not match for add.");
     
     std::unique_ptr<Mat<T>> temp_res_ptr;
-    Mat<T>* resPtr = this->_get_or_create_target(this->_rows, x._cols, result, temp_res_ptr);
+    Mat<T>* resPtr = Mat<T>::_get_or_create_target(this->_rows, x._cols, result, temp_res_ptr);
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
     std::unique_ptr<Singleton<T>> temp_a_ptr;
-    const Singleton<T>* a = this->_get_or_create_target(1, *h , alpha, temp_a_ptr);
+    const Singleton<T>* a = Singleton<T>::_get_or_create_target(1, *h , alpha, temp_a_ptr);
     std::unique_ptr<Singleton<T>> temp_b_ptr;
-    const Singleton<T>* b = this->_get_or_create_target(0, *h, beta, temp_b_ptr);
+    const Singleton<T>* b = Singleton<T>::_get_or_create_target(0, *h, beta, temp_b_ptr);
     
     if constexpr (std::is_same_v<T, float>)
-        CHECK_CUDA_ERROR(cublasSgeam(
+        CHECK_CUBLAS_ERROR(cublasSgeam(
             h->handle, 
             transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
             transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
@@ -247,7 +253,7 @@ Mat<T> Mat<T>::plus(
             resPtr->toKernel2d(), resPtr->_ld
         ));
     else if constexpr (std:: is_same_v<T, double>)
-        CHECK_CUDA_ERROR(cublasDgeam(
+        CHECK_CUBLAS_ERROR(cublasDgeam(
             h->handle, 
             transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
             transposeB ? CUBLAS_OP_T : CUBLAS_OP_N,
@@ -275,16 +281,16 @@ Mat<T> Mat<T>::minus(
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
     std::unique_ptr<Singleton<T>> temp_a_ptr;
-    const Singleton<T>* a = this->_get_or_create_target(static_cast<T>(1), *h, alpha, temp_a_ptr);
+    const Singleton<T>* a = Singleton<T>::_get_or_create_target(static_cast<T>(1), *h, alpha, temp_a_ptr);
     std::unique_ptr<Singleton<T>> temp_b_ptr;
-    const Singleton<T>* b = this->_get_or_create_target(beta ? -(beta->get()) : static_cast<T>(-1), *h, beta, temp_b_ptr);
+    const Singleton<T>* b = Singleton<T>::_get_or_create_target(beta ? -(beta->get()) : static_cast<T>(-1), *h, beta, temp_b_ptr);
 
     return this->plus(x, result, a, b, transposeA, transposeB, h);
 }
 
 template <typename T>
 __global__ void scaleKernel(DeviceData2d<T>  matrix, const T* alpha) {
-    if (GridInd2d ind; ind < matrix) matrix(ind) *= *alpha;
+    if (GridInd2d ind; ind < matrix) matrix[ind] *= *alpha;
 }
 
 template <typename T>
@@ -302,7 +308,7 @@ void Mat<T>::mult(const Singleton<T>& alpha, Handle* handle) {
 
     scaleKernel<<<numBlocks, threadsPerBlock, 0, h->stream>>>(
         this->toKernel2d(),
-        alpha.toKernel1d()
+        alpha.toKernel1d().data
     );
 }
 
@@ -326,8 +332,8 @@ void Mat<T>::transpose(
 
     if constexpr (std::is_same_v<T, float>) {
 
-        CHECK_CUDA_ERROR(cublasSgeam(
-            h->handle, 
+        CHECK_CUBLAS_ERROR(cublasSgeam(
+            h->handle,
             CUBLAS_OP_T, // Transpose A
             CUBLAS_OP_N, // Don't transpose B (it's not used)
             this->_cols, // Result rows
@@ -338,16 +344,16 @@ void Mat<T>::transpose(
             result.toKernel2d(), result._ld
         ));
     } else if constexpr (std::is_same_v<T, double>) {
-        CHECK_CUDA_ERROR(cublasDgeam(
-            h->handle, 
+        CHECK_CUBLAS_ERROR(cublasDgeam(
+            h->handle,
             CUBLAS_OP_T, 
             CUBLAS_OP_N,
             this->_cols,
             this->_rows,
-            Singleton<T>::ONE.toKernel1d(),
-            this->toKernel2d(), this->_ld,
-            Singleton<T>::ZERO.toKernel1d(), nullptr, this->_ld,
-            result.toKernel2d(), result._ld
+            Singleton<T>::ONE.data(),
+            this->data(), this->_ld,
+            Singleton<T>::ZERO.data(), nullptr, this->_ld,
+            result.data(), result._ld
         ));
     }
 }
@@ -441,7 +447,7 @@ __global__ void normalizeByRowKernel(
 ) {
 
     if (const GridInd2d ind; ind < A)
-        if (const T val = A(normalizeByRow, ind.col); val != 0) A(ind) *= ( static_cast<T>(1) / val );
+        if (const T val = A(normalizeByRow, ind.col); val != 0) A[ind] *= ( static_cast<T>(1) / val );
 
 }
 
@@ -479,20 +485,59 @@ void Mat<T>::batchMult(
         transB = transposeB ? CUBLAS_OP_T : CUBLAS_OP_N;
 
     if constexpr (std::is_same_v<T, float>) {
-        CHECK_CUDA_ERROR(cublasSgemmStridedBatched(hand, transA, transB, m, n, k,
-            alpha.toKernel1d(), a1.toKernel1d(), a1._ld, strideA,
+        CHECK_CUBLAS_ERROR(cublasSgemmStridedBatched(hand, transA, transB, m, n, k,
+            alpha.toKernel1d(), a1.toKernel2d(), a1._ld, strideA,
             b1.toKernel2d(), b1._ld, strideB, beta.toKernel1d(),
             c1.toKernel2d(), c1._ld, strideC, batchCount));
     }
 
     else if constexpr (std:: is_same_v<T, double>){
-        CHECK_CUDA_ERROR(cublasDgemmStridedBatched(hand, transA, transB, m, n, k,
+        CHECK_CUBLAS_ERROR(cublasDgemmStridedBatched(hand, transA, transB, m, n, k,
             alpha.toKernel1d(), a1.toKernel2d(), a1._ld, strideA,
             b1.toKernel2d(), b1._ld, strideB, beta.toKernel1d(),
             c1.toKernel2d(), c1._ld, strideC, batchCount));
     }
     else throw std::invalid_argument("Unsupported type.");
 }
+
+
+template<typename T>//Note, this is meant to be a Vec method here, not an oversite.  This is needed so that Math<T>::mult can be called here.
+void Vec<T>::mult(
+    const Mat<T> &other,
+    Vec<T> &result,
+    Handle *handle,
+    const Singleton<T> *alpha,
+    const Singleton<T> *beta,
+    bool transpose
+) const {
+    std::unique_ptr<Handle> temp_hand_ptr;
+    Handle *h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
+
+    std::unique_ptr<Singleton<T> > temp_a_ptr;
+    const Singleton<T> *a = Singleton<T>::_get_or_create_target(static_cast<T>(1), *h, alpha, temp_a_ptr);
+    std::unique_ptr<Singleton<T> > temp_b_ptr;
+    const Singleton<T> *b = Singleton<T>::_get_or_create_target(static_cast<T>(0), *h, beta, temp_b_ptr);
+
+    other.mult(*this, result, handle, a, b, !transpose);
+}
+
+
+template<typename T>
+GpuArray<T>::operator DeviceData2d<T>() {
+    return toKernel2d();
+}
+
+template<typename T>
+GpuArray<T>::operator DeviceData2d<T>() const {
+    return toKernel2d();
+}
+
+//TODO: these methods are in the parent class as private and copied here as public.  This is redundant code.  Sort it out.  It's private in parent class so that Vec and Tensor don't accidently use it.  But we need the code here and in dependents of this class.
+template <typename T>
+DeviceData2d<T> GpuArray<T>::toKernel2d() { return DeviceData2d<T>(this->_rows, this->_cols, this->_ld, this->_ptr.get()); }
+template <typename T>
+DeviceData2d<T> GpuArray<T>::toKernel2d() const { return DeviceData2d<T>(this->_rows, this->_cols, this->_ld, this->_ptr.get()); }
+
 
 template class Mat<float>;
 template class Mat<double>;

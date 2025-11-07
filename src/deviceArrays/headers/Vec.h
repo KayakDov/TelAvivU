@@ -9,7 +9,7 @@
 
 #ifndef BICGSTAB_VEC_H
 #define BICGSTAB_VEC_H
-#include "GPUArray.h"
+#include "GpuArray.h"
 #include "DeviceData.cuh"
 
 template <typename T> class Mat;
@@ -223,6 +223,11 @@ public:
     [[nodiscard]] DeviceData1d<T> toKernel1d();
 
     [[nodiscard]] DeviceData1d<T> toKernel1d() const;
+
+    __host__ __device__ operator DeviceData1d<T>();
+    __host__ __device__ operator DeviceData1d<T>() const;
+
+    KernelPrep kernelPrep();
 };
 
 #endif //BICGSTAB_VEC_H

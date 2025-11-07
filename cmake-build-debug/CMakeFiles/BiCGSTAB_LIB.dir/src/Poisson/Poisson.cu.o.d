@@ -190,7 +190,10 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/Poisson.cu.o : /home/dov/Documents/Lapla
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Mat.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Singleton.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Vec.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/GPUArray.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/GpuArray.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/DeviceData.cuh \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/GridDim.cuh \
+    /usr/include/c++/13/cstddef \
     /usr/include/c++/13/memory \
     /usr/include/c++/13/bits/memoryfwd.h \
     /usr/include/c++/13/bits/allocator.h \
@@ -296,7 +299,6 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/Poisson.cu.o : /home/dov/Documents/Lapla
     /usr/include/c++/13/bits/charconv.h \
     /usr/include/c++/13/bits/basic_string.tcc \
     /usr/include/c++/13/bits/memory_resource.h \
-    /usr/include/c++/13/cstddef \
     /usr/include/c++/13/bits/uses_allocator_args.h \
     /usr/include/c++/13/bits/locale_classes.tcc \
     /usr/include/c++/13/system_error \
@@ -332,9 +334,8 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/Poisson.cu.o : /home/dov/Documents/Lapla
     /usr/include/c++/13/bits/istream.tcc \
     /usr/include/c++/13/bits/sstream.tcc \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/DeviceMemory.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/DeviceData.cuh \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/GridDim.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/KernelPrep.cuh \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Tensor.h \
     /usr/include/c++/13/optional \
     /usr/include/c++/13/bits/enable_special_members.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/Poisson/../deviceArrays/headers/GridDim.h
+    /home/dov/Documents/LaplaceFiniteDifference/src/Poisson/../deviceArrays/headers/GridDim.cuh

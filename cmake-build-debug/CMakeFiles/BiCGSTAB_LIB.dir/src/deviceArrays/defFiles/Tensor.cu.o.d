@@ -187,9 +187,9 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Tensor.cu.o : /home/dov/Do
     /usr/include/c++/13/initializer_list \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/Tensor.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/DeviceData.cuh \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/GridDim.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/GridDim.cuh \
     /usr/include/c++/13/cstddef \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/GPUArray.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/GpuArray.h \
     /usr/include/c++/13/memory \
     /usr/include/c++/13/bits/memoryfwd.h \
     /usr/include/c++/13/bits/allocator.h \
@@ -329,4 +329,5 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Tensor.cu.o : /home/dov/Do
     /usr/include/c++/13/bits/ostream.tcc \
     /usr/include/c++/13/bits/istream.tcc \
     /usr/include/c++/13/bits/sstream.tcc \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/DeviceMemory.h
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/DeviceMemory.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/KernelPrep.cuh

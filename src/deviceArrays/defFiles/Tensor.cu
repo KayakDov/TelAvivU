@@ -67,6 +67,21 @@ DeviceData3d<T> Tensor<T>::toKernel3d() {
 }
 
 template<typename T>
+Tensor<T>::operator DeviceData3d<T>() {
+    return toKernel3d();
+}
+
+template<typename T>
+Tensor<T>::operator DeviceData3d<T>() const{
+    return toKernel3d();
+}
+
+template<typename T>
+KernelPrep Tensor<T>::kernelPrep() {
+    return KernelPrep(this->_cols, this->_rows, this->_layers);
+}
+
+template<typename T>
 size_t Tensor<T>::size() const {
     return utilityMatrix.size();
 }

@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "GridDim.h"
+#include "GridDim.cuh"
 
 /**
  * @brief Helper class to map a row/column in a banded matrix to the corresponding element
@@ -45,6 +45,7 @@ public:
     __device__ bool outOfBounds(size_t max) const {
         return row >= max || col >= max;
     }
+
 };
 
 #endif //BICGSTAB_KERNELSUPPORT_CUH

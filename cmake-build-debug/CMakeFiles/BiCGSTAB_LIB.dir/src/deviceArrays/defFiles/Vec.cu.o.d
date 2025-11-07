@@ -186,7 +186,10 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Vec.cu.o : /home/dov/Docum
     /usr/include/c++/13/bits/stl_relops.h \
     /usr/include/c++/13/initializer_list \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/Vec.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/GPUArray.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/GpuArray.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/DeviceData.cuh \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/GridDim.cuh \
+    /usr/include/c++/13/cstddef \
     /usr/include/c++/13/memory \
     /usr/include/c++/13/bits/memoryfwd.h \
     /usr/include/c++/13/bits/allocator.h \
@@ -292,7 +295,6 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Vec.cu.o : /home/dov/Docum
     /usr/include/c++/13/bits/charconv.h \
     /usr/include/c++/13/bits/basic_string.tcc \
     /usr/include/c++/13/bits/memory_resource.h \
-    /usr/include/c++/13/cstddef \
     /usr/include/c++/13/bits/uses_allocator_args.h \
     /usr/include/c++/13/bits/locale_classes.tcc \
     /usr/include/c++/13/system_error \
@@ -328,8 +330,7 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Vec.cu.o : /home/dov/Docum
     /usr/include/c++/13/bits/istream.tcc \
     /usr/include/c++/13/bits/sstream.tcc \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/DeviceMemory.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/DeviceData.cuh \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/GridDim.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/KernelPrep.cuh \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/defFiles/../headers/Singleton.h \
     /usr/local/cuda-12.9/targets/x86_64-linux/include/curand_kernel.h \
     /usr/local/cuda-12.9/targets/x86_64-linux/include/curand.h \

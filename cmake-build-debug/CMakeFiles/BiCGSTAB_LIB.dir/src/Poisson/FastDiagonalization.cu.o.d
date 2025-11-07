@@ -188,7 +188,10 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/FastDiagonalization.cu.o : /home/dov/Doc
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Mat.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Singleton.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Vec.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/GPUArray.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/GpuArray.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/DeviceData.cuh \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/GridDim.cuh \
+    /usr/include/c++/13/cstddef \
     /usr/include/c++/13/memory \
     /usr/include/c++/13/bits/memoryfwd.h \
     /usr/include/c++/13/bits/allocator.h \
@@ -294,7 +297,6 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/FastDiagonalization.cu.o : /home/dov/Doc
     /usr/include/c++/13/bits/charconv.h \
     /usr/include/c++/13/bits/basic_string.tcc \
     /usr/include/c++/13/bits/memory_resource.h \
-    /usr/include/c++/13/cstddef \
     /usr/include/c++/13/bits/uses_allocator_args.h \
     /usr/include/c++/13/bits/locale_classes.tcc \
     /usr/include/c++/13/system_error \
@@ -330,8 +332,7 @@ CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/FastDiagonalization.cu.o : /home/dov/Doc
     /usr/include/c++/13/bits/istream.tcc \
     /usr/include/c++/13/bits/sstream.tcc \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/DeviceMemory.h \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/DeviceData.cuh \
-    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/GridDim.h \
+    /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/KernelPrep.cuh \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/Tensor.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/deviceArrays/headers/SquareMat.h \
     /home/dov/Documents/LaplaceFiniteDifference/src/Poisson/Poisson.h \

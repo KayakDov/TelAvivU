@@ -6,7 +6,7 @@
 #define BICGSTAB_GRIDBOUNDARY_H
 
 #include "Poisson/CubeBoundary.cu"
-#include "deviceArrays/headers/GridDim.h"
+#include "deviceArrays/headers/GridDim.cuh"
 
 
 template <typename T>

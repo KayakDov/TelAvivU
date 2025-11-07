@@ -5,14 +5,16 @@
 #ifndef BICGSTAB_DEVICEDATA_CUH
 #define BICGSTAB_DEVICEDATA_CUH
 
-#include "GridDim.h"
+#include "GridDim.cuh"
 #include <cstddef> // For size_t
 
+class DenseInd;
 class GridInd2d;
 class GridInd3d;
 template <typename T> class Vec;
-template <typename T> class Tensor;
 template <typename T> class GpuArray;
+template <typename T> class Tensor;
+template <typename T> class Mat;
 
 template<typename T>
 class DeviceData1d {
@@ -55,6 +57,7 @@ public:
  */
 template <typename T>
 class DeviceData2d: public DeviceData1d<T>{  //TODO: get 1d and 3d versions to be used.
+    friend Mat<T>;
     friend GpuArray<T>;
 protected:
 
@@ -92,7 +95,10 @@ public:
      * @param ind
      * @return
      */
-    __device__ T& operator[](GridInd2d ind);
+    __device__ T& operator[](const GridInd2d& ind);
+
+    __device__ T& operator[](const DenseInd& ind);
+
 
     /**
      * @brief Provides 2D matrix access to the data.
@@ -126,6 +132,10 @@ public:
      */
     __device__ size_t col(size_t idx) const;
 
+    __device__ const T& operator[](const GridInd2d& ind) const;
+    __device__ const T& operator[](const DenseInd& ind) const;
+    __device__ const T& operator()(size_t row, size_t col) const;
+
 };
 
 template <typename T>
@@ -141,7 +151,9 @@ public:
      * @param ind
      * @return
      */
-    __device__ T& operator[](GridInd3d ind);
+    __device__ T& operator[](const GridInd3d& ind);
+    __device__ const T& operator[](const GridInd3d& ind) const;
+
 
 };
 

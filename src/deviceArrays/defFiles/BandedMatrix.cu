@@ -117,7 +117,7 @@ __global__ void mapToDenseKernel(
 ) {
     if (const GridInd2d bandedInd; bandedInd < banded)
         if (const DenseInd denseInd(bandedInd, indices); !denseInd.outOfBounds(denseSquare.rows))
-            denseSquare(denseInd) = banded[bandedInd];
+            denseSquare(denseInd.row, denseInd.col) = banded[bandedInd];
 }
 
 template<typename T>
@@ -133,9 +133,9 @@ void BandedMat<T>::getDense(SquareMat<T> dense, Handle *handle) const {//TODO: h
     );
 
     mapToDenseKernel<T><<<gridDim, blockDim, 0, h->stream>>>(
-        dense.toKernel(),
-        this->toKernel(),
-        this->_indices.toKernel()
+        dense.toKernel2d(),
+        this->toKernel2d(),
+        this->_indices.toKernel1d()
     );
     CHECK_CUDA_ERROR(cudaGetLastError());
 }
@@ -241,9 +241,9 @@ void BandedMat<T>::setFromDense(const SquareMat<T> &denseMat, Handle *handle) {
     );
 
     mapDenseToBandedKernel<T><<<gridDim, blockDim, 0, h->stream>>>(
-        denseMat.toKernel(),
-        this->toKernel(),
-        this->_indices.toKernel()
+        denseMat.toKernel2d(),
+        this->toKernel2d(),
+        this->_indices.toKernel1d()
     );
     CHECK_CUDA_ERROR(cudaGetLastError());
 }

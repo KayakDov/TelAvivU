@@ -59,6 +59,14 @@ void Handle::synch() const {
     CHECK_CUDA_ERROR(cudaStreamSynchronize(this->stream));
 }
 
+Handle::operator cublasHandle_t() const {
+    return handle;
+}
+
+Handle::operator cublasHandle_t() {
+    return handle;
+}
+
 void checkCudaErrors(cudaError_t err, const char* file, int line) {
     if (err != cudaSuccess) {
         std::cerr << "CUDA Error: " << cudaGetErrorString(err) << " at " << file << ":" << line << std::endl;

@@ -18,7 +18,7 @@ __global__ void eiganMatLKernel(DeviceData2d<T> eVecs) {
 }
 
 template <typename T>
-__global__ void eiganValLKernel(DeviceData2d<T> eVals) {
+__global__ void eiganValLKernel(DeviceData1d<T> eVals) {
     if (const size_t idx = blockIdx.x * blockDim.x + threadIdx.x; idx < eVals.cols) {
         T sinExpr = std::sin((idx  + 1) * PI<T> / (2*(eVals.cols + 1)));
         eVals[idx] = -4 * sinExpr * sinExpr;
@@ -26,7 +26,7 @@ __global__ void eiganValLKernel(DeviceData2d<T> eVals) {
 }
 
 template <typename T>
-__global__ void setUTildeKernel(DeviceData3d<T> uTilde, const DeviceData2d<T> eVals, const DeviceData2d<T> fTilde) {
+__global__ void setUTildeKernel(DeviceData3d<T> uTilde, const DeviceData2d<T> eVals, const DeviceData3d<T> fTilde) {
 
     if (GridInd3d ind; ind < uTilde)
         uTilde[ind] = fTilde[ind]/(eVals(0, ind.col) + eVals(1, ind.row) + eVals(2,ind.layer));
@@ -42,28 +42,18 @@ private:
      * @param stream
      */
     void eigenL(size_t i, cudaStream_t stream) { //TODO: this method could run both kernels on different streams.  Also different streams for each index.  Also, I don't use L, so that should be remvoved.
-        constexpr dim3 blockDim(16, 16);
 
-        const dim3 gridDim3d(
-            (eVecs[i]._cols + blockDim.x - 1) / blockDim.x,
-            (eVecs[i]._rows + blockDim.y - 1) / blockDim.y
-        );
-        eiganMatLKernel<T><<<gridDim3d, blockDim, 0, stream>>>(eVecs[i].toKernel(), eVecs[i]._rows, eVecs[i]._ld);
+        KernelPrep kpVec = eVecs[i].kernelPrep();
+        eiganMatLKernel<T><<<kpVec.gridDim, kpVec.blockDim, 0, stream>>>(eVecs[i].toKernel2d());
 
-        constexpr size_t gridDim1d = 256;
-
-        eiganValLKernel<T><<<(eVecs[i]._cols + gridDim1d - 1) / gridDim1d, gridDim1d, 0, stream>>>(eVals.col(i).toKernel(), eVecs[i]._cols);
+        KernelPrep kpVal(eVecs[i]._cols);
+        eiganValLKernel<T><<<kpVal.gridDim, kpVal.blockDim, 0, stream>>>(eVals.col(i).toKernel1d());
     }
 
     void setUTilde(Tensor<T> f, Tensor<T> u, cudaStream_t stream) {
-        constexpr dim3 blockDim(16, 16, 16);
 
-        const dim3 gridDim3d(
-            (f._cols + blockDim.x - 1) / blockDim.x,
-            (f._rows + blockDim.y - 1) / blockDim.y,
-            (f._layers + blockDim.z - 1) / blockDim.z
-        );
-        setUTildeKernel<<<gridDim3d, blockDim, 0, stream>>>(u.toKernel3d(), eVals.toKernel(), f.toKernel3d());
+        KernelPrep kp = f.kernelPrep();
+        setUTildeKernel<<<kp.gridDim, kp.blockDim, 0, stream>>>(u.toKernel3d(), eVals.toKernel2d(), f.toKernel3d());
     }
 
     std::array<SquareMat<T>, 3> eVecs;//Note: transpose is the inverse for these matrices.
@@ -84,28 +74,27 @@ private:
         temp.multKronecker(c, result, stream);
     }
 
-    std::array<SquareMat<T>, 3> generateSquareMat() const{
-        return {SquareMat<T>::create(this->_cols), SquareMat<T>::create(this->_rows),  SquareMat<T>::create(this->_layers)};
-    }
-
     void multiplyEF(Handle& hand, Tensor<T>& f, bool transposeE) {
+        auto c1Front = f.layerRowCol(0);
+
         Mat<T>::batchMult(Singleton<T>::ONE,
             eVecs[0], 0,
             f.layerRowCol(0), f.layerSize(),
-            Singleton<T>::ZERO, f.layerRowCol(0), f.layerSize(),
+            Singleton<T>::ZERO, c1Front, f.layerSize(),
             transposeE, true, hand,
             f._layers
             );
         Mat<T>::batchMult(Singleton<T>::ONE,
             eVecs[1], 0,
             f.layerRowCol(0), f.layerSize(),
-            Singleton<T>::ZERO, f.layerRowCol(0), f.layerSize(),
+            Singleton<T>::ZERO, c1Front, f.layerSize(),
             transposeE, false, hand, f._layers
             );
+        auto c1Side = f.layerColDepth(0);
         Mat<T>::batchMult(Singleton<T>::ONE,
             eVecs[2], 0,
             f.layerColDepth(0), f._rows,
-            Singleton<T>::ZERO, f.layerColDepth(0), f._rows,
+            Singleton<T>::ZERO, c1Side, f._rows,
             transposeE, true, hand, f._cols
             );
     }
@@ -120,16 +109,21 @@ public:
      */
     FastDiagonalization(const CubeBoundary<T>& boundary, Vec<T>& x, Vec<T>& f, Handle hand) ://TODO: provide pre alocated memory
         Poisson<T>(boundary, f, hand.stream),
-        eVecs(generateSquareMat()),
-        eVals(Mat<T>::create(std::max(this->_rows, std::max(this->_cols, this->_layers))), 3)
+        eVecs({SquareMat<T>::create(this->dim.cols), SquareMat<T>::create(this->dim.rows), SquareMat<T>::create(this->dim.layers)}),
+        eVals(Mat<T>::create(std::max(this->dim.rows, std::max(this->dim.cols, this->dim.layers)),3))
     {
-        Mat<T> temp = SquareMat<T>::create(std::max(this->_rows,this->_cols));
+        Mat<T> temp = SquareMat<T>::create(std::max(this->dim.rows,this->dim.cols));
 
         for (size_t i = 0; i < 3; ++i) eigenL(i, hand.stream);
 
-        multiplyEF(hand, f.tensor(this->_rows, this->_cols), true);
-        setUTilde(f, x, hand.stream);
-        multiplyEF(hand, x.tensor(this->_rows, this->_cols), false);
+        auto fTensor = f.tensor(this->dim.rows, this->dim.cols);
+        multiplyEF(hand, fTensor, true);
+
+        auto xTensor = x.tensor(this->dim.rows, this->dim.cols);
+
+        setUTilde(fTensor, xTensor, hand.stream);
+
+        multiplyEF(hand, xTensor, false);
     }
 };
 

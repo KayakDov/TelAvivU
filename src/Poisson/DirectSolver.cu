@@ -145,11 +145,9 @@ private:
 
         preAlocatedForA.subMat(0, 1, preAlocatedForA._rows, preAlocatedForA._cols - 1).fill(1, stream);
 
-        dim3 block(8, 8, 8);
-        dim3 grid = makeGridDim( this->_cols, this->_rows, this->_layers, block);
-
-        setAKernel<T><<<grid, block, 0, stream>>>(
-            preAlocatedForA.toKernel(), grid,
+        KernelPrep kp(this->dim.cols, this->dim.rows, this->dim.layers);
+        setAKernel<T><<<kp.gridDim, kp.blockDim, 0, stream>>>(
+            preAlocatedForA.toKernel2d(), this->dim,
             here.row, up.row, down.row, left.row, right.row, front.row, back.row
         );
 
@@ -178,22 +176,20 @@ public:
     * Initializes the boundary condition matrices and the dimensions of the interior grid.
     * It assumes the RHS vector $\mathbf{b}$ is pre-loaded with the source term $f$.
     *
-    * @param[in] frontBack A Mat containing boundary values for the front (layer=0) and back (layer=depth-1) faces.
-    * @param[in] leftRight A Mat containing boundary values for the left (col=0) and right (col=width-1) faces.
-    * @param[in] topBottom A Mat containing boundary values for the top (row=0) and bottom (row=height-1) faces.
+    * @param boundary The boundary conditions.
     * @param[in] b The initial right-hand side vector, pre-loaded with the source term $f$.
     * This vector is modified by the solver to include boundary contributions.
     * @param prealocatedForIndices
     */
-    DirectSolver(const CubeBoundary<T>& boundary, const Vec<T>& b, Mat<T>& preAlocatedForBandedA, Vec<int32_t>& prealocatedForIndices, cudaStream_t stream):
+    DirectSolver(const CubeBoundary<T>& boundary, Vec<T>& b, Mat<T>& preAlocatedForBandedA, Vec<int32_t>& prealocatedForIndices, cudaStream_t stream):
         Poisson<T>(boundary, b, stream),
         here(0, 0),
         up(1, 1),
         down(2, -1),
-        right(3, this->_rows),
-        left(4, -this->_rows),
-        back(5, this->_rows * this->_cols),
-        front(6, -this->_rows * this->_cols),
+        right(3, this->dim.rows),
+        left(4, -this->dim.rows),
+        back(5, this->dim.rows * this->dim.cols),
+        front(6, -this->dim.rows * this->dim.cols),
         A(setA(stream, preAlocatedForBandedA, prealocatedForIndices))
     {
         // A.Mat<T>::get(std::cout, true, false, stream);

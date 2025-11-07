@@ -390,6 +390,30 @@ src/deviceArrays/defFiles/DeviceMemory.cu.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/DeviceMemory.cu.s
 .PHONY : src/deviceArrays/defFiles/DeviceMemory.cu.s
 
+src/deviceArrays/defFiles/GpuArray.o: src/deviceArrays/defFiles/GpuArray.cu.o
+.PHONY : src/deviceArrays/defFiles/GpuArray.o
+
+# target to build an object file
+src/deviceArrays/defFiles/GpuArray.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/GpuArray.cu.o
+.PHONY : src/deviceArrays/defFiles/GpuArray.cu.o
+
+src/deviceArrays/defFiles/GpuArray.i: src/deviceArrays/defFiles/GpuArray.cu.i
+.PHONY : src/deviceArrays/defFiles/GpuArray.i
+
+# target to preprocess a source file
+src/deviceArrays/defFiles/GpuArray.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/GpuArray.cu.i
+.PHONY : src/deviceArrays/defFiles/GpuArray.cu.i
+
+src/deviceArrays/defFiles/GpuArray.s: src/deviceArrays/defFiles/GpuArray.cu.s
+.PHONY : src/deviceArrays/defFiles/GpuArray.s
+
+# target to generate assembly for a file
+src/deviceArrays/defFiles/GpuArray.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/GpuArray.cu.s
+.PHONY : src/deviceArrays/defFiles/GpuArray.cu.s
+
 src/deviceArrays/defFiles/GridDim.o: src/deviceArrays/defFiles/GridDim.cu.o
 .PHONY : src/deviceArrays/defFiles/GridDim.o
 
@@ -413,6 +437,30 @@ src/deviceArrays/defFiles/GridDim.s: src/deviceArrays/defFiles/GridDim.cu.s
 src/deviceArrays/defFiles/GridDim.cu.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/GridDim.cu.s
 .PHONY : src/deviceArrays/defFiles/GridDim.cu.s
+
+src/deviceArrays/defFiles/KernelPrep.o: src/deviceArrays/defFiles/KernelPrep.cu.o
+.PHONY : src/deviceArrays/defFiles/KernelPrep.o
+
+# target to build an object file
+src/deviceArrays/defFiles/KernelPrep.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/KernelPrep.cu.o
+.PHONY : src/deviceArrays/defFiles/KernelPrep.cu.o
+
+src/deviceArrays/defFiles/KernelPrep.i: src/deviceArrays/defFiles/KernelPrep.cu.i
+.PHONY : src/deviceArrays/defFiles/KernelPrep.i
+
+# target to preprocess a source file
+src/deviceArrays/defFiles/KernelPrep.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/KernelPrep.cu.i
+.PHONY : src/deviceArrays/defFiles/KernelPrep.cu.i
+
+src/deviceArrays/defFiles/KernelPrep.s: src/deviceArrays/defFiles/KernelPrep.cu.s
+.PHONY : src/deviceArrays/defFiles/KernelPrep.s
+
+# target to generate assembly for a file
+src/deviceArrays/defFiles/KernelPrep.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/KernelPrep.cu.s
+.PHONY : src/deviceArrays/defFiles/KernelPrep.cu.s
 
 src/deviceArrays/defFiles/Mat.o: src/deviceArrays/defFiles/Mat.cu.o
 .PHONY : src/deviceArrays/defFiles/Mat.o
@@ -533,30 +581,6 @@ src/deviceArrays/defFiles/Vec.s: src/deviceArrays/defFiles/Vec.cu.s
 src/deviceArrays/defFiles/Vec.cu.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Vec.cu.s
 .PHONY : src/deviceArrays/defFiles/Vec.cu.s
-
-src/deviceArrays/defFiles/deviceArrays.o: src/deviceArrays/defFiles/deviceArrays.cu.o
-.PHONY : src/deviceArrays/defFiles/deviceArrays.o
-
-# target to build an object file
-src/deviceArrays/defFiles/deviceArrays.cu.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/deviceArrays.cu.o
-.PHONY : src/deviceArrays/defFiles/deviceArrays.cu.o
-
-src/deviceArrays/defFiles/deviceArrays.i: src/deviceArrays/defFiles/deviceArrays.cu.i
-.PHONY : src/deviceArrays/defFiles/deviceArrays.i
-
-# target to preprocess a source file
-src/deviceArrays/defFiles/deviceArrays.cu.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/deviceArrays.cu.i
-.PHONY : src/deviceArrays/defFiles/deviceArrays.cu.i
-
-src/deviceArrays/defFiles/deviceArrays.s: src/deviceArrays/defFiles/deviceArrays.cu.s
-.PHONY : src/deviceArrays/defFiles/deviceArrays.s
-
-# target to generate assembly for a file
-src/deviceArrays/defFiles/deviceArrays.cu.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/BiCGSTAB_LIB.dir/build.make CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/deviceArrays.cu.s
-.PHONY : src/deviceArrays/defFiles/deviceArrays.cu.s
 
 src/deviceArrays/defFiles/handle.o: src/deviceArrays/defFiles/handle.cu.o
 .PHONY : src/deviceArrays/defFiles/handle.o
@@ -693,9 +717,15 @@ help:
 	@echo "... src/deviceArrays/defFiles/DeviceMemory.o"
 	@echo "... src/deviceArrays/defFiles/DeviceMemory.i"
 	@echo "... src/deviceArrays/defFiles/DeviceMemory.s"
+	@echo "... src/deviceArrays/defFiles/GpuArray.o"
+	@echo "... src/deviceArrays/defFiles/GpuArray.i"
+	@echo "... src/deviceArrays/defFiles/GpuArray.s"
 	@echo "... src/deviceArrays/defFiles/GridDim.o"
 	@echo "... src/deviceArrays/defFiles/GridDim.i"
 	@echo "... src/deviceArrays/defFiles/GridDim.s"
+	@echo "... src/deviceArrays/defFiles/KernelPrep.o"
+	@echo "... src/deviceArrays/defFiles/KernelPrep.i"
+	@echo "... src/deviceArrays/defFiles/KernelPrep.s"
 	@echo "... src/deviceArrays/defFiles/Mat.o"
 	@echo "... src/deviceArrays/defFiles/Mat.i"
 	@echo "... src/deviceArrays/defFiles/Mat.s"
@@ -711,9 +741,6 @@ help:
 	@echo "... src/deviceArrays/defFiles/Vec.o"
 	@echo "... src/deviceArrays/defFiles/Vec.i"
 	@echo "... src/deviceArrays/defFiles/Vec.s"
-	@echo "... src/deviceArrays/defFiles/deviceArrays.o"
-	@echo "... src/deviceArrays/defFiles/deviceArrays.i"
-	@echo "... src/deviceArrays/defFiles/deviceArrays.s"
 	@echo "... src/deviceArrays/defFiles/handle.o"
 	@echo "... src/deviceArrays/defFiles/handle.i"
 	@echo "... src/deviceArrays/defFiles/handle.s"

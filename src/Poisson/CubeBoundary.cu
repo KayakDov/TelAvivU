@@ -56,7 +56,7 @@ public:
      *
      * Element 5 is conceptually and physically located directly "beneath" element 1, 7 beneath 3, and so on.
      */
-    const Mat<T> frontBack, leftRight, topBottom;
+    Mat<T> frontBack, leftRight, topBottom;
     /**
      * @brief Constructs the CubeBoundary object by initializing the three boundary matrix pairs.
      *
@@ -69,7 +69,7 @@ public:
      * @param leftRight Matrix containing boundary data for the Left and Right faces (Y x Z plane).
      * @param topBottom Matrix containing boundary data for the Top and Bottom faces (X x Z plane).
      */
-    CubeBoundary(const Mat<T>& frontBack, const Mat<T>& leftRight, const Mat<T>& topBottom):
+    CubeBoundary(Mat<T>& frontBack, Mat<T>& leftRight, Mat<T>& topBottom):
         frontBack(frontBack), leftRight(leftRight), topBottom(topBottom) {};
 
     /**
@@ -84,8 +84,8 @@ public:
      *
      * @return The number of elements in the cube surounded by this boundary.
      */
-    [[nodiscard]] size_t internalSize() {
-        return frontBack._rows()/2 * leftRight._cols * topBottom._rows/2;
+    [[nodiscard]] size_t internalSize() const {
+        return frontBack._rows/2 * leftRight._cols * topBottom._rows/2;
     }
 
     /**

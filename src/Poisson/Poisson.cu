@@ -3,7 +3,7 @@
 
 #include <optional>
 
-#include "../deviceArrays/headers/GridDim.h"
+#include "../deviceArrays/headers/GridDim.cuh"
 
 /**
  * @brief Map a linear index to coordinates on the front or back faces of the 3D grid.
@@ -33,21 +33,16 @@ __device__ GridInd3d setIndicesFrontBackFaces(const GridDim& g, size_t idx) {
  * The function excludes overlap with front/back faces by checking if
  * the layer is at the boundary (0 or depth - 1). In those cases, it returns false.
  *
- * @param[out] layer The computed depth index.
- * @param[out] row The computed row index.
- * @param[out] col The computed column index (0 or width - 1).
- * @param[in] height The interior grid height (without boundary).
- * @param[in] width The interior grid width (without boundary).
- * @param[in] depth The interior grid depth (without boundary).
+ * @param success will be set to true if the indices are set, and false otherwise.
  * @param[in] idx The linear thread index, offset for left/right faces.
  * @return true if the index corresponds to a valid left/right face location, false otherwise.
  */
-__device__ std::optional<GridInd3d> setIndicesLeftRightFaces(const GridDim& g, size_t idx) {
+__device__ GridInd3d setIndicesLeftRightFaces(const GridDim& g, bool& success, size_t idx) {
     idx -= 2 * g.layerSize;
     const size_t layer = g.layers - 1 - (idx / g.rows) % g.layers;
-    if (layer < g.layers - 1 && layer > 0)
-        return GridInd3d(idx % g.rows, idx < g.rows * g.layers ? 0 : g.cols - 1, layer);
-    return std::nullopt;
+    if ((success = layer < g.layers - 1 && layer > 0))
+        return {idx % g.rows, idx < g.rows * g.layers ? 0 : g.cols - 1, layer};
+
 }
 /**
  * @brief Map a linear index to coordinates on the top or bottom faces of the 3D grid.
@@ -59,22 +54,17 @@ __device__ std::optional<GridInd3d> setIndicesLeftRightFaces(const GridDim& g, s
  * if the layer is at the boundary (0 or depth - 1) or if the column is at the
  * left/right boundary (0 or width - 1). In those cases, it returns false.
  *
- * @param[out] layer The computed depth index.
- * @param[out] row The computed row index (0 or height - 1).
- * @param[out] col The computed column index.
- * @param[in] height The interior grid height (without boundary).
- * @param[in] width The interior grid width (without boundary).
- * @param[in] depth The interior grid depth (without boundary).
+ * @param success will be set to true if an index is returned, and false otherwise.
  * @param[in] idx The linear thread index, offset for top/bottom faces.
  * @return true if the index corresponds to a valid top/bottom face location, false otherwise.
  */
-__device__ std::optional<GridInd3d> setIndicesTopBottomFaces(const GridDim& g, size_t idx) {
+__device__ GridInd3d setIndicesTopBottomFaces(const GridDim& g, bool& success, size_t idx) {
     idx -= 2 * g.layerSize + 2 * g.rows * g.layers;
     const size_t layer = g.layers - 1 - (idx % g.layers);
     const size_t col = (idx / g.layers) % g.cols;
-    if (layer < g.layers - 1 && layer > 0 && col < g.cols - 1 && col > 0)
-        return GridInd3d(idx < g.layers * g.cols ? 0 : g.rows - 1, col, layer);
-    return std::nullopt;
+    if ((success = layer < g.layers - 1 && layer > 0 && col < g.cols - 1 && col > 0))
+        return {idx < g.layers * g.cols ? 0 : g.rows - 1, col, layer};
+
 }
 
 /**
@@ -126,6 +116,7 @@ __global__ void setRHSKernel3D(DeviceData2d<T> b,
                                const DeviceData2d<T> topBottom, const size_t tbBlockSize,
                                const GridDim grid) {
     const size_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    bool success;
     if (idx >= fbBlockSize + lrBlockSize + tbBlockSize) return;
 
     if (idx < fbBlockSize) {
@@ -133,11 +124,14 @@ __global__ void setRHSKernel3D(DeviceData2d<T> b,
         b[grid[ind]] -= bVal(ind, grid, topBottom, leftRight, frontBack);
     }
     else if (idx < fbBlockSize + lrBlockSize) {
-        if (auto ind = setIndicesLeftRightFaces(grid, idx))
-            b[grid[ind.value()]] -= bVal(ind, grid, topBottom, leftRight, frontBack);
+        auto ind = setIndicesLeftRightFaces(grid, success, idx);
+        if (success) b[grid[ind]] -= bVal(ind, grid, topBottom, leftRight, frontBack);
     }
-    else if (auto ind = setIndicesTopBottomFaces(grid, idx))
-        b[grid[ind.value()]] -= bVal(ind, grid, topBottom, leftRight, frontBack);
+    else {
+        auto ind = setIndicesTopBottomFaces(grid, success, idx);
+        if (success)
+            b[grid[ind]] -= bVal(ind, grid, topBottom, leftRight, frontBack);
+    }
 }
 
 template <typename T>

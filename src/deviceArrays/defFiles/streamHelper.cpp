@@ -1,4 +1,4 @@
-#include "../headers/GPUArray.h"
+#include "../headers/GpuArray.h"
 #include <algorithm>
 #include "../headers/deviceArraySupport.h"
 
