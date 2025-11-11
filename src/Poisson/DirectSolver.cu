@@ -3,7 +3,7 @@
 #define BICGSTAB_POISSONFDM_CUH
 #include "Poisson.h"
 #include "../deviceArrays/headers/BandedMat.h"
-#include "../BiCGSTAB.cu"
+#include "../BiCGSTAB/BiCGSTAB.cu"
 #include "../deviceArrays/headers/DeviceMemory.h"
 
 
@@ -192,8 +192,6 @@ public:
         front(6, -this->dim.rows * this->dim.cols),
         A(setA(stream, preAlocatedForBandedA, prealocatedForIndices))
     {
-        // A.Mat<T>::get(std::cout, true, false, stream);
-        Poisson<T>::setB(boundary, stream);
     }
     /**
      * @brief Solves the Poisson equation for the grid.
@@ -222,10 +220,6 @@ public:
 
     auto boundary = CubeBoundary<double>::ZeroTo1(dimLength, stream);
 
-     cudaDeviceSynchronize();
-     Handle handle;
-     boundary.frontBack.get(std::cout<<"front back\n", true, false, &handle);
-
     auto longVecs = Mat<double>::create(boundary.internalSize(), 2 + numDiagonals + 7);
     auto b = longVecs.col(0);
     b.fill(0, stream);
@@ -240,10 +234,6 @@ public:
     boundary.freeMem();
 
     solver.solve(x, prealocatedForBiCGSTAB);
-
-     cudaDeviceSynchronize();
-    Handle hand;
-    x.get(std::cout << "x = \n", true, false, &hand);
 }
 
 /**
