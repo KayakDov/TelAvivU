@@ -183,7 +183,7 @@ public:
      * @return
      */
     __device__ T& operator[](const GridInd3d& ind){
-        return this->operator()(ind.layer * (this -> rows * this -> cols) +  ind.row, ind.col);
+        return this->operator()(ind.layer * this -> rows +  ind.row, ind.col);
     }
 
 

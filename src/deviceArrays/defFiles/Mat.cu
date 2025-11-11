@@ -185,17 +185,14 @@ void Mat<T>::set(std::istream& input_stream, bool isText, bool isColMjr, Handle*
  * Note, if gets to text, will print data as row major and is much slower.  If gets to binary data, will write as column major and is fast.
  */
 template <typename T>
-std::ostream &Mat<T>::get(std::ostream &output_stream, bool isText, bool printColMajor, Handle *hand) const {
-
-    std::unique_ptr<Handle> temp_hand_ptr;
-    Handle* h = Handle::_get_or_create_handle(hand, temp_hand_ptr);
+std::ostream &Mat<T>::get(std::ostream &output_stream, bool isText, bool printColMajor, Handle& hand) const {
 
     StreamGet<T> helper(this->_rows, this->_cols, output_stream);
 
     if(!printColMajor) {
-        Mat<T> transposed = Mat<T>::create(this->_cols, this->_rows);
-        this -> transpose(transposed, h);
-        transposed.get(output_stream, isText, true, h);
+        auto transposed = Mat<T>::create(this->_cols, this->_rows);
+        this -> transpose(transposed, &hand);
+        transposed.get(output_stream, isText, true, hand);
         return output_stream;
     }
     
@@ -207,8 +204,8 @@ std::ostream &Mat<T>::get(std::ostream &output_stream, bool isText, bool printCo
             helper.getChunkWidth()
         );
 
-        subMat.get(helper.getBuffer().data(), h->stream);
-        h->synch();//TODO: this might be avoidable with multi threading
+        subMat.get(helper.getBuffer().data(), hand);
+        hand.synch();//TODO: this might be avoidable with multi threading
 
         helper.writeChunk(isText);
         helper.updateProgress();
@@ -475,6 +472,15 @@ void Mat<T>::batchMult(
     const size_t m = transposeA ? a1._cols : a1._rows,
         n = transposeB ? b1._rows : b1._cols,
         k = transposeA ? a1._rows : a1._cols;
+
+    std::cout << "batchMult debug:\n"
+          << "  m=" << m << " n=" << n << " k=" << k << "\n"
+          << "  a1._rows=" << a1._rows << " a1._cols=" << a1._cols << " a1._ld=" << a1._ld << "\n"
+          << "  b1._rows=" << b1._rows << " b1._cols=" << b1._cols << " b1._ld=" << b1._ld << "\n"
+          << "  c1._rows=" << c1._rows << " c1._cols=" << c1._cols << " c1._ld=" << c1._ld << "\n"
+          << "  strideA=" << strideA << " strideB=" << strideB << " strideC=" << strideC << "\n"
+          << "  batchCount=" << batchCount << std::endl;
+
 
     cublasOperation_t transA = transposeA ? CUBLAS_OP_T : CUBLAS_OP_N,
         transB = transposeB ? CUBLAS_OP_T : CUBLAS_OP_N;

@@ -304,7 +304,7 @@ public:
      * @warning Attempting to retrieve data from an uninitialized or invalid GPU array
      * may result in undefined behavior.
      */
-    virtual std::ostream &get(std::ostream &output_stream, bool isText, bool printColMajor, Handle *hand) const = 0;
+    virtual std::ostream &get(std::ostream &output_stream, bool isText, bool printColMajor, Handle &hand) const = 0;
 
     /**
      * @brief Fills the GpuArray with the specified value on a given CUDA stream.

@@ -156,7 +156,7 @@ void Vec<T>::set(std::istream &input_stream, bool isText, bool isColMjr, Handle*
 }
 
 template<typename T>
-std::ostream &Vec<T>::get(std::ostream &output_stream, bool isText, bool printColMajor, Handle *hand) const {
+std::ostream &Vec<T>::get(std::ostream &output_stream, bool isText, bool printColMajor, Handle &hand) const {
     StreamGet<T> helper(this->_rows, this->_cols, output_stream);
     while (helper.hasNext()) {
         Vec<T> subArray = this->subVec(
@@ -164,7 +164,7 @@ std::ostream &Vec<T>::get(std::ostream &output_stream, bool isText, bool printCo
             helper.getChunkWidth(),
             1
         );
-        subArray.get(helper.getBuffer().data(), hand->stream);
+        subArray.get(helper.getBuffer().data(), hand.stream);
         helper.writeChunk(isText);
         helper.updateProgress();
     }

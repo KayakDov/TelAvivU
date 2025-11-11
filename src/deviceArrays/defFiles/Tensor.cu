@@ -7,10 +7,12 @@ Tensor<T>::Tensor(size_t rows, size_t cols, size_t layers, size_t ld, std::share
 
 template<typename T>
 Mat<T> Tensor<T>::subMatrix(size_t startRow, size_t startCol, size_t startLayer, size_t height, size_t width, size_t ld) {
-    return Mat<T>(height, width, ld, std::shared_ptr<T>(this->_ptr, this->_ptr.get() +
-        startLayer * this->_ld * this->_cols +
-        startCol * this->_ld +
-        startRow));
+    return Mat<T>(
+        height,
+        width,
+        ld,
+        std::shared_ptr<T>(this->_ptr, this->_ptr.get() +
+            startLayer * this->_rows + startCol * this->_ld + startRow));
 }
 
 template<typename T>
@@ -27,7 +29,7 @@ Mat<T> Tensor<T>::layerRowCol(size_t deptIndex) {
 
 template<typename T>
 Mat<T> Tensor<T>::layerColDepth(size_t colIndex) {
-    return subMatrix(0, colIndex, 0, this->_rows, this->_layers, this->_ld * this->_cols);
+    return subMatrix(0, colIndex, 0, this->_rows, this->_layers, this->_rows);
 }
 
 template<typename T>
@@ -118,7 +120,7 @@ void Tensor<T>::set(std::istream &input_stream, bool isText, bool isColMjr, Hand
 }
 
 template<typename T>
-std::ostream &Tensor<T>::get(std::ostream &output_stream, bool isText, bool printColMajor, Handle *hand) const {
+std::ostream &Tensor<T>::get(std::ostream &output_stream, bool isText, bool printColMajor, Handle &hand) const {
     return utilityMatrix.get(output_stream, isText, printColMajor, hand);
 }
 

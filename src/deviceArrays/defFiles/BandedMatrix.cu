@@ -131,7 +131,7 @@ void BandedMat<T>::getDense(SquareMat<T> dense, Handle *handle) const {//TODO: h
 }
 
 template<typename T>
-BandedMat<T>::BandedMat(size_t rows, size_t cols, size_t ld, const std::shared_ptr<T>& ptr, const Vec<int32_t> &indices):
+BandedMat<T>::BandedMat(size_t rows, size_t cols, size_t ld, std::shared_ptr<T> ptr, const Vec<int32_t> &indices):
     Mat<T>(rows, cols, ld, ptr), _indices(indices) {
 }
 template<typename T>

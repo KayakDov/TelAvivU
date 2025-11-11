@@ -43,10 +43,10 @@ private:
 
 protected:
 
-    BandedMat(size_t rows, size_t cols, size_t ld, const std::shared_ptr<T> &ptr, const Vec<int32_t> &indices);
+    BandedMat(size_t rows, size_t cols, size_t ld, std::shared_ptr<T> ptr, const Vec<int32_t> &indices);
 
 public:
-    /**
+    /**const
     * @brief Constructs a banded matrix by wrapping an existing dense matrix buffer.
     *
     * @param copyFrom Existing matrix (device or host-backed) whose memory and dimensions

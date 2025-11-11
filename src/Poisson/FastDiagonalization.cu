@@ -49,12 +49,18 @@ private:
         KernelPrep kpVal(eVecs[i]._cols);
         eiganValLKernel<T><<<kpVal.gridDim, kpVal.blockDim, 0, stream>>>(eVals.col(i).toKernel1d());
 
+        // cudaDeviceSynchronize();
+        // Handle hand;
+        // eVecs[i].get(std::cout << "eVecs[" << i << "] = \n", true, false, hand);
+        // eVals.col(i).get(std::cout << "eVals[" << i << "] = \n", true, false, hand);
+
+
     }
 
-    void setUTilde(Tensor<T> f, Tensor<T> u, Handle stream) {
+    void setUTilde(Tensor<T> f, Tensor<T> u, Handle hand) {
 
         KernelPrep kp = f.kernelPrep();
-        setUTildeKernel<<<kp.gridDim, kp.blockDim, 0, stream>>>(u.toKernel3d(), eVals.toKernel2d(), f.toKernel3d());
+        setUTildeKernel<<<kp.gridDim, kp.blockDim, 0, hand>>>(u.toKernel3d(), eVals.toKernel2d(), f.toKernel3d());
 
     }
 
@@ -76,33 +82,36 @@ private:
         temp.multKronecker(c, result, stream);
     }
 
-    void multiplyEF(Handle& hand, Tensor<T>& f, bool transposeE) {
-
-        f.get(std::cout << "f:\n", true, false, &hand);
-
-        auto c1Front = f.layerRowCol(0);
-
+    /**
+     * Multiplies an eigenmatrix by a layer (possibly perpendicular) from the grid.
+     * @param index 0 for the x dimension , 1 for the y dimesnion, and 2 for the z dimension.
+     * @param stride The stride between layers.
+     * @param layer1 The first layer to be multiplied.
+     * @param transposeE Should the eigenmatrix be transposed.
+     * @param transposeLayer Should the layer be transposed.
+     * @param batchCount How many layers are there.
+     * @param hand The handle.
+     */
+    void multLayer(size_t index, const size_t stride, Mat<T> layer1, const bool transposeE, const bool transposeLayer, const size_t batchCount, Handle hand) {
         Mat<T>::batchMult(
             Singleton<T>::ONE,
-            eVecs[0], 0,
-            f.layerRowCol(0), f.layerSize(),
-            Singleton<T>::ZERO, c1Front, f.layerSize(),
-            transposeE, true, hand,
-            f._layers
+            eVecs[index], 0,
+            layer1, stride,
+            Singleton<T>::ZERO, layer1, stride,
+            transposeE, transposeLayer, hand,
+            batchCount
             );
-        Mat<T>::batchMult(Singleton<T>::ONE,
-            eVecs[1], 0,
-            f.layerRowCol(0), f.layerSize(),
-            Singleton<T>::ZERO, c1Front, f.layerSize(),
-            transposeE, false, hand, f._layers
-            );
-        auto c1Side = f.layerColDepth(0);
-        Mat<T>::batchMult(Singleton<T>::ONE,
-            eVecs[2], 0,
-            f.layerColDepth(0), f._rows,
-            Singleton<T>::ZERO, c1Side, f._rows,
-            transposeE, true, hand, f._cols
-            );
+    }
+
+    void multiplyEF(Handle& hand, Tensor<T>& f, bool transposeE) {
+
+        std::cout << "batchMult call with:\n";
+        std::cout << "  f: " << f._rows << "x" << f._cols << "x" << f._layers << " ld=" << f._ld << "\n";
+
+        auto c1Front = f.layerRowCol(0);
+        multLayer(0, f._rows, c1Front, transposeE, true, f._layers, hand);
+        multLayer(1, f._rows, c1Front, transposeE, false, f._layers, hand);
+        multLayer(2, f._ld, f.layerColDepth(0), transposeE, true, f._cols, hand);
     }
 public:
     /**
@@ -119,11 +128,16 @@ public:
         eVals(Mat<T>::create(std::max(this->dim.rows, std::max(this->dim.cols, this->dim.layers)),3))
     {
 
-        Mat<T> temp = SquareMat<T>::create(std::max(this->dim.rows,this->dim.cols));
-
         for (size_t i = 0; i < 3; ++i) eigenL(i, hand);
 
         auto fTensor = f.tensor(this->dim.rows, this->dim.cols);
+        std::cout << "\n=== multiplyEF sanity check ===\n";
+        std::cout << "rows: " << fTensor._rows
+                  << " cols: " << fTensor._cols
+                  << " layers: " << fTensor._layers
+                  << " ld: " << fTensor._ld << std::endl;
+
+
         multiplyEF(hand, fTensor, true);
 
         auto xTensor = x.tensor(this->dim.rows, this->dim.cols);
@@ -170,7 +184,7 @@ int main() {
 
     FastDiagonalization<double> fdm(boundary, x, f, hand);
 
-    x.get(std::cout << "x = \n", true, false, &hand);
+    x.get(std::cout << "x = \n", true, false, hand);
 
     return 0;
 }
