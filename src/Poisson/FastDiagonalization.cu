@@ -87,28 +87,33 @@ private:
      * @param index 0 for the x dimension , 1 for the y dimesnion, and 2 for the z dimension.
      * @param stride The stride between layers.
      * @param layer1 The first layer to be multiplied.
+     * @param dst1 Be sure that dst1 has the same ld and stride as layer1
      * @param transposeE Should the eigenmatrix be transposed.
      * @param transposeLayer Should the layer be transposed.
      * @param batchCount How many layers are there.
      * @param hand The handle.
      */
-    void multLayer(size_t index, const size_t stride, Mat<T> layer1, const bool transposeE, const bool transposeLayer, const size_t batchCount, Handle& hand) {
+    void multLayer(size_t index, const size_t stride, Mat<T>& layer1, Mat<T>& dst1, const bool transposeE, const bool transposeLayer, const size_t batchCount, Handle& hand) {
         Mat<T>::batchMult(
             Singleton<T>::ONE,
             eVecs[index], 0,
             layer1, stride,
-            Singleton<T>::ZERO, layer1, stride,
+            Singleton<T>::ZERO, dst1, stride,
             transposeE, transposeLayer, hand,
             batchCount
             );
+
     }
 
-    void multiplyEF(Handle& hand, Tensor<T>& f, bool transposeE) {
+    void multiplyEF(Handle& hand, Tensor<T>& f, Tensor<T>& dst, bool transposeE) {
 
-        auto c1Front = f.layerRowCol(0);
-        multLayer(0, f._rows, c1Front, transposeE, true, f._layers, hand);
-        multLayer(1, f._rows, c1Front, transposeE, false, f._layers, hand);
-        multLayer(2, f._ld, f.layerColDepth(0), transposeE, true, f._cols, hand);
+        auto xFront = f.layerRowCol(0), dstFront = dst.layerRowCol(0);
+
+        multLayer(0, f._rows, xFront, dstFront, transposeE, true, f._layers, hand);
+        multLayer(1, f._rows, dstFront, xFront, transposeE, false, f._layers, hand);
+
+        auto xSide = f.layerColDepth(0), dstSide = dst.layerColDepth(0);
+        multLayer(2, f._ld, xSide, dstSide, transposeE, true, f._cols, hand);
     }
 public:
     /**
@@ -117,63 +122,65 @@ public:
      * @param x The solution will be placed here.  This should have a space for every element in the grid.
      * @param f The RHS of the laplace equation.  Whatever you have written here, we will overwrite it. Thi should have
      * a space for every element in the grid.
+     * @param temp temporary storage the same size as f and x.
      * @param stream
      */
-    FastDiagonalization(const CubeBoundary<T>& boundary, Vec<T>& x, Vec<T>& f, Handle& hand) ://TODO: provide pre alocated memory
+    FastDiagonalization(const CubeBoundary<T>& boundary, Vec<T>& x, Vec<T>& f, Vec<T>& temp, Handle& hand) ://TODO: provide pre alocated memory
         Poisson<T>(boundary, f, hand),
         eVecs({SquareMat<T>::create(this->dim.cols), SquareMat<T>::create(this->dim.rows), SquareMat<T>::create(this->dim.layers)}),
         eVals(Mat<T>::create(std::max(this->dim.rows, std::max(this->dim.cols, this->dim.layers)),3))
-    {
+    {//TODO:verify E_x kroniker E_y kroniker E_z kroniker f = the f_tilet I built
 
         for (size_t i = 0; i < 3; ++i) eigenL(i, hand);
 
-        auto fTensor = f.tensor(this->dim.rows, this->dim.cols);
+        auto fTensor = f.tensor(this->dim.rows, this->dim.cols), tempTensor = temp.tensor(this->dim.rows, this->dim.cols);
 
-        multiplyEF(hand, fTensor, true);
+        multiplyEF(hand, fTensor, tempTensor, true);
+
+        // f.get(std::cout << "my compute f_tilde = \n", true, false, hand);
+
+        //----------------------TODO: It seems like the results of the following on an f that hasn't seen multiplyEF should give the same results as multiply EF.  I need to figure out why they are different.
+        //                      TODO: maybe it's because my batch multiply reads and writes to the same space?
+        // auto tempMat1 = Mat<T>::create(eVecs[0]._rows * eVecs[1]._rows, eVecs[0]._cols* eVecs[1]._cols);
+        // auto tempMat2 = Mat<T>::create(tempMat1._rows * eVecs[2]._rows, tempMat1._cols* eVecs[2]._cols);
+        // eVecs[0].multKronecker(eVecs[1], tempMat1, hand);
+        // tempMat1.multKronecker(eVecs[2], tempMat2, hand);
+        // tempMat2.mult(f, f, &hand, &Singleton<T>::ONE, &Singleton<T>::ZERO, false);
+        // f.get(std::cout << "my compute f_tilde = \n", true, false, hand);
+        //------------------------------------------------------------------------------------------------------------------
+
 
         auto xTensor = x.tensor(this->dim.rows, this->dim.cols);
 
-        setUTilde(fTensor, xTensor, hand);
+        setUTilde(tempTensor, xTensor, hand);
 
-        multiplyEF(hand, xTensor, false);
-
-
+        multiplyEF(hand, tempTensor, xTensor, false);
     }
 };
 
 
 /**
+ *
  * @brief Main entry point to demonstrate the FastDiagonalizationMethod for a 2x2x2 grid.
  */
 int main() {
 
     Handle handle;
 
-    // auto a = Mat<double>::create(2, 2);
-    // auto b = Mat<double>::create(2, 2);
-    // auto c = Mat<double>::create(2, 2);
-    // a.fill(1, handle.stream);
-    // b.fill(2, handle.stream);
-    //
-    // a.get(std::cout << "\nA = \n", true, false, &handle);
-    // b.get(std::cout << "\nB = \n", true, false, &handle);
-    //
-    // a.mult(b, &c, &handle, &Singleton<double>::ONE, &Singleton<double>::ZERO, true,true);
-    //
-    // c.get(std::cout << "\nC = \n", true, false, &handle);
-
     constexpr size_t dim = 2;
     Handle hand;
 
     const auto boundary = CubeBoundary<double>::ZeroTo1(dim, hand);
 
-    auto x = Vec<double>::create(boundary.internalSize(), hand);
+    auto memAloc = Mat<double>::create(boundary.internalSize(), 3);
 
-    auto f = Vec<double>::create(boundary.internalSize(), hand);
+    auto x = memAloc.col(0);
+    auto f = memAloc.col(1);
+    auto temp = memAloc.col(2);
 
     f.fill(0, hand.stream);
 
-    FastDiagonalization<double> fdm(boundary, x, f, hand);
+    FastDiagonalization<double> fdm(boundary, x, f, temp, hand);
 
     x.get(std::cout << "x = \n", true, false, hand);
 
