@@ -11,6 +11,10 @@ public:
     const DeviceData2d<T> front, back, left, right, top, bottom;
     __host__ __device__ DeviceCubeBoundary(DeviceData2d<T> front, DeviceData2d<T> back, DeviceData2d<T> left, DeviceData2d<T> right, DeviceData2d<T> top, DeviceData2d<T> bottom):
         front(front), back(back), left(left), right(right), top(top), bottom(bottom) {};
+
+    __device__ size_t size() const{
+        return front.size() + back.size() + left.size() + right.size() + top.size() + bottom.size();
+    }
 };
 
 

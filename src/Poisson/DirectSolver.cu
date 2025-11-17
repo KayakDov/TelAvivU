@@ -93,12 +93,10 @@ __global__ void setAKernel(DeviceData2d<T> a,
 
     if (ind.row == 0) set0(-1, upCol);
     else if (ind.row == g.rows - 1) set0(1, downCol);
-    if (ind.col == 0) set0(-static_cast<int32_t>(g.rows), leftCol);
-    else if (ind.col == g.cols - 1) set0(g.rows, rightCol);
-    if (ind.layer == 0) set0(-static_cast<int32_t>(g.layerSize), frontCol);
-    else if (ind.layer == g.layers - 1) set0(g.layerSize, backCol);
-
-
+    if (ind.col == 0) set0(-static_cast<int32_t>(g.rows*g.layers), leftCol);
+    else if (ind.col == g.cols - 1) set0(g.rows*g.layers , rightCol);
+    if (ind.layer == 0) set0(-static_cast<int32_t>(g.rows), frontCol);
+    else if (ind.layer == g.layers - 1) set0(g.rows, backCol);
 }
 
 constexpr  size_t numDiagonals = 7;
@@ -122,8 +120,6 @@ public:
 
 private:
     const BandedMat<T> A;
-    
-
 
     static inline dim3 makeGridDim(size_t x, size_t y, size_t z, dim3 block) {
         return dim3( (unsigned)((x + block.x - 1) / block.x),
@@ -184,10 +180,10 @@ public:
         here(0, 0),
         up(1, 1),
         down(2, -1),
-        right(3, this->dim.rows),
-        left(4, -this->dim.rows),
-        back(5, this->dim.rows * this->dim.cols),
-        front(6, -this->dim.rows * this->dim.cols),
+        left(3, -this->dim.rows),
+        right(4, this->dim.rows),
+        front(5, -this->dim.rows * this->dim.cols),
+        back(6, this->dim.rows * this->dim.cols),
         A(setA(stream, preAlocatedForBandedA, prealocatedForIndices))
     {
     }
@@ -214,24 +210,30 @@ public:
   * @param dimLength The length of an edge of the grid.  //up to 325 works on Dov's computer.  After that the size of
   * the initally allocated memory exceeds the available memory on the gpu.
   */
- void testPoisson(const size_t dimLength, cudaStream_t stream) {
+ void testPoisson(const size_t dimLength, Handle& hand) {
 
-    auto boundary = CubeBoundary<double>::ZeroTo1(dimLength, stream);
+    auto boundary = CubeBoundary<double>::ZeroTo1(dimLength, hand);
 
     auto longVecs = Mat<double>::create(boundary.internalSize(), 2 + numDiagonals + 7);
     auto b = longVecs.col(0);
-    b.fill(0, stream);
+    b.fill(0, hand);
     auto x = longVecs.col(1);
     auto A = longVecs.subMat(0, 2, boundary.internalSize(), numDiagonals);
     auto prealocatedForBiCGSTAB = longVecs.subMat(0, 2 + numDiagonals, boundary.internalSize(), 7);
 
     auto diagonalInds = Vec<int32_t>::create(numDiagonals);
 
-    DirectSolver<double> solver(boundary, b, A, diagonalInds, stream);
+    DirectSolver<double> solver(boundary, b, A, diagonalInds, hand);
+
+     A.get(std::cout << "DirectSolcer.cu::testPoission \nA  = \n", true, false, hand);
+
+     b.get(std::cout << "DirectSolcer.cu::testPoission \nb  = \n", true, false, hand);
 
     boundary.freeMem();
 
     solver.solve(x, prealocatedForBiCGSTAB);
+
+    x.get(std::cout << "DirectSolcer.cu::testPoission \nx  = \n", true, false, hand);
 }
 
 /**
