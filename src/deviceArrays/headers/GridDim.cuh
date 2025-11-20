@@ -28,7 +28,6 @@ public:
     size_t layer;
     __device__ GridInd3d(size_t row, size_t col, size_t layer);
     __device__ inline GridInd3d(): GridInd2d(), layer(blockIdx.z * blockDim.z + threadIdx.z){}
-    
 };
 
 class GridDim {

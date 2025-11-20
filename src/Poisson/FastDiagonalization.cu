@@ -30,8 +30,15 @@ __global__ void eiganValLKernel(DeviceData1d<T> eVals) {
 template <typename T>
 __global__ void setUTildeKernel(DeviceData3d<T> uTilde, const DeviceData2d<T> eVals, const DeviceData3d<T> fTilde) {
 
-    if (GridInd3d ind; ind < uTilde)
+    if (GridInd3d ind; ind < uTilde) {
+        // printf("col=%lu row=%lu layer=%lu | eValsX=%f eValsY=%f eValsZ=%f | fTilde=%f\n",
+        //    ind.col, ind.row, ind.layer,
+        //    eVals(ind.col, 0),
+        //    eVals(ind.row, 1),
+        //    eVals(ind.layer, 2),
+        //    fTilde[ind]);
         uTilde[ind] = fTilde[ind]/(eVals(ind.col, 0) + eVals(ind.row, 1) + eVals(ind.layer, 2));
+    }
 }
 
 template <typename T>
@@ -43,27 +50,19 @@ private:
      * @param i The index of the desired matrix, 1,2, or 3.
      * @param stream
      */
-    void eigenL(size_t i, cudaStream_t stream) { //TODO: this method could run on different streams.  Also different streams for each index.  Also, I don't use L, so that should be remvoved.
+    void eigenL(size_t i, cudaStream_t stream) { //TODO: this method could run on different streams.  Also different streams for each index.
 
         KernelPrep kpVec = eVecs[i].kernelPrep();
         eiganMatLKernel<T><<<kpVec.gridDim, kpVec.blockDim, 0, stream>>>(eVecs[i].toKernel2d());
 
-        KernelPrep kpVal(eVecs[i]._cols);
-        eiganValLKernel<T><<<kpVal.gridDim, kpVal.blockDim, 0, stream>>>(eVals.col(i).toKernel1d());
-
-        // cudaDeviceSynchronize();
-        // Handle hand;
-        // eVecs[i].get(std::cout << "eVecs[" << i << "] = \n", true, false, hand);
-        // eVals.col(i).get(std::cout << "eVals[" << i << "] = \n", true, false, hand);
-
-
+        size_t numVaals = eVecs[i]._cols;
+        KernelPrep kpVal(numVaals);
+        eiganValLKernel<T><<<kpVal.gridDim, kpVal.blockDim, 0, stream>>>(eVals.col(i).subVec(0, numVaals, 1).toKernel1d());
     }
 
     void setUTilde(const Tensor<T>& f, Tensor<T>& u, Handle& hand) {
-
         KernelPrep kp = f.kernelPrep();
         setUTildeKernel<<<kp.gridDim, kp.blockDim, 0, hand>>>(u.toKernel3d(), eVals.toKernel2d(), f.toKernel3d());
-
     }
 
     std::array<SquareMat<T>, 3> eVecs;//Note: transpose is the inverse for these matrices.
@@ -84,57 +83,27 @@ private:
         temp.multKronecker(c, result, stream);
     }
 
-    /**
-     * Multiplies an eigenmatrix by a layer (possibly perpendicular) from the grid.
-     * @param index 0 for the x dimension , 1 for the y dimesnion, and 2 for the z dimension.
-     * @param stride The stride between layers.
-     * @param layer1 The first layer to be multiplied.
-     * @param dst1 Be sure that dst1 has the same ld and stride as layer1
-     * @param transposeE Should the eigenmatrix be transposed.
-     * @param transposeLayer Should the layer be transposed.
-     * @param batchCount How many layers are there.
-     * @param hand The handle.
-     */
-    void multLayer(size_t index, const size_t stride, Mat<T>& layer1, Mat<T>& dst1, const bool transposeE, const bool transposeLayer, const size_t batchCount, Handle& hand) {
+    void multE(size_t i, bool transposeEigen, bool transpose, const Mat<T>& a1, Mat<T>& dst1, size_t stride, Handle& hand, size_t batchCount) {
         Mat<T>::batchMult(
-            eVecs[index],
-            0, layer1,
-            stride, dst1,
-            stride, transposeE, transposeLayer,
-            hand, batchCount, Singleton<T>::ONE,
-            Singleton<T>::ZERO
-        );
-
+            transpose? a1      :eVecs[i], transpose? stride:0,
+            transpose? eVecs[i]: a1,      transpose? 0     : stride,
+            dst1, stride,
+            transpose? false : transposeEigen, transpose? transposeEigen : false,
+            hand, batchCount
+            );
     }
 
-    void multiplyEF(Handle& hand, Tensor<T>& f, Tensor<T>& dst, bool transposeE) {
 
-        auto xFront = f.layerRowCol(0), dstFront1 = dst.layerRowCol(0);
-        Mat<T>::batchMult(
-            xFront, f._rows,
-            eVecs[0], 0,
-            dstFront1, dst._rows,
-            false, !transposeE,
-            hand, f._layers
-            );
+    void multiplyEF(Handle& hand, Tensor<T>& src, Tensor<T>& dst, bool transposeE) {
 
-        auto yFront = dst.layerRowCol(0), dstFront2 = f.layerRowCol(0);
+        auto xFront = src.layerRowCol(0), dstFront1 = dst.layerRowCol(0);
+        multE(0, transposeE, true, xFront, dstFront1, src._rows, hand, src._layers);
 
-        Mat<T>::batchMult(
-            eVecs[1], 0,
-            yFront, yFront._rows,
-            dstFront2, dstFront2._rows,
-            transposeE, false,
-            hand, f._layers);
+        auto yFront = dst.layerRowCol(0), dstFront2 = src.layerRowCol(0);
+        multE(1, transposeE, false, yFront, dstFront2, yFront._rows, hand, src._layers);
 
-        auto zSide = f.layerColDepth(0), dstSide = dst.layerColDepth(0);
-
-        Mat<T>::batchMult(
-            zSide, f._ld,
-            eVecs[0], 0,
-            dstSide, dst._ld,
-            false, !transposeE,
-            hand, f._cols);
+        auto zSide = src.layerColDepth(0), dstSide = dst.layerColDepth(0);
+        multE(2, transposeE, true, zSide, dstSide, src._ld, hand, src._cols);
     }
 public:
     /**
@@ -146,48 +115,33 @@ public:
      * @param fTilda temporary storage the same size as f and x.
      * @param stream
      */
-    FastDiagonalization(const CubeBoundary<T>& boundary, Vec<T>& x, Vec<T>& f, Vec<T>& fTilda, Handle& hand) ://TODO: provide pre alocated memory
+    FastDiagonalization(const CubeBoundary<T>& boundary, Vec<T>& x, Vec<T>& f, Vec<T>& fTilda, Handle& hand) :
         Poisson<T>(boundary, f, hand),
         eVecs({SquareMat<T>::create(this->dim.cols), SquareMat<T>::create(this->dim.rows), SquareMat<T>::create(this->dim.layers)}),
         eVals(Mat<T>::create(std::max(this->dim.rows, std::max(this->dim.cols, this->dim.layers)),3))
-    {//TODO:verify E_x kroniker E_y kroniker E_z kroniker f = the f_tilet I built
+    {
 
         for (size_t i = 0; i < 3; ++i) eigenL(i, hand);
 
-        // eVecs[0].get(std::cout << "\neVecs[0] = \n", true, false, hand);
-        // eVecs[1].get(std::cout << "\neVecs[1] = \n", true, false, hand);
-        // eVecs[2].get(std::cout << "\neVecs[2] = \n", true, false, hand);
+        std::cout << "eVecs[0] = \n" << GpuOut<T>(eVecs[0], hand) << std::endl;
+        std::cout << "eVecs[1] = \n" << GpuOut<T>(eVecs[1], hand) << std::endl;
+        std::cout << "eVecs[2] = \n" << GpuOut<T>(eVecs[2], hand) << std::endl;
 
-        auto fTensor = f.tensor(this->dim.rows, this->dim.cols), fTildaTensor = fTilda.tensor(this->dim.rows, this->dim.cols);
+        std::cout << "eVals = \n" << GpuOut<T>(eVals, hand) << std::endl;
 
+        std::cout << "b = \n" << GpuOut<T>(f, hand) << std::endl;
 
-        // std::cout << "f = " << Streamable<double>(hand, fTensor) << std::endl;
-        multiplyEF(hand, fTensor, fTildaTensor, true); //line must be included
+        auto fTensor = f.tensor(this->dim.rows, this->dim.layers), fTildaTensor = fTilda.tensor(this->dim.rows, this->dim.layers);
 
-        // multiplyEF(hand, fTildaTensor, fTensor, false);//TODO;delete me
+        multiplyEF(hand, fTensor, fTildaTensor, true);
 
-
-
-        //
-        // //----------------------TODO: It seems like the results of the following on an f that hasn't seen multiplyEF should give the same results as multiply EF.  I need to figure out why they are different.
-        // //                      TODO: maybe it's because my batch multiply reads and writes to the same space?
-        // auto tempMat1 = Mat<T>::create(eVecs[0]._rows * eVecs[1]._rows, eVecs[0]._cols* eVecs[1]._cols);
-        // auto tempMat2 = Mat<T>::create(tempMat1._rows * eVecs[2]._rows, tempMat1._cols* eVecs[2]._cols);
-        //
-        // kronecker3(eVecs[0], eVecs[1], eVecs[2], tempMat1, tempMat2, hand);
-        //
-        // tempMat2.mult(f, fTilda, &hand, &Singleton<T>::ONE, &Singleton<T>::ZERO, false);
-        // std::cout << "f = \n" << Streamable<double>(hand, fTildaTensor) << std::endl;
-        // //------------------------------------------------------------------------------------------------------------------
-
+        std::cout << "f tilda = \n" << GpuOut<T>(fTildaTensor, hand) << std::endl;
 
         setUTilde(fTildaTensor, fTensor, hand);
 
-        std::cout << "eigenvalues = \n" << GpuOut<double>(eVals, hand) << std::endl;
+        std::cout << "u tilda = \n" << GpuOut<T>(fTensor, hand) << std::endl;
 
-        std::cout << "u = \n" << GpuOut<double>(fTensor, hand) << std::endl;
-
-        auto xTensor = x.tensor(this->dim.rows, this->dim.cols);
+        auto xTensor = x.tensor(this->dim.rows, this->dim.layers);
 
         multiplyEF(hand, fTensor, xTensor, false);
     }
@@ -200,10 +154,11 @@ public:
  */
 int main() {
 
-    constexpr size_t dim = 2;
     Handle hand;
 
-    const auto boundary = CubeBoundary<double>::ZeroTo1(2, 2, 4, hand);
+    const size_t height = 2, width = 2, depth = 4;
+
+    const auto boundary = CubeBoundary<double>::ZeroTo1(height, width, depth, hand);
 
     std::cout << "boundary frontBack = \n" << GpuOut<double>(boundary.frontBack, hand) << std::endl;
     std::cout << "boundary topBottom = \n" << GpuOut<double>(boundary.topBottom, hand) << std::endl;
@@ -219,7 +174,7 @@ int main() {
 
     FastDiagonalization<double> fdm(boundary, x, f, temp, hand);
 
-    x.get(std::cout << "x = \n", true, false, hand);
+    std::cout << "x = \n" << GpuOut<double>(x.tensor(height, depth), hand) << std::endl;
 
     return 0;
 }

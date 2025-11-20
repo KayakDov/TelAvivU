@@ -99,7 +99,7 @@ public:
      * @return The number of elements in the cube surounded by this boundary.
      */
     [[nodiscard]] size_t internalSize() const {
-        return frontBack._rows/2 * leftRight._cols * topBottom._rows/2;
+        return (frontBack._rows/2) * leftRight._cols * frontBack._cols;
     }
 
     /**

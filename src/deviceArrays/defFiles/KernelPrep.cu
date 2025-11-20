@@ -40,14 +40,10 @@ void KernelPrep::calculate3D(size_t width, size_t height, size_t depth) {
         return;
     }
 
-    // Use a cube block size. Since the maximum block size is 1024,
-    // we limit the dimensions to ensure the product doesn't exceed 1024.
-    // 8x8x8 = 512 threads per block, which is a common safe setting.
     constexpr size_t SIDE = 8;
     
     blockDim = dim3(SIDE, SIDE, SIDE);
-    
-    // Calculate required grid size
+
     gridDim = dim3(
         ceiling_division(width, SIDE),
         ceiling_division(height, SIDE),
