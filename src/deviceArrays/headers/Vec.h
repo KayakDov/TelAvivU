@@ -15,6 +15,15 @@
 
 template <typename T> class Mat;
 template <typename T> class Tensor;
+template<typename T> void eigenDecompSolver(const T* frontBack,  size_t fbLd,
+                       const T* leftRight,  size_t lrLd,
+                       const T* topBottom,  size_t tbLd,
+                       T* f,                size_t fStride,
+                       T* x,                size_t xStride,
+                       size_t height,
+                       size_t width,
+                       size_t depth);
+
 /**
  * @class Vec
  * @brief Represents a 1D vector stored on GPU.
@@ -32,6 +41,14 @@ private:
     friend /*Vec<T> */Mat<T>;//::vec(size_t offset, size_t ld, size_t size);//TODO: friend just the relivent method, except that seems to create a circular dependency, so work on this another time.
     friend /*Vec<T> */Tensor<T>;//::depth(size_t row, size_t col);
     friend GpuArray<T>;
+    friend void eigenDecompSolver<T>(const T* frontBack,  const size_t fbLd,
+                       const T* leftRight,  const size_t lrLd,
+                       const T* topBottom,  const size_t tbLd,
+                       T* f,                const size_t fStride,
+                       T* x,                const size_t xStride,
+                       const size_t height,
+                       const size_t width,
+                       const size_t depth);
 
 
 protected:

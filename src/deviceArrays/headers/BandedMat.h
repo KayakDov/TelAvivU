@@ -42,7 +42,14 @@ private:
     const Vec<int32_t> _indices;
 
 protected:
-
+    /**
+     * Constructor.
+     * @param rows The number of rows is the length of the longest diagonal.
+     * @param cols The number of columns ie diagonals.
+     * @param ld The distance between the first element of each row.
+     * @param ptr  Be sure this is prealocated memory with a destruction plan.
+     * @param indices Each values is the index of the coresponding row.
+     */
     BandedMat(size_t rows, size_t cols, size_t ld, std::shared_ptr<T> ptr, const Vec<int32_t> &indices);
 
 public:

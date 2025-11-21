@@ -35,7 +35,7 @@ inline void cudaFreeDeleter(void* ptr) {
  * computations, linear algebra operations, and reductions, optimized for GPU execution.
  *
  * @note Proper initialization of GPU devices and context is required for using this class.
- * It is designed to work with CUDA-enabled devices.
+ * It is designed to workW with CUDA-enabled devices.
  *
  * @warning Attempting to operate on uninitialized or invalid GpuArray instances
  * may result in undefined behavior.
@@ -110,6 +110,7 @@ protected:
      * management among related instances or derived classes.
      */
     std::shared_ptr<T> _ptr;
+
     /**
      * @brief Constructs a GpuArray instance with specified dimensions, leading dimension,
      * and memory pointer.
@@ -119,6 +120,8 @@ protected:
      * and a shared pointer to the memory block representing the array data.
      * It is intended for use in scenarios where the array's parameters and memory
      * allocation are pre-determined.
+     *
+     * If you don't want to manage your own memory, call the factory create method.
      *
      * @param rows The number of rows in the GpuArray.
      * @param cols The number of columns in the GpuArray.

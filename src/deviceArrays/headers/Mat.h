@@ -7,6 +7,17 @@
 #include "GpuArray.h"
 #include "Vec.h"
 
+template<typename T>
+void eigenDecompSolver(const T* frontBack, size_t fbLd,
+                       const T* leftRight, size_t lrLd,
+                       const T* topBottom, size_t tbLd,
+                       T* f,               size_t fStride,
+                       T* x,               size_t xStride,
+                       size_t height,
+                       size_t width,
+                       size_t depth);
+
+
 /**
  * @brief Abstract base class for GPU-backed matrices.
  *
@@ -22,6 +33,14 @@ class Mat : public GpuArray<T> {
     using GpuArray<T>::mult;
 
     friend Tensor<T>;
+    friend void eigenDecompSolver<T>(const T* frontBack,  size_t fbLd,
+                       const T* leftRight,  size_t lrLd,
+                       const T* topBottom,  size_t tbLd,
+                       T* f,                size_t fStride,
+                       T* x,                size_t xStride,
+                       size_t height,
+                       size_t width,
+                       size_t depth);
 
 protected:
     /**
