@@ -216,13 +216,15 @@ public:
      */
     Vec<T> solveUnpreconditionedBiCGSTAB(const BandedMat<T>& A, Vec<T>& x){
 
+        cudaDeviceSynchronize();
+        TimePoint start = std::chrono::steady_clock::now();
         preamable(A, x);
 
         double totalTime = 0;
         size_t numIterations = 0;
         for(;numIterations < maxIterations; numIterations++) {
 
-            TimePoint start = std::chrono::steady_clock::now();
+
 
             A.bandedMult(p, v, handle); // v = A * p
 
@@ -281,13 +283,14 @@ public:
 
             pUpdate(0); // p = p - beta * omega * v
 
-            TimePoint end = std::chrono::steady_clock::now();
-            double iterationTime = (static_cast<std::chrono::duration<double, std::milli>>(end - start)).count();
-            totalTime += iterationTime;
+
         }
+        cudaDeviceSynchronize();
+        const TimePoint end = std::chrono::steady_clock::now();
+        const double time = (static_cast<std::chrono::duration<double, std::milli>>(end - start)).count();
 
         if (numIterations >= maxIterations) std::cout << "WARNING: Maximum number of iterations reached.  Convergence failed.";
-        std::cout << numIterations << ", " << totalTime << std::endl;
+        std::cout << time << ", ";
 
         return x;
     }

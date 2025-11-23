@@ -137,6 +137,8 @@ private:
      */
     BandedMat<T> setA(cudaStream_t& stream, Mat<T>& preAlocatedForA, Vec<int32_t>& prealocatedForIndices) {
 
+        // std::cout << "DirectSolver::setA preAlocatedForA size = " << preAlocatedForA
+
         preAlocatedForA.subMat(0, 1, preAlocatedForA._rows, preAlocatedForA._cols - 1).fill(1, stream);
 
         KernelPrep kp(this->dim.cols, this->dim.rows, this->dim.layers);

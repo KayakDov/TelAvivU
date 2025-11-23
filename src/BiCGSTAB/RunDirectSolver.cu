@@ -7,6 +7,9 @@
 #include "Poisson/CubeBoundary.h"
 #include "Poisson/DirectSolver.cu"
 constexpr  size_t numDiagonals = 7;
+
+
+
 /**
  * Creates and solved an example Poisson class on a cube with the given side length.
  * @param dimLength The length of an edge of the grid.  //up to 325 works on Dov's computer.  After that the size of
@@ -31,8 +34,17 @@ void testPoisson(const size_t height, size_t width, size_t depth, Handle& hand) 
 
     solver.solve(x, prealocatedForBiCGSTAB);
 
-    std::cout << "x = \n" << GpuOut<double>(x, hand) << std::endl;
+    // std::cout << "x = \n" << GpuOut<double>(x, hand) << std::endl;
 
+}
+
+/**
+ * benchmarks  the BiCGSTAV algorithm.
+ * @param dim The size of a dimension
+ * @param hand
+ */
+void testPoisson(size_t dim, Handle& hand) {
+    testPoisson(dim, dim, dim, hand);
 }
 
 /**
@@ -45,21 +57,38 @@ void testPoisson(const size_t height, size_t width, size_t depth, Handle& hand) 
  * @param[in] argv Argument vector (unused).
  * @return 0 on successful execution.
  *///TODO:Similarly for any memory allocated by bicgstab.
-int main(int argc, char *argv[]) {
-
-    Handle hand;
-
-    testPoisson(2, 2, 2, hand);
-
-    // std::cout << "dimension size, number of iterations, total time" << std::endl;
-    // for (size_t i = 2; i < 350; ++i) {
-    // std::cout << i << ", ";
-    // testPoisson(i, hand);
-    // cudaDeviceSynchronize();
-
-    // }
-
-
-
-    return 0;
-}
+// int main(int argc, char *argv[]) {
+//
+//     Handle hand;
+//
+//     testPoisson(2, 2, 2, hand);
+//
+//     // std::cout << "dimension size, number of iterations, total time" << std::endl;
+//     // for (size_t i = 2; i < 350; ++i) {
+//     // std::cout << i << ", ";
+//     // testPoisson(i, hand);
+//     // cudaDeviceSynchronize();int main(int argc, char *argv[]) {
+//
+//     Handle hand;
+//
+//     testPoisson(2, 2, 2, hand);
+//
+//     // std::cout << "dimension size, number of iterations, total time" << std::endl;
+//     // for (size_t i = 2; i < 350; ++i) {
+//     // std::cout << i << ", ";
+//     // testPoisson(i, hand);
+//     // cudaDeviceSynchronize();
+//
+//     // }
+//
+//
+//
+//     return 0;
+// }
+//
+//     // }
+//
+//
+//
+//     return 0;
+// }

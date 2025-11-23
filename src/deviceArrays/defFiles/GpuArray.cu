@@ -34,6 +34,7 @@ template<typename T>
 void GpuArray<T>::fill(T val, cudaStream_t stream) {
 
     KernelPrep kp = kernelPrep();
+
     fill2dKernel<<<kp.gridDim, kp.blockDim, 0, stream>>>(this->toKernel2d(), val);
     CHECK_CUDA_ERROR(cudaGetLastError());
 }

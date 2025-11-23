@@ -134,7 +134,7 @@ EigenDecompSolver<T>::EigenDecompSolver(const CubeBoundary<T>& boundary,
         eigenL(i, hand3[i]);
         doneEigen[i].record(hand3[i]);
     }
-    eigenL(3, hand3[3]);
+    eigenL(2, hand3[2]);
 
     auto fT  = f.tensor(this->dim.rows, this->dim.layers);
     auto fTd = x.tensor(this->dim.rows, this->dim.layers);

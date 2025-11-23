@@ -1,59 +1,32 @@
 
 #include "Poisson.h"
 
+#include <iostream>
 #include <optional>
 
 #include "../deviceArrays/headers/GridDim.cuh"
+#include "deviceArrays/headers/Streamable.h"
 
-//TODO: half can be passed as a paramater.  There also seems to be a lot of redundant code between methods.
+
 template <typename T>
-__global__ void setRHSKernelFrontBack(DeviceData1d<T> b, const DeviceData2d<T> faces, const GridDim grid) {
-    GridInd2d ind;
-    if (ind >= faces) return;
+__global__ void setRHSKernel(DeviceData1d<T> b, const DeviceData2d<T> topBottom, const DeviceData2d<T> leftRight, const DeviceData2d<T> frontBack, const GridDim grid) {
 
-    const size_t half = faces.rows / 2;
+    if (GridInd2d ind; ind < frontBack)
+        b[grid(ind.row % grid.rows, ind.col, ind.row >= grid.rows ? grid.layers - 1 : 0)] -= frontBack[ind];
 
-    // printf("front back: (%lu, %lu) -> (%lu, %lu, %lu)\n", blockIdx.y * blockDim.y + threadIdx.y, ind.col, ind.row, ind.col, layer);
+    if (GridInd2d ind; ind < leftRight)
+        b[grid(ind.row % grid.rows, ind.row >= grid.rows ? grid.cols - 1 : 0, grid.layers - 1 - ind.col)] -= leftRight[ind];
 
-    b[grid(ind.row % half, ind.col, ind.row >= half ? grid.layers - 1 : 0)] -= faces[ind];
-}
-template <typename T>
-__global__ void setRHSKernelLeftRight(DeviceData1d<T> b, const DeviceData2d<T> faces, const GridDim grid) {
-    GridInd2d ind;
-    if (ind >= faces) return;
-
-    const size_t half = faces.rows / 2;
-
-    // printf("left right: (%lu, %lu) -> (%lu, %lu, %lu)\n", blockIdx.y * blockDim.y + threadIdx.y, ind.col, ind.row, col, grid.layers - 1 - ind.col);
-
-    b[grid(ind.row % half, ind.row >= half ? grid.cols - 1 : 0, grid.layers - 1 - ind.col)] -= faces[ind];
-}
-template <typename T>
-__global__ void setRHSKernelTopBottom(DeviceData1d<T> b, const DeviceData2d<T> faces, const GridDim grid) {
-    GridInd2d ind;
-    if (ind >= faces) return;
-
-    const size_t half = faces.rows / 2;
-
-    // printf("top botton: (%lu, %lu) -> (%lu, %lu, %lu)\n", blockIdx.y * blockDim.y + threadIdx.y, ind.col, row, ind.col, grid.layers - 1 - ind.row);
-
-    b[grid(ind.row >= half ? grid.rows - 1 : 0, ind.col, grid.layers - 1 - (ind.row % half))] -= faces[ind];
+    if (GridInd2d ind; ind < topBottom)
+        b[grid(ind.row >= grid.layers ? grid.rows - 1 : 0, ind.col, grid.layers - 1 - (ind.row % grid.layers))] -= topBottom[ind];
 }
 
 
 template <typename T>
 void Poisson<T>::setB(const CubeBoundary<T>& boundary, cudaStream_t stream) {
 
-    KernelPrep kpTB = boundary.topBottom.kernelPrep();
-    setRHSKernelTopBottom<<<kpTB.gridDim, kpTB.blockDim, 0, stream>>>(_b.toKernel1d(), boundary.topBottom.toKernel2d(), dim);
-    CHECK_CUDA_ERROR(cudaGetLastError());
-
-    KernelPrep kpLR = boundary.leftRight.kernelPrep();
-    setRHSKernelLeftRight<<<kpLR.gridDim, kpLR.blockDim, 0, stream>>>(_b.toKernel1d(), boundary.leftRight.toKernel2d(), dim);
-    CHECK_CUDA_ERROR(cudaGetLastError());
-
-    KernelPrep kpFB = boundary.frontBack.kernelPrep();
-    setRHSKernelFrontBack<<<kpFB.gridDim, kpFB.blockDim, 0, stream>>>(_b.toKernel1d(), boundary.frontBack.toKernel2d(), dim);
+    KernelPrep kp(std::max(dim.cols, dim.layers), std::max(dim.rows, dim.layers));
+    setRHSKernelFrontBack<<<kp.gridDim, kp.blockDim, 0, stream>>>(_b.toKernel1d(), boundary.topBottom.toKernel2d(), boundary.leftRight.toKernel2d(), boundary.frontBack.toKernel2d(), dim);
     CHECK_CUDA_ERROR(cudaGetLastError());
 }
 
