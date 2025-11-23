@@ -1,5 +1,7 @@
 #include "EigenDecompSolver.h"
 
+#include "BiCGSTAB/Event.h"
+
 template <typename T>
 __device__ constexpr T PI = static_cast<T>(3.14159265358979323846);
 
@@ -121,26 +123,30 @@ void EigenDecompSolver<T>::multiplyEF(Handle& hand, Tensor<T>& src, Tensor<T>& d
 template <typename T>
 EigenDecompSolver<T>::EigenDecompSolver(const CubeBoundary<T>& boundary,
                                         Vec<T>& x, Vec<T>& f,
-                                        Handle& hand)
-    : Poisson<T>(boundary, f, hand),
-      eVecs({SquareMat<T>::create(this->dim.cols),
-             SquareMat<T>::create(this->dim.rows),
-             SquareMat<T>::create(this->dim.layers)}),
-      eVals(Mat<T>::create(
-          std::max(this->dim.rows, std::max(this->dim.cols, this->dim.layers)),
-          3))
+                                        SquareMat<T>& rowsXRows, SquareMat<T>& colsXCols, SquareMat<T>& depthsXDepths, Mat<T>& maxDimX3,
+                                        Handle hand3[])
+    : Poisson<T>(boundary, f, hand3[2]),
+      eVecs({rowsXRows, colsXCols, depthsXDepths}),
+      eVals(maxDimX3)
 {
-    for (size_t i = 0; i < 3; ++i) eigenL(i, hand);
+    Event doneEigen[2]{};
+    for (size_t i = 0; i < 2; i++) {
+        eigenL(i, hand3[i]);
+        doneEigen[i].record(hand3[i]);
+    }
+    eigenL(3, hand3[3]);
 
     auto fT  = f.tensor(this->dim.rows, this->dim.layers);
     auto fTd = x.tensor(this->dim.rows, this->dim.layers);
 
-    multiplyEF(hand, fT, fTd, true);
+    doneEigen[0].wait(hand3[2]);
+    doneEigen[1].wait(hand3[2]);
+    multiplyEF(hand3[2], fT, fTd, true);
 
-    setUTilde(fTd, fT, hand);
+    setUTilde(fTd, fT, hand3[2]);
 
     auto xT = x.tensor(this->dim.rows, this->dim.layers);
-    multiplyEF(hand, fT, xT, false);
+    multiplyEF(hand3[2], fT, xT, false);
 }
 
 

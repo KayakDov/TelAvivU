@@ -156,8 +156,19 @@ SquareMat<T> SquareMat<T>::setToIdentity(cudaStream_t stream) {
     return *this;
 }
 
+
+template<typename T>
+SquareMat<T> Mat<T>::sqSubMat(size_t startRow, size_t startCol, size_t dim) const {
+    return SquareMat<T>(dim, this->_ld, offset(startRow, startCol));
+}
+
 template class SquareMat<float>;
 template class SquareMat<double>;
 template class SquareMat<size_t>;
 template class SquareMat<int32_t>;
 template class SquareMat<unsigned char>;
+
+template SquareMat<float> Mat<float>::sqSubMat(size_t startRow, size_t startCol, size_t dim) const;
+template SquareMat<double> Mat<double>::sqSubMat(size_t startRow, size_t startCol, size_t dim) const;
+template SquareMat<size_t> Mat<size_t>::sqSubMat(size_t startRow, size_t startCol, size_t dim) const;
+template SquareMat<int32_t> Mat<int32_t>::sqSubMat(size_t startRow, size_t startCol, size_t dim) const;

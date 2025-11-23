@@ -52,6 +52,16 @@ protected:
      */
     Mat(size_t rows, size_t cols, size_t ld, std::shared_ptr<T> _ptr);
 
+    /**
+     * A pointer to the desired element.
+     * @param row
+     * @param col
+     * @return a pointer to the desired element.
+     */
+    std::shared_ptr<T> offset(size_t row, size_t col);
+
+    std::shared_ptr<T> offset(size_t row, size_t col) const;
+
 public:
 
 
@@ -195,6 +205,15 @@ public:
      * @note Not yet implemented.
      */
     [[nodiscard]] virtual Mat<T> subMat(size_t startRow, size_t startCol, size_t height, size_t width) const;
+
+    /**
+     * A square submatrix of this matrix.
+     * @param startRow The starting row.
+     * @param startCol The starting column.
+     * @param dim The height and width.
+     * @return A window into this matrix that is a square sub matrix.
+     */
+    [[nodiscard]] SquareMat<T> sqSubMat(size_t startRow, size_t startCol, size_t dim) const;
 
 
     /**

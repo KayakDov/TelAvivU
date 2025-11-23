@@ -25,6 +25,7 @@
  */
 template <typename T>
 class SquareMat : public Mat<T> {
+    friend class Mat<T>;
 private:
     /**
      * @brief Private constructor for internal use.

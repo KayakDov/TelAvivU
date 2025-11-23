@@ -123,11 +123,14 @@ public:
      * @param boundary Boundary conditions for the grid.
      * @param x Output buffer for the solution.
      * @param f Right-hand-side vector (will be overwritten).
-     * @param hand CUDA cuBLAS/cusolver handle.
+     * @param rowsXRows A space to work in.
+     * @param colsXCols A space to work in.
+     * @param depthsXDepths A space to work in.
+     * @param maxDimX3 A space to work in.
+     * @param hand 3 CUDA cuBLAS/cusolver handles.
      */
-    EigenDecompSolver(const CubeBoundary<T>& boundary,
-                      Vec<T>& x, Vec<T>& f,
-                      Handle& hand);
+    EigenDecompSolver(const CubeBoundary<T> &boundary, Vec<T> &x, Vec<T> &f, SquareMat<T> &rowsXRows,
+                      SquareMat<T> &colsXCols, SquareMat<T> &depthsXDepths, Mat<T> &maxDimX3, Handle hand3[]);
 };
 
 

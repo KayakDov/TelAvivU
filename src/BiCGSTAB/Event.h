@@ -1,6 +1,6 @@
 /**
  * @file Event.h
- * @brief Wrapper class for CUDA event management.
+ * @brief RAII wrapper for CUDA event management using smart pointers.
  */
 
 #ifndef EVENT_H
@@ -8,58 +8,101 @@
 
 #include <cuda_runtime.h>
 #include <stdexcept>
+#include <memory>
 #include "../deviceArrays/headers/GpuArray.h"
+
 /**
  * @class Event
- * @brief A RAII wrapper for CUDA events, supporting creation, destruction,
- *        renewal, recording, and stream synchronization.
+ * @brief A robust RAII wrapper around a CUDA event using std::unique_ptr.
+ *
+ * This class manages a CUDA event (`cudaEvent_t`) through a smart pointer
+ * with a custom deleter. It supports:
+ *  - creation
+ *  - destruction (automatic via RAII)
+ *  - renewal (recreate event)
+ *  - recording on a CUDA stream
+ *  - making a stream wait on the event
+ *
+ * The event is always either:
+ *  - owned exclusively by this class, or
+ *  - null (if moved-from)
+ *
+ * No destructor is needed, and no `valid` flag is used.
  */
 class Event {
 public:
+
     /**
-     * @brief Constructor. Creates a CUDA event.
+     * @brief Constructs a new CUDA event.
+     *
+     * The event is created with `cudaEventDisableTiming` for minimal overhead.
+     *
+     * @throws std::runtime_error if CUDA fails to create the event.
      */
     Event();
 
     /**
-     * @brief Destructor. Destroys the CUDA event if it exists.
-     */
-    ~Event();
-
-    /**
-     * @brief Renew the event by destroying and recreating it.
+     * @brief Recreates the CUDA event.
+     *
+     * The previous event is destroyed automatically via the custom deleter.
+     *
+     * @throws std::runtime_error if CUDA fails to recreate the event.
      */
     void renew();
 
     /**
-     * @brief Record this event on the stream managed by a Handle.
-     * @param h Reference to a Handle whose stream is used for recording.
+     * @brief Records the event on the CUDA stream associated with the given Handle.
+     *
+     * @param h A Handle object containing a CUDA stream.
+     * @throws std::runtime_error if the event is null or if `cudaEventRecord` fails.
      */
-    void record(const Handle& h);
+    void record(const Handle& h) const;
 
     /**
-     * @brief Make the stream in the given Handle wait until this event is complete.
-     * @param h Reference to a Handle whose stream will wait on this event.
+     * @brief Makes the stream in the given Handle wait until this event completes.
+     *
+     * @param h A Handle object containing a CUDA stream.
+     * @throws std::runtime_error if the event is null or if `cudaStreamWaitEvent` fails.
      */
     void wait(const Handle& h) const;
 
     /**
-     * @brief the even in case it has been used in the past, and records.
-     * @param h Reference to a Handle whose stream is used for recording.
+     * @brief Renew the CUDA event and immediately record it on the given stream.
+     *
+     * Useful for checkpointing or marking phase boundaries in asynchronous pipelines.
+     *
+     * @param h The Handle whose CUDA stream is used.
      */
     void renewAndRecord(const Handle& h);
 
-    /// Deleted copy constructor and copy assignment (events are not copyable).
+    /// @name Deleted copy operations
+    /// @{
     Event(const Event&) = delete;
     Event& operator=(const Event&) = delete;
+    /// @}
 
-    /// Allow move semantics.
-    Event(Event&& other) noexcept;
-    Event& operator=(Event&& other) noexcept;
+    /// @name Move semantics
+    /// @{
+    Event(Event&&) noexcept = default;
+    Event& operator=(Event&&) noexcept = default;
+    /// @}
 
 private:
-    cudaEvent_t event; ///< The underlying CUDA event.
-    bool valid;        ///< Tracks whether the event is currently valid.
+
+    /**
+     * @struct EventDeleter
+     * @brief Custom deleter that destroys the CUDA event when the unique_ptr resets.
+     */
+    struct EventDeleter {
+        void operator()(cudaEvent_t e) const noexcept {
+            if (e) CHECK_CUDA_ERROR(cudaEventDestroy(e));
+        }
+    };
+
+    /// @brief Smart pointer owning the CUDA event.
+    using EventPtr = std::unique_ptr<std::remove_pointer<cudaEvent_t>::type, EventDeleter>;
+
+    EventPtr event; ///< The owned CUDA event (or null if moved-from).
 };
 
 #endif // EVENT_H

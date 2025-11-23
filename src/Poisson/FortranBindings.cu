@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include "EigenDecompSolver.cu"
 
 
@@ -52,7 +54,7 @@ void eigenDecompSolver(const T* frontBack,  const size_t fbLd,
     Handle hand;
 
     cudaDeviceSynchronize();
-    EigenDecompSolver eds(boundary, xVec, fVec, hand);
+    // EigenDecompSolver eds(boundary, xVec, fVec, hand);  TODO: ask for prealocated memory and pass to here.
     cudaDeviceSynchronize();
 }
 
@@ -103,7 +105,37 @@ extern "C" {
     }
 
 } // extern "C"
+using TimePoint = std::chrono::time_point<std::chrono::steady_clock>;
+template<typename T>
+void benchMarkEigenDecompSolver(size_t dim, Handle& hand) {
 
+    std::cout << dim;
+    const auto boundary = CubeBoundary<double>::ZeroTo1(dim, hand);
+
+    auto memAlocFX = Mat<double>::create(boundary.internalSize(), 2);
+
+    Mat<T> eigenStorage = Mat<T>::create(dim, 3 * dim + 3);
+    SquareMat<T> eX = eigenStorage.sqSubMat(0, 0, dim),
+        eY = eigenStorage.sqSubMat(0, dim, dim),
+        eZ = eigenStorage.sqSubMat(0, 2 * dim, dim);
+    Mat<T> vals = eigenStorage.subMat(0, 3*dim, dim, 3);
+
+
+    auto x = memAlocFX.col(0);
+    auto f = memAlocFX.col(1);
+
+    f.fill(0, hand);
+
+    TimePoint start = std::chrono::steady_clock::now();
+    EigenDecompSolver<double> fdm(boundary, x, f, eX, eY, eZ, vals, hand);
+    TimePoint end = std::chrono::steady_clock::now();
+    // hand.synch();
+    cudaDeviceSynchronize();
+    double iterationTime = (static_cast<std::chrono::duration<double, std::milli>>(end - start)).count();
+    std::cout << ", " << iterationTime << std::endl;
+
+    // std::cout << "x = \n" << GpuOut<double>(x.tensor(dim, dim), hand) << std::endl;
+}
 
 /**
  * @brief Main entry point to demonstrate the FastDiagonalizationMethod
@@ -113,20 +145,14 @@ int main() {
 
     Handle hand;
 
-    const size_t height = 2, width = 2, depth = 4;
+    std::cout << "dim, time" << std::endl;
+    // for (size_t dim = 3; true; dim++)
+    size_t dim = 700;
+        benchMarkEigenDecompSolver<double>(dim, hand);
 
-    const auto boundary = CubeBoundary<double>::ZeroTo1(height, width, depth, hand);
 
-    auto memAloc = Mat<double>::create(boundary.internalSize(), 2);
 
-    auto x = memAloc.col(0);
-    auto f = memAloc.col(1);
 
-    f.fill(0, hand);
-
-    EigenDecompSolver<double> fdm(boundary, x, f, hand);
-
-    std::cout << "x = \n" << GpuOut<double>(x.tensor(height, depth), hand) << std::endl;
 
     return 0;
 }

@@ -390,13 +390,23 @@ Mat<T> Mat<T>::create(size_t rows, size_t cols){
 }
 
 template <typename T>
+std::shared_ptr<T> Mat<T>::offset(size_t row, size_t col) {
+    return std::shared_ptr<T>(this->_ptr, const_cast<T*>(this->_ptr.get() + col * this->_ld + row));
+}
+
+template <typename T>
+std::shared_ptr<T> Mat<T>::offset(size_t row, size_t col) const{
+    return std::shared_ptr<T>(this->_ptr,this->_ptr.get() + col * this->_ld + row);
+}
+
+template <typename T>
 Mat<T> Mat<T>::subMat(const size_t startRow, const size_t startCol, const size_t height, const size_t width) const{
 
     return Mat<T>(
         height,
         width,
         this->_ld,
-        std::shared_ptr<T>(this->_ptr, const_cast<T*>(this->_ptr.get() + startCol * this->_ld + startRow))
+        offset(startRow, startCol)
     );
 }
 
