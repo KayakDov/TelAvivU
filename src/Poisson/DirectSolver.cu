@@ -142,7 +142,7 @@ private:
         preAlocatedForA.subMat(0, 1, preAlocatedForA._rows, preAlocatedForA._cols - 1).fill(1, stream);
 
         KernelPrep kp(this->dim.cols, this->dim.rows, this->dim.layers);
-        setAKernel<T><<<kp.gridDim, kp.blockDim, 0, stream>>>(
+        setAKernel<T><<<kp.numBlocks, kp.threadsPerBlock, 0, stream>>>(
             preAlocatedForA.toKernel2d(), this->dim,
             here.row, up.row, down.row, left.row, right.row, front.row, back.row
         );

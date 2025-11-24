@@ -30,12 +30,17 @@ __global__ void fill2dKernel(DeviceData2d<T> a, const T val){
     if (const GridInd2d ind; ind < a) a[ind] = val;
 }
 
+template <typename T>
+__global__ void fill2dKernelT(DeviceData2d<T> a, const T val){
+    if (const GridInd2dT ind; ind < a) a[ind] = val;
+}
+
 template<typename T>
 void GpuArray<T>::fill(T val, cudaStream_t stream) {
 
-    KernelPrep kp = kernelPrep();
+    KernelPrep kp = kernelPrep(true);
 
-    fill2dKernel<<<kp.gridDim, kp.blockDim, 0, stream>>>(this->toKernel2d(), val);
+    fill2dKernel<<<kp.numBlocks, kp.threadsPerBlock, 0, stream>>>(this->toKernel2d(), val);
     CHECK_CUDA_ERROR(cudaGetLastError());
 }
 
@@ -125,7 +130,7 @@ void GpuArray<T>::multKronecker(const GpuArray<T>& other, GpuArray<T>& result, c
 
     KernelPrep kp = kernelPrep();
 
-    kroneckerKernel<<<kp.gridDim, kp.blockDim, 0, stream>>>(
+    kroneckerKernel<<<kp.numBlocks, kp.threadsPerBlock, 0, stream>>>(
         this->toKernel2d(),
         other.toKernel2d(),
         result.toKernel2d()
@@ -145,8 +150,8 @@ const T * GpuArray<T>::data() const {
 }
 
 template<typename T>
-KernelPrep GpuArray<T>::kernelPrep() const {
-    return {this->_cols, this->_rows};
+KernelPrep GpuArray<T>::kernelPrep(bool transpose) const {
+    return {this->_cols, this->_rows, transpose};
 }
 
 template <typename T>

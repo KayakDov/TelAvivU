@@ -9,14 +9,50 @@
  * * Provides methods to set up dim3 structures for 1D, 2D, and 3D data processing.
  */
 class KernelPrep {
+
+    static constexpr size_t DEFAULT_BLOCK_SIZE_1D = 256;
+    static constexpr size_t DEFAULT_BLOCK_SIZE_2D_SIDE = 16;
+    static constexpr size_t DEFAULT_BLOCK_SIZE_3D_SIDE = 8;
+
+    static const cudaDeviceProp& deviceProps() {
+        static cudaDeviceProp prop = []{
+            int device = 0;
+            cudaDeviceProp p{};
+            if (cudaGetDeviceProperties(&p, device) != cudaSuccess) {
+                throw std::runtime_error("Failed to query CUDA device properties");
+            }
+            return p;
+        }();
+        return prop;
+    }
+
 public:
-    // --- Public Fields ---
+    static size_t maxThreadsPerBlock() {
+        return deviceProps().maxThreadsPerBlock;
+    }
+
+    static size_t maxNumBlocksX() {
+        return deviceProps().maxGridSize[0];
+    }
+
+    static size_t maxNumBlocksY() {
+        return deviceProps().maxGridSize[1];
+    }
+
+    static size_t maxNumBlocksZ() {
+        return deviceProps().maxGridSize[2];
+    }
+    // KernelPrep.cuh or a shared constants header
+    static constexpr size_t CUDA_MAX_GRID_X = 2147483647u;
+    static constexpr size_t CUDA_MAX_GRID_Y = 65535u;
+    static constexpr size_t CUDA_MAX_GRID_Z = 64u;
+    static constexpr size_t CUDA_MAX_BLOCK_THREADS = 1024u;
 
     /** @brief The calculated grid dimensions (number of blocks). */
-    dim3 gridDim;
+    dim3 numBlocks;
 
     /** @brief The calculated block dimensions (threads per block). */
-    dim3 blockDim;
+    dim3 threadsPerBlock;
 
     // --- Constructors / Configuration Methods ---
 
@@ -30,8 +66,11 @@ public:
      * @brief Constructs a KernelPrep object and calculates 2D grid/block dimensions.
      * @param width The width (X dimension) of the data.
      * @param height The height (Y dimension) of the data.
+     * @param transpose Set transpose to true to flip x and y dimensions, so that column index is the y dimension
+     * and row index is the x dimension.  This is useful when the y dimension is much longer than the x dimension,
+     * on account of gpu limits.
      */
-    KernelPrep(size_t width, size_t height);
+    KernelPrep(size_t width, size_t height, bool transpose = false);
 
     /**
      * @brief Constructs a KernelPrep object and calculates 3D grid/block dimensions.
@@ -51,35 +90,6 @@ public:
         return (numerator + denominator - 1) / denominator;
     }
 
-private:
-    // --- Private Helper Constants and Methods ---
-
-    // Default threads per block for 1D operations. Must be power of 2.
-    static constexpr size_t DEFAULT_BLOCK_SIZE_1D = 256;
-
-    // Default threads per side for 2D/3D blocks. 16*16 = 256 threads.
-    static constexpr size_t DEFAULT_BLOCK_SIZE_2D_SIDE = 16;
-
-    /**
-     * @brief Core calculation logic for 1D dimensions.
-     * @param count The total number of elements.
-     */
-    void calculate1D(size_t count);
-
-    /**
-     * @brief Core calculation logic for 2D dimensions.
-     * @param width The X dimension.
-     * @param height The Y dimension.
-     */
-    void calculate2D(size_t width, size_t height);
-
-    /**
-     * @brief Core calculation logic for 3D dimensions.
-     * @param width The X dimension.
-     * @param height The Y dimension.
-     * @param depth The Z dimension.
-     */
-    void calculate3D(size_t width, size_t height, size_t depth);
 };
 
 #endif // KERNELPREP_H

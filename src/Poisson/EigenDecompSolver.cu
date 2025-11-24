@@ -46,12 +46,12 @@ __global__ void setUTildeKernel(DeviceData3d<T> uTilde,
 template <typename T>
 void EigenDecompSolver<T>::eigenL(size_t i, cudaStream_t stream) {
     KernelPrep kpVec = eVecs[i].kernelPrep();
-    eigenMatLKernel<T><<<kpVec.gridDim, kpVec.blockDim, 0, stream>>>(
+    eigenMatLKernel<T><<<kpVec.numBlocks, kpVec.threadsPerBlock, 0, stream>>>(
         eVecs[i].toKernel2d());
 
     size_t n = eVecs[i]._cols;
     KernelPrep kpVal(n);
-    eigenValLKernel<T><<<kpVal.gridDim, kpVal.blockDim, 0, stream>>>(
+    eigenValLKernel<T><<<kpVal.numBlocks, kpVal.threadsPerBlock, 0, stream>>>(
         eVals.col(i).subVec(0, n, 1).toKernel1d());
 }
 
@@ -60,7 +60,7 @@ void EigenDecompSolver<T>::setUTilde(const Tensor<T>& f,
                                      Tensor<T>& u,
                                      Handle& hand) {
     KernelPrep kp = f.kernelPrep();
-    setUTildeKernel<T><<<kp.gridDim, kp.blockDim, 0, hand>>>(
+    setUTildeKernel<T><<<kp.numBlocks, kp.threadsPerBlock, 0, hand>>>(
         u.toKernel3d(),
         eVals.toKernel2d(),
         f.toKernel3d());

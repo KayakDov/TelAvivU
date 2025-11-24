@@ -15,12 +15,29 @@
 #include <cstddef>
 #include <device_launch_parameters.h>
 
+__device__ inline size_t idx(){return blockIdx.x * blockDim.x + threadIdx.x;}
+__device__ inline size_t idy(){return blockIdx.y * blockDim.y + threadIdx.y;}
+
 class GridInd2d {
 public:
     size_t row, col;
     __device__ GridInd2d(size_t row, size_t col);
-    __device__ inline GridInd2d():row(blockIdx.y * blockDim.y + threadIdx.y),
-    col(blockIdx.x * blockDim.x + threadIdx.x){}
+
+    /**
+     * The index of the thread.
+     */
+    __device__ inline GridInd2d(): GridInd2d(idy(), idx()){}
+};
+
+/**
+ * A transposed 2d index of the thread.
+ */
+class GridInd2dT : public GridInd2d{
+public:
+    /**
+     * The thread index transposed.  Should be used when the kernel prep is transposed.
+     */
+    __device__ GridInd2dT(): GridInd2d(idx(), idy()){}
 };
 
 class GridInd3d : public GridInd2d{

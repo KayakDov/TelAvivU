@@ -11,13 +11,15 @@
 template <typename T>
 __global__ void setRHSKernel(DeviceData1d<T> b, const DeviceData2d<T> topBottom, const DeviceData2d<T> leftRight, const DeviceData2d<T> frontBack, const GridDim grid) {
 
-    if (GridInd2d ind; ind < frontBack)
+    const GridInd2d ind;
+
+    if (ind < frontBack)
         b[grid(ind.row % grid.rows, ind.col, ind.row >= grid.rows ? grid.layers - 1 : 0)] -= frontBack[ind];
 
-    if (GridInd2d ind; ind < leftRight)
+    if (ind < leftRight)
         b[grid(ind.row % grid.rows, ind.row >= grid.rows ? grid.cols - 1 : 0, grid.layers - 1 - ind.col)] -= leftRight[ind];
 
-    if (GridInd2d ind; ind < topBottom)
+    if (ind < topBottom)
         b[grid(ind.row >= grid.layers ? grid.rows - 1 : 0, ind.col, grid.layers - 1 - (ind.row % grid.layers))] -= topBottom[ind];
 }
 
@@ -26,7 +28,7 @@ template <typename T>
 void Poisson<T>::setB(const CubeBoundary<T>& boundary, cudaStream_t stream) {
 
     KernelPrep kp(std::max(dim.cols, dim.layers), std::max(dim.rows, dim.layers));
-    setRHSKernelFrontBack<<<kp.gridDim, kp.blockDim, 0, stream>>>(_b.toKernel1d(), boundary.topBottom.toKernel2d(), boundary.leftRight.toKernel2d(), boundary.frontBack.toKernel2d(), dim);
+    setRHSKernel<<<kp.numBlocks, kp.threadsPerBlock, 0, stream>>>(_b.toKernel1d(), boundary.topBottom.toKernel2d(), boundary.leftRight.toKernel2d(), boundary.frontBack.toKernel2d(), dim);
     CHECK_CUDA_ERROR(cudaGetLastError());
 }
 

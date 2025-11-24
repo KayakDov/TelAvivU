@@ -183,7 +183,7 @@ void Vec<T>::fill(T val, cudaStream_t stream) {
         cudaMemset(this->toKernel1d(), val, size() * sizeof(T));
     else {
         KernelPrep kp = kernelPrep();
-        fill1dKernel<<<kp.gridDim, kp.blockDim, 0, stream>>>(this->toKernel1d(), val);
+        fill1dKernel<<<kp.numBlocks, kp.threadsPerBlock, 0, stream>>>(this->toKernel1d(), val);
     }
     CHECK_CUDA_ERROR(cudaGetLastError());
 }
@@ -291,7 +291,7 @@ void Vec<T>::EBEPow(const Singleton<T> &t, const Singleton<T> &n, cudaStream_t s
 
     KernelPrep kp = this->kernelPrep();
 
-    EBEPowKernel<<<kp.gridDim, kp.blockDim, 0, stream>>>(
+    EBEPowKernel<<<kp.numBlocks, kp.threadsPerBlock, 0, stream>>>(
         this->toKernel1d(),
         t.data(), n.data()
     );
@@ -314,7 +314,7 @@ void Vec<T>::setSum(const Vec<T> &a, const Vec<T> &b, const Singleton<T> &alpha,
 
     KernelPrep kp = this->kernelPrep();
 
-    setSumKernel<<<kp.gridDim, kp.blockDim, 0, *h>>>(
+    setSumKernel<<<kp.numBlocks, kp.threadsPerBlock, 0, *h>>>(
         this->toKernel1d(), // Destination: 'this' vector
         a.toKernel1d(), // Input 1: 'a' vector
         b.toKernel1d(), // Input 2: 'b' vector
@@ -338,7 +338,7 @@ void Vec<T>::setDifference(const Vec<T> &a, const Vec<T> &b, const Singleton<T> 
     Handle *h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
 
     KernelPrep kp = this->kernelPrep();
-    setDifferenceKernel<<<kp.gridDim, kp.blockDim, 0, *h>>>(
+    setDifferenceKernel<<<kp.numBlocks, kp.threadsPerBlock, 0, *h>>>(
         this->toKernel1d(), // Destination: 'this' vector
         a.toKernel1d(), // Input 1: 'a' vector
         b.toKernel1d(), // Input 2: 'b' vector

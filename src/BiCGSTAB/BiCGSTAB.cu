@@ -139,7 +139,7 @@ private:
         KernelPrep kp = p.kernelPrep();
 
         // Kernel launch performs: p = r + beta * (p - omega * v)
-        updatePKernel<<<kp.gridDim, kp.blockDim, 0, handle[streamInd]>>>(
+        updatePKernel<<<kp.numBlocks, kp.threadsPerBlock, 0, handle[streamInd]>>>(
             p.toKernel1d(),       // d_p (Input/Output)
             r.toKernel1d(),       // d_r
             v.toKernel1d(),       // d_v

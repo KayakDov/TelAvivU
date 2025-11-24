@@ -64,43 +64,43 @@ void eigenDecompSolver(const T *frontBack, const size_t fbLd,
 //                    EXPORTED SYMBOLS FOR FORTRAN
 // ============================================================================
 
-extern "C" {
-void eigenDecompSolver_float(
-    const float *frontBack, const size_t *fbLd,
-    const float *leftRight, const size_t *lrLd,
-    const float *topBottom, const size_t *tbLd,
-    float *f, const size_t *fStride,
-    float *x, const size_t *xStride,
-    const size_t *height, const size_t *width,
-    const size_t *depth) {
-    eigenDecompSolver<float>(
-        frontBack, *fbLd,
-        leftRight, *lrLd,
-        topBottom, *tbLd,
-        f, *fStride,
-        x, *xStride,
-        *height, *width, *depth
-    );
-}
+    extern "C" {
+    void eigenDecompSolver_float_(
+        const float *frontBack, const size_t *fbLd,
+        const float *leftRight, const size_t *lrLd,
+        const float *topBottom, const size_t *tbLd,
+        float *f, const size_t *fStride,
+        float *x, const size_t *xStride,
+        const size_t *height, const size_t *width,
+        const size_t *depth) {
+        eigenDecompSolver<float>(
+            frontBack, *fbLd,
+            leftRight, *lrLd,
+            topBottom, *tbLd,
+            f, *fStride,
+            x, *xStride,
+            *height, *width, *depth
+        );
+    }
 
 
-void eigenDecompSolver_double(
-    const double *frontBack, const size_t *fbLd,
-    const double *leftRight, const size_t *lrLd,
-    const double *topBottom, const size_t *tbLd,
-    double *f, const size_t *fStride,
-    double *x, const size_t *xStride,
-    const size_t *height, const size_t *width,
-    const size_t *depth) {
-    eigenDecompSolver<double>(
-        frontBack, *fbLd,
-        leftRight, *lrLd,
-        topBottom, *tbLd,
-        f, *fStride,
-        x, *xStride,
-        *height, *width, *depth
-    );
-}
+    void eigenDecompSolver_double_(
+        const double *frontBack, const size_t *fbLd,
+        const double *leftRight, const size_t *lrLd,
+        const double *topBottom, const size_t *tbLd,
+        double *f, const size_t *fStride,
+        double *x, const size_t *xStride,
+        const size_t *height, const size_t *width,
+        const size_t *depth) {
+        eigenDecompSolver<double>(
+            frontBack, *fbLd,
+            leftRight, *lrLd,
+            topBottom, *tbLd,
+            f, *fStride,
+            x, *xStride,
+            *height, *width, *depth
+        );
+    }
 } // extern "C"
 using TimePoint = std::chrono::time_point<std::chrono::steady_clock>;
 
@@ -132,7 +132,7 @@ void benchMarkEigenDecompSolver(size_t dim, Handle hand3[]) {
 
     double iterationTime = (static_cast<std::chrono::duration<double, std::milli>>(end - start)).count();
 
-    std::cout << ", " << iterationTime << ", ";
+    std::cout << iterationTime << ", ";
 
     // std::cout << "x = \n" << GpuOut<double>(x.tensor(dim, dim), hand3[0]) << std::endl;
 }
@@ -144,19 +144,19 @@ void benchMarkEigenDecompSolver(size_t dim, Handle hand3[]) {
 int main() {
     Handle hand[3]{};
 
-    // constexpr size_t numTests = 1;
-    //
-    // std::cout << "dim, time" << std::endl;
-    // for (size_t dim = 3; true; dim++) {
-    //     std::cout << dim << ", ";
-    //     // size_t dim = 700;
-    //     // for (size_t i = 0; i < numTests; i++) benchMarkEigenDecompSolver<double>(dim, hand);
-    //     for (size_t i = 0; i < numTests; i++)
-    //         testPoisson(dim, hand[0]);
-    //     std::cout << std::endl;
+    constexpr size_t numTests = 1;
 
+    std::cout << "dim, time" << std::endl;
+    for (size_t dim = 3; true; dim++) {
+        std::cout << dim << ", ";
 
-    testPoisson(102, hand[0]);
+        for (size_t i = 0; i < numTests; i++) benchMarkEigenDecompSolver<double>(dim, hand);
+        for (size_t i = 0; i < numTests; i++) testPoisson(dim, hand[0]);
+        std::cout << std::endl;
+    }
+
+    // benchMarkEigenDecompSolver<double>(162, hand);
+        // testPoisson(162, hand[0]);
 
 
     return 0;

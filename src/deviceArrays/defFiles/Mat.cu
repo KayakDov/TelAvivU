@@ -84,8 +84,8 @@ Mat<T>* Mat<T>::_get_or_create_target(const size_t rows, const size_t cols, Mat<
 }
 
 template<typename T>
-KernelPrep Mat<T>::kernelPrep() const {
-    return GpuArray<T>::kernelPrep();
+KernelPrep Mat<T>::kernelPrep(bool t) const {
+    return GpuArray<T>::kernelPrep(t);
 }
 
 
@@ -436,7 +436,7 @@ void Mat<T>::normalizeCols(size_t setRowTo1, Handle* handle) {
     Handle* h = Handle::_get_or_create_handle(handle, temp_hand_ptr);
 
     KernelPrep kp = this->kernelPrep();
-    normalizeByRowKernel<T><<<kp.gridDim, kp.blockDim, 0, *h>>>(this->toKernel2d(), setRowTo1);
+    normalizeByRowKernel<T><<<kp.numBlocks, kp.threadsPerBlock, 0, *h>>>(this->toKernel2d(), setRowTo1);
 }
 
 template<typename T>
