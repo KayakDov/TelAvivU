@@ -22,6 +22,10 @@ SquareMat<T> SquareMat<T>::create(size_t rowsCols) {
     return SquareMat<T>(rowsCols, mat._ld, mat.ptr());
 }
 
+template<typename T>
+SquareMat<T> SquareMat<T>::create(size_t rowsCols, size_t ld, T *ptr) {
+    return SquareMat<T>(rowsCols, ld, nonOwningGpuPtr(ptr));
+}
 
 
 /**

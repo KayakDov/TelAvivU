@@ -62,40 +62,6 @@ cudaStream_t convert_handle(void* hand_ptr) {
 // TEMPLATE IMPLEMENTATIONS
 // ======================================================================
 
-/**
- * @brief Template implementation for creating a DirectSolver object.
- */
-template <typename T>
-void C_DirectSolver_create_impl(
-    void** solver_handle_out,
-    const size_t height, const size_t width, const size_t depth,
-    T* b_data, const size_t b_size,
-    T* bandedA_data, const size_t bandedA_rows, const size_t bandedA_cols,
-    int32_t* diag_indices_data, const size_t diag_indices_size,
-    void* hand_ptr)
-{
-    cudaStream_t stream = convert_handle(hand_ptr);
-
-    // 1. Create CubeBoundary (needed for constructor)
-    CubeBoundary<T> boundary(height, width, depth, stream);
-
-    // 2. Create device array wrappers
-    Vec<T> b_vec(b_data, b_size, stream);
-    Mat<T> bandedA_mat(bandedA_data, bandedA_rows, bandedA_cols, stream);
-    Vec<int32_t> diag_indices_vec(diag_indices_data, diag_indices_size, stream);
-
-    // 3. Create the DirectSolver object
-    DirectSolver<T>* solver = new DirectSolver<T>(
-        boundary,
-        b_vec,
-        bandedA_mat,
-        diag_indices_vec,
-        stream
-    );
-
-    *solver_handle_out = solver;
-    boundary.freeMem();
-}
 
 /**
  * @brief Template implementation for calling the DirectSolver::solve method.

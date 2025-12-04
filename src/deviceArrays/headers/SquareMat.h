@@ -51,6 +51,19 @@ public:
     static SquareMat<T> create(size_t rowsCols);
 
     /**
+     * @brief Factory method to create a SquareMat from memory managed elsewhere.  Don't call this method unless you
+     * intend to mannage the memory yourself, which is almost never worth it.
+     *
+     * Allocates a square matrix of size `rowsCols x rowsCols` in GPU memory.
+     *
+     * @param rowsCols The number of rows and columns (matrix is square).
+     * @param ld the distance between the first elements of adjacent columns.
+     * @param ptr The raw pointer to the data.  Memory is neither allocated or freed if you pass a raw pointer.
+     * @return A new SquareMat object.
+     */
+    static SquareMat<T> create(size_t rowsCols, size_t ld, T* ptr);
+
+    /**
      * @brief Computes the eigenvalues and optionally the eigenvectors of the matrix.
      * 
      * @param eVals Vector to store the computed eigenvalues.

@@ -191,13 +191,33 @@ public:
         solver.solve(A, x);
     }
 
+    /**
+     * Solves the equation A x = b.  This method is meant for the Fortran wrapper.  All pointers are device pointers.
+     * @param A A device pointer to the A matrix.  Each column here should represent a diagonal of the sparse matrix.
+     * All columns may have trailing padding, leading padding is forbidden.
+     * @param aLd The distance between the first element of columns of the A matrix.
+     * @param inds A device pointer to the indices of A.  The ith element here should be the index of the diagonal
+     * stored in column i of A.  Sub diagonals should be represented with negative numbers and super diagonals with
+     * positive.  The index of a diagonal is the distance from the primary diagonal, indexed 0.
+     * @param indsStride The distance between elements of the indices.
+     * @param numInds The total number of diagonals.
+     * @param x The solution will be placed here.
+     * @param xStride The distance between elements of x.
+     * @param b The RHS of the equation.
+     * @param bStride The distance between elements of b.
+     * @param bSize The number of elements in b.
+     * @param prealocated Pre alocated memory that will be overwritten.  It should have b.size() rows and 7 columns.
+     * @param prealocatedLd
+     * @param maxIterations The maximum number of iterations the algorithm should run.
+     * @param tolerance A small number used to decide if the current iteration is a final solution.
+     */
     static void solve(
         const T* A,
         const T* aLd,
         const size_t* inds,
         const size_t indsStride,
         const size_t numInds,
-        const T* x,
+        T* x,
         const size_t xStride,
         const T* b,
         const size_t bStride,

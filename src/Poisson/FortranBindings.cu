@@ -5,46 +5,6 @@
 
 
 
-
-
-/**
- * @brief Solve the 3D eigen-decomposition linear system on GPU data.
- *
- * This method wraps raw device pointers into Mat<T>, Vec<T>, and CubeBoundary<T>
- * objects and executes an EigenDecompSolver. No memory is allocated or deallocated.
- *
- * ## Data Format (IMPORTANT)
- * (unchanged — omitted for brevity)
- */
-template<typename T>
-void eigenDecompSolver(const T *frontBack, const size_t fbLd,
-                       const T *leftRight, const size_t lrLd,
-                       const T *topBottom, const size_t tbLd,
-                       T *f, const size_t fStride,
-                       T *x, const size_t xStride,
-                       const size_t height,
-                       const size_t width,
-                       const size_t depth) {
-    // Construct faces: rows, cols, leading dimension, data
-    Mat<T> fb(2 * height, width, fbLd, nonOwningGpuPtr(const_cast<T *>(frontBack)));
-    Mat<T> lr(2 * height, depth, lrLd, nonOwningGpuPtr(const_cast<T *>(leftRight)));
-    Mat<T> tb(2 * depth, width, tbLd, nonOwningGpuPtr(const_cast<T *>(topBottom)));
-
-    CubeBoundary<T> boundary(fb, lr, tb);
-
-    const size_t n = height * width * depth;
-
-    Vec<T> xVec(n, nonOwningGpuPtr(x), xStride);
-    Vec<T> fVec(n, nonOwningGpuPtr(const_cast<T *>(f)), fStride);
-
-    Handle hand;
-
-    cudaDeviceSynchronize();
-    // EigenDecompSolver eds(boundary, xVec, fVec, hand);  TODO: ask for prealocated memory and pass to here.
-    cudaDeviceSynchronize();
-}
-
-
 // ============================================================================
 //                    EXPORTED SYMBOLS FOR FORTRAN
 // ============================================================================
@@ -91,7 +51,7 @@ void eigenDecompSolver_double_(
 using TimePoint = std::chrono::time_point<std::chrono::steady_clock>;
 
 template<typename T>
-void benchMarkEigenDecompSolver(size_t height, size_t width, size_t depth, Handle hand3[]) {
+void benchMarkEigenDecompSolver(size_t height, size_t width, size_t depth, std::array<Handle, 3>& hand3) {
     const auto boundary = CubeBoundary<double>::ZeroTo1(height, width, depth, hand3[0]);
 
     auto memAlocFX = Mat<double>::create(boundary.internalSize(), 2);
@@ -127,7 +87,7 @@ void benchMarkEigenDecompSolver(size_t height, size_t width, size_t depth, Handl
 }
 
 template<typename T>
-void benchMarkEigenDecompSolver(size_t dim, Handle hand3[]) {
+void benchMarkEigenDecompSolver(size_t dim, std::array<Handle, 3>& hand3) {
     benchMarkEigenDecompSolver<T>(dim, dim, dim, hand3);
 }
 
@@ -136,7 +96,7 @@ void benchMarkEigenDecompSolver(size_t dim, Handle hand3[]) {
  *        for a 2x2x2 grid.
  */
 int main() {
-    Handle hand[3]{};
+    std::array<Handle, 3> hand3;
 
     constexpr size_t maxDimensions = 5000;
 
@@ -144,18 +104,13 @@ int main() {
 
     for (size_t dim = 355; dim < maxDimensions; dim++) {
         std::cout << dim << ", ";
-        benchMarkEigenDecompSolver<double>(dim, hand);
+        benchMarkEigenDecompSolver<double>(dim, hand3);
         cudaDeviceSynchronize();
 
-        testPoisson(dim, hand[0]);
+        testPoisson(dim, hand3[0]);
         std::cout << std::endl;
     }
 
-
-    // for (size_t i = 0; i < numTests; i++) {
-    //     testPoisson(dim, hand[0]);
-    //     cudaDeviceSynchronize();
-    // }
 
     return 0;
 }
