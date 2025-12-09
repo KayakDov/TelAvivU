@@ -1,5 +1,5 @@
 set(CMAKE_CUDA_COMPILER "/usr/local/cuda/bin/nvcc")
-set(CMAKE_CUDA_HOST_COMPILER "")
+set(CMAKE_CUDA_HOST_COMPILER "/usr/bin/gcc")
 set(CMAKE_CUDA_HOST_LINK_LAUNCHER "/usr/bin/g++")
 set(CMAKE_CUDA_COMPILER_ID "NVIDIA")
 set(CMAKE_CUDA_COMPILER_VERSION "13.0.88")
@@ -72,7 +72,7 @@ set(CMAKE_CUDA_HOST_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "")
 
 set(CMAKE_CUDA_IMPLICIT_INCLUDE_DIRECTORIES "/usr/local/cuda/targets/x86_64-linux/include/cccl;/usr/include/c++/13;/usr/include/x86_64-linux-gnu/c++/13;/usr/include/c++/13/backward;/usr/lib/gcc/x86_64-linux-gnu/13/include;/usr/local/include;/usr/include/x86_64-linux-gnu;/usr/include")
 set(CMAKE_CUDA_IMPLICIT_LINK_LIBRARIES "stdc++;m;gcc_s;gcc;c;gcc_s;gcc")
-set(CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES "/usr/local/cuda/lib64;/usr/local/cuda/targets/x86_64-linux/lib/stubs;/usr/local/cuda/targets/x86_64-linux/lib;/usr/lib/gcc/x86_64-linux-gnu/13;/usr/lib/x86_64-linux-gnu;/usr/lib;/lib/x86_64-linux-gnu;/lib")
+set(CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES "/usr/local/cuda/targets/x86_64-linux/lib/stubs;/usr/local/cuda/targets/x86_64-linux/lib;/usr/lib/gcc/x86_64-linux-gnu/13;/usr/lib/x86_64-linux-gnu;/usr/lib;/lib/x86_64-linux-gnu;/lib")
 set(CMAKE_CUDA_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "")
 
 set(CMAKE_CUDA_RUNTIME_LIBRARY_DEFAULT "STATIC")

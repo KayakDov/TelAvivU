@@ -1,26 +1,8 @@
 
- #ifndef BICGSTAB_POISSONFDM_CUH
-#define BICGSTAB_POISSONFDM_CUH
-#include "Poisson.h"
-#include "../deviceArrays/headers/BandedMat.h"
-#include "../BiCGSTAB/BiCGSTAB.cu"
-#include "../deviceArrays/headers/DeviceMemory.h"
-#include "deviceArrays/headers/Streamable.h"
+#include "DirectSolver.cuh"
+//TODO: Combine this class  with RunDirectSolver class, and then make into an hpp or split into .cuh and .cu.
 
-
-struct AdjacencyInd {
-    /**
-     * The column in the banded matrix.
-     */
-    const size_t col;
-    /**
-     * The index of the diagonal that is held by that column.
-     */
-    const int32_t diag;
-    __device__ __host__ AdjacencyInd(const size_t row, const int32_t diag) : col(row), diag(diag) {
-    }
-};
-
+constexpr  size_t numDiagonals = 7;
  /**
  * @brief Device-side functor to set off-diagonal entries of the system matrix A to 0 or NAN.
  *
@@ -111,23 +93,7 @@ __global__ void setAKernel(DeviceData2d<T> a,
  * @tparam T Floating-point type used for the computation (typically float or double).
  */
 template <typename T>
-class DirectSolver : public Poisson<T> {
-
-public:
-    const AdjacencyInd here, up, down, left, right, back, front;
-
-private:
-    const BandedMat<T> A;
-
-    /**
-     * @brief Launch kernel that assembles A in banded/dense storage.
-     *
-     * @param numInds The number of indices.
-     * @param mindices device pointer to the int32_t offsets array (length numNonZeroDiags).
-     * @param handle contains the stream to run on.
-     * @param preAlocatedForA Provide prealocated memory here to be written to, numDiagonals x _b.size().
-     */
-    BandedMat<T> setA(cudaStream_t& stream, Mat<T>& preAlocatedForA, Vec<int32_t>& preAlocatedForIndices) {
+BandedMat<T>  DirectSolver<T>::setA(cudaStream_t& stream, Mat<T>& preAlocatedForA, Vec<int32_t>& preAlocatedForIndices) {
 
         preAlocatedForA.subMat(0, 1, preAlocatedForA._rows, preAlocatedForA._cols - 1).fill(1, stream);
 
@@ -144,8 +110,9 @@ private:
         return BandedMat<T> (preAlocatedForA, preAlocatedForIndices);
     }
 
-    void loadMapRowToDiag(Vec<int32_t> diags, const cudaStream_t stream) const {
-        int32_t diagsCpu[diags.size()];
+template <typename T>
+void  DirectSolver<T>::loadMapRowToDiag(Vec<int32_t> diags, const cudaStream_t stream) const {
+        int32_t diagsCpu[numDiagonals];
         diagsCpu[up.col] = up.diag;
         diagsCpu[down.col] = down.diag;
         diagsCpu[left.col] = left.diag;
@@ -155,19 +122,9 @@ private:
         diagsCpu[here.col] = here.diag;
         diags.set(diagsCpu, stream);
     }
-public:
-    /**
-    * @brief Constructs the PoissonFDM solver object.
-    *
-    * Initializes the boundary condition matrices and the dimensions of the interior grid.
-    * It assumes the RHS vector $\mathbf{b}$ is pre-loaded with the source term $f$.
-    *
-    * @param boundary The boundary conditions.
-    * @param[in] f The initial right-hand side vector, pre-loaded with the source term $f$.  This will be overwritten.
-    * This vector is modified by the solver to include boundary contributions.
-    * @param prealocatedForIndices
-    */
-    DirectSolver(const CubeBoundary<T>& boundary, Vec<T>& f, Mat<T>& preAlocatedForBandedA, Vec<int32_t>& prealocatedForIndices, cudaStream_t stream):
+
+template <typename T>
+DirectSolver<T>::DirectSolver(const CubeBoundary<T>& boundary, Vec<T>& f, Mat<T>& preAlocatedForBandedA, Vec<int32_t>& prealocatedForIndices, cudaStream_t stream):
         Poisson<T>(boundary, f, stream),
         here(0, 0),
         up(1, -1),
@@ -178,21 +135,47 @@ public:
         back(6, this->dim.rows),
         A(setA(stream, preAlocatedForBandedA, prealocatedForIndices))
     {}
-
-    /**
-     * @brief Solves the Poisson equation for the grid.
-     *
-     * Automatically dispatches to the 2D or 3D solver based on whether the number of layers is 1.
-     *
-     * @param[out] x Pre-allocated memory that the solution will be written to.
-     * @param A Pre-allocated memory that will be used to compute the solution.  It should be numDiagonals rows and _b.size() columns.
-     * @param[in] hand The CUDA handle (stream/context) to manage the computation.
-     */
-    void solve(Mat<T> prealocatedForBiCGSTAB) {
-
+template <typename T>
+void  DirectSolver<T>::solve(Mat<T> prealocatedForBiCGSTAB) {
         cudaDeviceSynchronize();
         BiCGSTAB<T>::solve(A, this->_b, &prealocatedForBiCGSTAB);
     }
-};
 
-#endif //BICGSTAB_POISSONFDM_CUH
+/**
+ * Creates and solved an example Poisson class on a cube with the given side length.
+ * @param dimLength The length of an edge of the grid.  //up to 325 works on Dov's computer.  After that the size of
+ * the initally allocated memory exceeds the available memory on the gpu.
+ */
+void testPoisson(const size_t height, size_t width, size_t depth, Handle& hand) {
+
+    auto boundary = CubeBoundary<double>::ZeroTo1(height, width, depth, hand);
+
+    auto longVecs = Mat<double>::create(boundary.internalSize(), 1 + numDiagonals + 7);
+    auto b = longVecs.col(0);
+    b.fill(0, hand);
+
+    // std::cout << "RunDirectSolver testPoisson b: " << b.size() << std::endl << GpuOut<double>(b, hand) << std::endl;
+
+    auto A = longVecs.subMat(0, 1, boundary.internalSize(), numDiagonals);
+    auto prealocatedForBiCGSTAB = longVecs.subMat(0, 1 + numDiagonals, boundary.internalSize(), 7);
+
+    auto diagonalInds = Vec<int32_t>::create(numDiagonals);
+
+    DirectSolver<double> solver(boundary, b, A, diagonalInds, hand);
+
+    boundary.freeMem();
+
+    solver.solve(prealocatedForBiCGSTAB);
+
+    // std::cout << "x = \n" << GpuOut<double>(x.tensor(height, depth), hand) << std::endl;
+
+}
+
+/**
+ * benchmarks  the BiCGSTAV algorithm.
+ * @param dim The size of a dimension
+ * @param hand
+ */
+void testPoisson(size_t dim, Handle& hand) {
+    testPoisson(dim, dim, dim, hand);
+}

@@ -1,81 +1,60 @@
-cmake_minimum_required(VERSION 3.24)
-project(BiCGSTAB LANGUAGES CXX CUDA)
+cmake_minimum_required(VERSION 3.18)
 
-# C++ / CUDA settings
+# Force CMake to use the correct CUDA compiler
+set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
+# Force host compiler
+set(CMAKE_CUDA_HOST_COMPILER /usr/bin/gcc)
+set(CMAKE_CUDA_ARCHITECTURES 86)
+
+project(CudaBanded LANGUAGES CXX CUDA)
+
+# Standards
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
-set(CMAKE_CUDA_ARCHITECTURES native)
 
-# Export compile commands (good for IDE indexing)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# Find packages
-find_package(CUDAToolkit REQUIRED)
-find_package(Threads REQUIRED)
-
-# Add global CUDA library path
-link_directories(/usr/local/cuda/lib64)
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L/usr/local/cuda/lib64")
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -L/usr/local/cuda/lib64")
-
-# --- 1. Gather source files for the library ---
-file(GLOB_RECURSE LIB_SOURCES
-        src/*.cu
-        src/*.cpp
-        src/deviceArrays/defFiles/*.cu
-        src/deviceArrays/defFiles/*.cpp
+# Include directories
+include_directories(
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/deviceArrays/headers
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/BiCGSTAB
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Poisson
+        /usr/local/cuda/include
 )
 
-# Exclude files with main functions
-list(FILTER LIB_SOURCES EXCLUDE REGEX ".*main\\.cu$")
-list(FILTER LIB_SOURCES EXCLUDE REGEX ".*RunDirectSolver\\.cu$")
-list(FILTER LIB_SOURCES EXCLUDE REGEX ".*testMethods\\.cu$")
-
-# --- 2. Create static library ---
-add_library(BiCGSTAB_LIB STATIC
-        ${LIB_SOURCES}
-        src/FortranBindings.hpp
+# Collect all source files
+file(GLOB_RECURSE ALL_SRC
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.cu"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 )
 
-target_include_directories(BiCGSTAB_LIB PUBLIC
-        ${CMAKE_SOURCE_DIR}/src
-        ${CMAKE_SOURCE_DIR}/src/deviceArrays/headers
-        ${CMAKE_SOURCE_DIR}/src/BiCGSTAB
-        ${CMAKE_SOURCE_DIR}/src/Poisson
+# Remove all possible main files except testMethods.cu
+list(FILTER ALL_SRC EXCLUDE REGEX ".*/main\\.cu$")
+list(FILTER ALL_SRC EXCLUDE REGEX ".*/RunDirectSolver\\.cu$")
+
+# Explicitly add the main file
+set(MAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/src/testMethods.cu")
+
+
+add_executable(testMethods
+        ${MAIN_FILE}
+        ${ALL_SRC}
 )
 
-set_target_properties(BiCGSTAB_LIB PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-
-target_link_libraries(BiCGSTAB_LIB PUBLIC
-        CUDA::cudart
-        CUDA::cublas
-        CUDA::cusolver
-        "/usr/local/cuda/targets/x86_64-linux/lib/libculibos.a"
+# Enable separable compilation
+set_target_properties(testMethods PROPERTIES
+        CUDA_SEPARABLE_COMPILATION ON
 )
 
-# --- 3. Executables ---
-# main.cu
-add_executable(BiCGSTAB src/main.cu
-        src/FortranBindings.hpp)
-target_include_directories(BiCGSTAB PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(BiCGSTAB PRIVATE BiCGSTAB_LIB Threads::Threads)
-set_target_properties(BiCGSTAB PROPERTIES CUDA_SEPARABLE_COMPILATION OFF)
-target_compile_options(BiCGSTAB PRIVATE
-        $<$<COMPILE_LANGUAGE:CUDA>:-G -lineinfo -Xcompiler -fno-inline>
+# Link CUDA libraries
+target_link_libraries(testMethods PRIVATE
+        cublas
+        cusolver
+        cuda
 )
 
-# testMethods.cu (FortranBindings)
-add_executable(EigenDecomp src/testMethods.cu
-        src/FortranBindings.hpp)
-target_include_directories(EigenDecomp PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(EigenDecomp PRIVATE BiCGSTAB_LIB)
-set_target_properties(EigenDecomp PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-
-# RunDirectSolver.cu
-add_executable(DirectSolver src/BiCGSTAB/RunDirectSolver.cu
-        src/FortranBindings.hpp)
-target_include_directories(DirectSolver PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(DirectSolver PRIVATE BiCGSTAB_LIB)
-set_target_properties(DirectSolver PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+# Optional compiler flags
+target_compile_options(testMethods PRIVATE
+        $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr>
+)

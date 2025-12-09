@@ -11,7 +11,7 @@
 # =============================================================================
 
 # =============================================================================
-# Project: BiCGSTAB
+# Project: CudaBanded
 # Configurations: Debug
 # =============================================================================
 
@@ -39,355 +39,271 @@ include CMakeFiles/rules.ninja
 #############################################
 # Logical path to working directory; prefix for absolute paths.
 
-cmake_ninja_workdir = /home/dov/Documents/TelAvivU/cmake-build-debug/
+cmake_ninja_workdir = /home/dov/Documents/CudaBanded/TelAvivU/cmake-build-debug/
 # =============================================================================
-# Object build statements for STATIC_LIBRARY target BiCGSTAB_LIB
+# Object build statements for EXECUTABLE target testMethods
 
 
 #############################################
-# Order-only phony target for BiCGSTAB_LIB
+# Order-only phony target for testMethods
 
-build cmake_object_order_depends_target_BiCGSTAB_LIB: phony || .
+build cmake_object_order_depends_target_testMethods: phony || .
 
-build CMakeFiles/BiCGSTAB_LIB.dir/src/BiCGSTAB/BiCGSTAB.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/BiCGSTAB/BiCGSTAB.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
+build CMakeFiles/testMethods.dir/src/testMethods.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/testMethods.cu || cmake_object_order_depends_target_testMethods
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/BiCGSTAB/BiCGSTAB.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/BiCGSTAB
+  DEP_FILE = CMakeFiles/testMethods.dir/src/testMethods.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src
 
-build CMakeFiles/BiCGSTAB_LIB.dir/src/BiCGSTAB/Event.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/BiCGSTAB/Event.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
+build CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCUDA/CMakeCUDACompilerId.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/cmake-build-debug/CMakeFiles/4.0.2/CompilerIdCUDA/CMakeCUDACompilerId.cu || cmake_object_order_depends_target_testMethods
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/BiCGSTAB/Event.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/BiCGSTAB
+  DEP_FILE = CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCUDA/CMakeCUDACompilerId.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCUDA
 
-build CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/CubeBoundary.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/Poisson/CubeBoundary.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
+build CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCUDA/tmp/CMakeCUDACompilerId.cudafe1.cpp.o: CXX_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/cmake-build-debug/CMakeFiles/4.0.2/CompilerIdCUDA/tmp/CMakeCUDACompilerId.cudafe1.cpp || cmake_object_order_depends_target_testMethods
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/CubeBoundary.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/DirectSolver.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/Poisson/DirectSolver.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/DirectSolver.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/EigenDecompSolver.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/Poisson/EigenDecompSolver.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/EigenDecompSolver.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/Poisson.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/Poisson/Poisson.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/Poisson.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/deviceArrays/defFiles/BandedMatrix.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/DeviceData.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/deviceArrays/defFiles/DeviceData.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/DeviceData.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/deviceArrays/defFiles/DeviceMemory.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/GpuArray.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/deviceArrays/defFiles/GpuArray.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/GpuArray.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/GridDim.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/deviceArrays/defFiles/GridDim.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/GridDim.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/KernelPrep.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/deviceArrays/defFiles/KernelPrep.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/KernelPrep.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Mat.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/deviceArrays/defFiles/Mat.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Mat.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Singleton.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/deviceArrays/defFiles/Singleton.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Singleton.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/SquareMat.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/deviceArrays/defFiles/SquareMat.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/SquareMat.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Streamable.cpp.o: CXX_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/deviceArrays/defFiles/Streamable.cpp || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Streamable.cpp.o.d
+  DEP_FILE = CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCUDA/tmp/CMakeCUDACompilerId.cudafe1.cpp.o.d
   FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCUDA/tmp
 
-build CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Tensor.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/deviceArrays/defFiles/Tensor.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
+build CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.o: CXX_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/cmake-build-debug/CMakeFiles/4.0.2/CompilerIdCXX/CMakeCXXCompilerId.cpp || cmake_object_order_depends_target_testMethods
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Tensor.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Vec.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/deviceArrays/defFiles/Vec.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Vec.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/handle.cu.o: CUDA_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/deviceArrays/defFiles/handle.cu || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/handle.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles
-
-build CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/streamHelper.cpp.o: CXX_COMPILER__BiCGSTAB_LIB_unscanned_Debug /home/dov/Documents/TelAvivU/src/deviceArrays/defFiles/streamHelper.cpp || cmake_object_order_depends_target_BiCGSTAB_LIB
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/streamHelper.cpp.o.d
+  DEP_FILE = CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.o.d
   FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCXX
 
-
-# =============================================================================
-# Link build statements for STATIC_LIBRARY target BiCGSTAB_LIB
-
-
-#############################################
-# Link the static library libBiCGSTAB_LIB.a
-
-build libBiCGSTAB_LIB.a: CXX_STATIC_LIBRARY_LINKER__BiCGSTAB_LIB_Debug CMakeFiles/BiCGSTAB_LIB.dir/src/BiCGSTAB/BiCGSTAB.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/BiCGSTAB/Event.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/CubeBoundary.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/DirectSolver.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/EigenDecompSolver.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/Poisson/Poisson.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/DeviceData.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/GpuArray.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/GridDim.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/KernelPrep.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Mat.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Singleton.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/SquareMat.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Streamable.cpp.o CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Tensor.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/Vec.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/handle.cu.o CMakeFiles/BiCGSTAB_LIB.dir/src/deviceArrays/defFiles/streamHelper.cpp.o
+build CMakeFiles/testMethods.dir/hello_thrust.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/hello_thrust.cu || cmake_object_order_depends_target_testMethods
   CONFIG = Debug
-  LANGUAGE_COMPILE_FLAGS = -g
-  OBJECT_DIR = CMakeFiles/BiCGSTAB_LIB.dir
-  POST_BUILD = :
-  PRE_LINK = :
-  TARGET_FILE = libBiCGSTAB_LIB.a
-  TARGET_PDB = BiCGSTAB_LIB.a.dbg
+  DEP_FILE = CMakeFiles/testMethods.dir/hello_thrust.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir
 
-# =============================================================================
-# Object build statements for EXECUTABLE target BiCGSTAB
-
-
-#############################################
-# Order-only phony target for BiCGSTAB
-
-build cmake_object_order_depends_target_BiCGSTAB: phony || cmake_object_order_depends_target_BiCGSTAB_LIB
-
-build CMakeFiles/BiCGSTAB.dir/src/main.cu.o: CUDA_COMPILER__BiCGSTAB_unscanned_Debug /home/dov/Documents/TelAvivU/src/main.cu || cmake_object_order_depends_target_BiCGSTAB
+build CMakeFiles/testMethods.dir/shroud_project/utilFortranBindings.cpp.o: CXX_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/shroud_project/utilFortranBindings.cpp || cmake_object_order_depends_target_testMethods
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB.dir/src/main.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native -G -lineinfo -Xcompiler -fno-inline
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/BiCGSTAB.dir
-  OBJECT_FILE_DIR = CMakeFiles/BiCGSTAB.dir/src
+  DEP_FILE = CMakeFiles/testMethods.dir/shroud_project/utilFortranBindings.cpp.o.d
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/shroud_project
 
-
-# =============================================================================
-# Device Link build statements for EXECUTABLE target BiCGSTAB
-
-
-#############################################
-# Link the executable CMakeFiles/BiCGSTAB.dir/cmake_device_link.o
-
-build CMakeFiles/BiCGSTAB.dir/cmake_device_link.o: CXX_EXECUTABLE_DEVICE_LINKER__BiCGSTAB_Debug CMakeFiles/BiCGSTAB.dir/src/main.cu.o | libBiCGSTAB_LIB.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcudart.so /usr/lib/x86_64-linux-gnu/librt.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusolver.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublas.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libculibos.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublasLt.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusparse.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libnvJitLink.so /usr/local/cuda/targets/x86_64-linux/lib/libculibos.a || libBiCGSTAB_LIB.a
-  LANGUAGE_COMPILE_FLAGS = -g -arch=native
-  LINK_LIBRARIES = libBiCGSTAB_LIB.a  -ldl /usr/lib/x86_64-linux-gnu/librt.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libculibos.a /usr/local/cuda/targets/x86_64-linux/lib/libculibos.a -lcudadevrt -lcudart_static -lrt -lpthread
-  LINK_PATH = -L/usr/local/cuda/targets/x86_64-linux/lib/stubs
-  OBJECT_DIR = CMakeFiles/BiCGSTAB.dir
-  TARGET_FILE = CMakeFiles/BiCGSTAB.dir/cmake_device_link.o
-
-# =============================================================================
-# Link build statements for EXECUTABLE target BiCGSTAB
-
-
-#############################################
-# Link the executable BiCGSTAB
-
-build BiCGSTAB: CXX_EXECUTABLE_LINKER__BiCGSTAB_Debug CMakeFiles/BiCGSTAB.dir/src/main.cu.o CMakeFiles/BiCGSTAB.dir/cmake_device_link.o | libBiCGSTAB_LIB.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcudart.so /usr/lib/x86_64-linux-gnu/librt.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusolver.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublas.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libculibos.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublasLt.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusparse.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libnvJitLink.so /usr/local/cuda/targets/x86_64-linux/lib/libculibos.a || libBiCGSTAB_LIB.a
+build CMakeFiles/testMethods.dir/shroud_project/wrapFortranBindings.cpp.o: CXX_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/shroud_project/wrapFortranBindings.cpp || cmake_object_order_depends_target_testMethods
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/BiCGSTAB.dir/link.d
+  DEP_FILE = CMakeFiles/testMethods.dir/shroud_project/wrapFortranBindings.cpp.o.d
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/shroud_project
+
+build CMakeFiles/testMethods.dir/src/BiCGSTAB/BiCGSTAB.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB/BiCGSTAB.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/BiCGSTAB/BiCGSTAB.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/BiCGSTAB
+
+build CMakeFiles/testMethods.dir/src/BiCGSTAB/Event.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB/Event.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/BiCGSTAB/Event.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/BiCGSTAB
+
+build CMakeFiles/testMethods.dir/src/Poisson/CubeBoundary.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/Poisson/CubeBoundary.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/Poisson/CubeBoundary.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/Poisson
+
+build CMakeFiles/testMethods.dir/src/Poisson/DirectSolver.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/Poisson/DirectSolver.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/Poisson/DirectSolver.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/Poisson
+
+build CMakeFiles/testMethods.dir/src/Poisson/EigenDecompSolver.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/Poisson/EigenDecompSolver.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/Poisson/EigenDecompSolver.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/Poisson
+
+build CMakeFiles/testMethods.dir/src/Poisson/Poisson.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/Poisson/Poisson.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/Poisson/Poisson.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/Poisson
+
+build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/defFiles/BandedMatrix.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceData.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/defFiles/DeviceData.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceData.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/defFiles/DeviceMemory.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/GpuArray.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/defFiles/GpuArray.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/GpuArray.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/GridDim.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/defFiles/GridDim.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/GridDim.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/KernelPrep.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/defFiles/KernelPrep.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/KernelPrep.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Mat.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/defFiles/Mat.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Mat.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Singleton.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/defFiles/Singleton.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Singleton.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/SquareMat.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/defFiles/SquareMat.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/SquareMat.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Streamable.cpp.o: CXX_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/defFiles/Streamable.cpp || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Streamable.cpp.o.d
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Tensor.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/defFiles/Tensor.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Tensor.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Vec.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/defFiles/Vec.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Vec.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/handle.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/defFiles/handle.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/handle.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]" --expt-relaxed-constexpr
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/streamHelper.cpp.o: CXX_COMPILER__testMethods_unscanned_Debug /home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/defFiles/streamHelper.cpp || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/streamHelper.cpp.o.d
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
+  INCLUDES = -I/home/dov/Documents/CudaBanded/TelAvivU/src -I/home/dov/Documents/CudaBanded/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/CudaBanded/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/CudaBanded/TelAvivU/src/Poisson -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+
+# =============================================================================
+# Device Link build statements for EXECUTABLE target testMethods
+
+
+#############################################
+# Link the executable CMakeFiles/testMethods.dir/cmake_device_link.o
+
+build CMakeFiles/testMethods.dir/cmake_device_link.o: CXX_EXECUTABLE_DEVICE_LINKER__testMethods_Debug CMakeFiles/testMethods.dir/src/testMethods.cu.o CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCUDA/CMakeCUDACompilerId.cu.o CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCUDA/tmp/CMakeCUDACompilerId.cudafe1.cpp.o CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.o CMakeFiles/testMethods.dir/hello_thrust.cu.o CMakeFiles/testMethods.dir/shroud_project/utilFortranBindings.cpp.o CMakeFiles/testMethods.dir/shroud_project/wrapFortranBindings.cpp.o CMakeFiles/testMethods.dir/src/BiCGSTAB/BiCGSTAB.cu.o CMakeFiles/testMethods.dir/src/BiCGSTAB/Event.cu.o CMakeFiles/testMethods.dir/src/Poisson/CubeBoundary.cu.o CMakeFiles/testMethods.dir/src/Poisson/DirectSolver.cu.o CMakeFiles/testMethods.dir/src/Poisson/EigenDecompSolver.cu.o CMakeFiles/testMethods.dir/src/Poisson/Poisson.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceData.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/GpuArray.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/GridDim.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/KernelPrep.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Mat.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Singleton.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/SquareMat.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Streamable.cpp.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Tensor.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Vec.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/handle.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/streamHelper.cpp.o
+  LANGUAGE_COMPILE_FLAGS = -g "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
+  LINK_LIBRARIES = -lcublas -lcusolver -lcuda -lcudadevrt -lcudart_static -lrt -lpthread -ldl -lstdc++ -lm -lgcc_s -lgcc -lc
+  LINK_PATH = -L/usr/local/cuda/targets/x86_64-linux/lib/stubs  -L/usr/local/cuda/targets/x86_64-linux/lib  -L/usr/lib/gcc/x86_64-linux-gnu/13
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  TARGET_FILE = CMakeFiles/testMethods.dir/cmake_device_link.o
+
+# =============================================================================
+# Link build statements for EXECUTABLE target testMethods
+
+
+#############################################
+# Link the executable testMethods
+
+build testMethods: CXX_EXECUTABLE_LINKER__testMethods_Debug CMakeFiles/testMethods.dir/src/testMethods.cu.o CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCUDA/CMakeCUDACompilerId.cu.o CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCUDA/tmp/CMakeCUDACompilerId.cudafe1.cpp.o CMakeFiles/testMethods.dir/CMakeFiles/4.0.2/CompilerIdCXX/CMakeCXXCompilerId.cpp.o CMakeFiles/testMethods.dir/hello_thrust.cu.o CMakeFiles/testMethods.dir/shroud_project/utilFortranBindings.cpp.o CMakeFiles/testMethods.dir/shroud_project/wrapFortranBindings.cpp.o CMakeFiles/testMethods.dir/src/BiCGSTAB/BiCGSTAB.cu.o CMakeFiles/testMethods.dir/src/BiCGSTAB/Event.cu.o CMakeFiles/testMethods.dir/src/Poisson/CubeBoundary.cu.o CMakeFiles/testMethods.dir/src/Poisson/DirectSolver.cu.o CMakeFiles/testMethods.dir/src/Poisson/EigenDecompSolver.cu.o CMakeFiles/testMethods.dir/src/Poisson/Poisson.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceData.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/GpuArray.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/GridDim.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/KernelPrep.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Mat.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Singleton.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/SquareMat.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Streamable.cpp.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Tensor.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Vec.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/handle.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/streamHelper.cpp.o CMakeFiles/testMethods.dir/cmake_device_link.o
+  CONFIG = Debug
   FLAGS = -g
-  LINK_FLAGS = -L/usr/local/cuda/lib64 -Wl,--dependency-file=CMakeFiles/BiCGSTAB.dir/link.d
-  LINK_LIBRARIES = libBiCGSTAB_LIB.a  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcudart.so  -ldl  /usr/lib/x86_64-linux-gnu/librt.a  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusolver.so  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublas.so  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libculibos.a  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublasLt.so  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusparse.so  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libnvJitLink.so  /usr/local/cuda/targets/x86_64-linux/lib/libculibos.a  -lcudadevrt  -lcudart_static  -lrt  -lpthread  -ldl
-  LINK_PATH = -L/usr/local/cuda/targets/x86_64-linux/lib/stubs
-  OBJECT_DIR = CMakeFiles/BiCGSTAB.dir
+  LINK_LIBRARIES = -lcublas  -lcusolver  -lcuda  -lcudadevrt  -lcudart_static  -lrt  -lpthread  -ldl  -lstdc++  -lm  -lgcc_s  -lgcc  -lc  -lgcc_s  -lgcc
+  LINK_PATH = -L/usr/local/cuda/targets/x86_64-linux/lib/stubs   -L/usr/local/cuda/targets/x86_64-linux/lib   -L/usr/lib/gcc/x86_64-linux-gnu/13
+  OBJECT_DIR = CMakeFiles/testMethods.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_FILE = BiCGSTAB
-  TARGET_PDB = BiCGSTAB.dbg
-
-# =============================================================================
-# Object build statements for EXECUTABLE target EigenDecomp
-
-
-#############################################
-# Order-only phony target for EigenDecomp
-
-build cmake_object_order_depends_target_EigenDecomp: phony || cmake_object_order_depends_target_BiCGSTAB_LIB
-
-build CMakeFiles/EigenDecomp.dir/src/testMethods.cu.o: CUDA_COMPILER__EigenDecomp_unscanned_Debug /home/dov/Documents/TelAvivU/src/testMethods.cu || cmake_object_order_depends_target_EigenDecomp
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/EigenDecomp.dir/src/testMethods.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/EigenDecomp.dir
-  OBJECT_FILE_DIR = CMakeFiles/EigenDecomp.dir/src
-
-
-# =============================================================================
-# Device Link build statements for EXECUTABLE target EigenDecomp
-
-
-#############################################
-# Link the executable CMakeFiles/EigenDecomp.dir/cmake_device_link.o
-
-build CMakeFiles/EigenDecomp.dir/cmake_device_link.o: CXX_EXECUTABLE_DEVICE_LINKER__EigenDecomp_Debug CMakeFiles/EigenDecomp.dir/src/testMethods.cu.o | libBiCGSTAB_LIB.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcudart.so /usr/lib/x86_64-linux-gnu/librt.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusolver.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublas.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libculibos.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublasLt.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusparse.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libnvJitLink.so /usr/local/cuda/targets/x86_64-linux/lib/libculibos.a || libBiCGSTAB_LIB.a
-  LANGUAGE_COMPILE_FLAGS = -g -arch=native
-  LINK_LIBRARIES = libBiCGSTAB_LIB.a  -ldl /usr/lib/x86_64-linux-gnu/librt.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libculibos.a /usr/local/cuda/targets/x86_64-linux/lib/libculibos.a -lcudadevrt -lcudart_static -lrt -lpthread
-  LINK_PATH = -L/usr/local/cuda/targets/x86_64-linux/lib/stubs
-  OBJECT_DIR = CMakeFiles/EigenDecomp.dir
-  TARGET_FILE = CMakeFiles/EigenDecomp.dir/cmake_device_link.o
-
-# =============================================================================
-# Link build statements for EXECUTABLE target EigenDecomp
-
-
-#############################################
-# Link the executable EigenDecomp
-
-build EigenDecomp: CXX_EXECUTABLE_LINKER__EigenDecomp_Debug CMakeFiles/EigenDecomp.dir/src/testMethods.cu.o CMakeFiles/EigenDecomp.dir/cmake_device_link.o | libBiCGSTAB_LIB.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcudart.so /usr/lib/x86_64-linux-gnu/librt.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusolver.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublas.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libculibos.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublasLt.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusparse.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libnvJitLink.so /usr/local/cuda/targets/x86_64-linux/lib/libculibos.a || libBiCGSTAB_LIB.a
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/EigenDecomp.dir/link.d
-  FLAGS = -g
-  LINK_FLAGS = -L/usr/local/cuda/lib64 -Wl,--dependency-file=CMakeFiles/EigenDecomp.dir/link.d
-  LINK_LIBRARIES = libBiCGSTAB_LIB.a  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcudart.so  -ldl  /usr/lib/x86_64-linux-gnu/librt.a  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusolver.so  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublas.so  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libculibos.a  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublasLt.so  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusparse.so  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libnvJitLink.so  /usr/local/cuda/targets/x86_64-linux/lib/libculibos.a  -lcudadevrt  -lcudart_static  -lrt  -lpthread  -ldl
-  LINK_PATH = -L/usr/local/cuda/targets/x86_64-linux/lib/stubs
-  OBJECT_DIR = CMakeFiles/EigenDecomp.dir
-  POST_BUILD = :
-  PRE_LINK = :
-  TARGET_FILE = EigenDecomp
-  TARGET_PDB = EigenDecomp.dbg
-
-# =============================================================================
-# Object build statements for EXECUTABLE target DirectSolver
-
-
-#############################################
-# Order-only phony target for DirectSolver
-
-build cmake_object_order_depends_target_DirectSolver: phony || cmake_object_order_depends_target_BiCGSTAB_LIB
-
-build CMakeFiles/DirectSolver.dir/src/BiCGSTAB/RunDirectSolver.cu.o: CUDA_COMPILER__DirectSolver_unscanned_Debug /home/dov/Documents/TelAvivU/src/BiCGSTAB/RunDirectSolver.cu || cmake_object_order_depends_target_DirectSolver
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/DirectSolver.dir/src/BiCGSTAB/RunDirectSolver.cu.o.d
-  FLAGS = -g -std=c++17 -arch=native
-  INCLUDES = -I/home/dov/Documents/TelAvivU/src -I/home/dov/Documents/TelAvivU/src/deviceArrays/headers -I/home/dov/Documents/TelAvivU/src/BiCGSTAB -I/home/dov/Documents/TelAvivU/src/Poisson -isystem /usr/local/cuda/targets/x86_64-linux/include
-  OBJECT_DIR = CMakeFiles/DirectSolver.dir
-  OBJECT_FILE_DIR = CMakeFiles/DirectSolver.dir/src/BiCGSTAB
-
-
-# =============================================================================
-# Device Link build statements for EXECUTABLE target DirectSolver
-
-
-#############################################
-# Link the executable CMakeFiles/DirectSolver.dir/cmake_device_link.o
-
-build CMakeFiles/DirectSolver.dir/cmake_device_link.o: CXX_EXECUTABLE_DEVICE_LINKER__DirectSolver_Debug CMakeFiles/DirectSolver.dir/src/BiCGSTAB/RunDirectSolver.cu.o | libBiCGSTAB_LIB.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcudart.so /usr/lib/x86_64-linux-gnu/librt.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusolver.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublas.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libculibos.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublasLt.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusparse.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libnvJitLink.so /usr/local/cuda/targets/x86_64-linux/lib/libculibos.a || libBiCGSTAB_LIB.a
-  LANGUAGE_COMPILE_FLAGS = -g -arch=native
-  LINK_LIBRARIES = libBiCGSTAB_LIB.a  -ldl /usr/lib/x86_64-linux-gnu/librt.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libculibos.a /usr/local/cuda/targets/x86_64-linux/lib/libculibos.a -lcudadevrt -lcudart_static -lrt -lpthread
-  LINK_PATH = -L/usr/local/cuda/targets/x86_64-linux/lib/stubs
-  OBJECT_DIR = CMakeFiles/DirectSolver.dir
-  TARGET_FILE = CMakeFiles/DirectSolver.dir/cmake_device_link.o
-
-# =============================================================================
-# Link build statements for EXECUTABLE target DirectSolver
-
-
-#############################################
-# Link the executable DirectSolver
-
-build DirectSolver: CXX_EXECUTABLE_LINKER__DirectSolver_Debug CMakeFiles/DirectSolver.dir/src/BiCGSTAB/RunDirectSolver.cu.o CMakeFiles/DirectSolver.dir/cmake_device_link.o | libBiCGSTAB_LIB.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcudart.so /usr/lib/x86_64-linux-gnu/librt.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusolver.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublas.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libculibos.a /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublasLt.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusparse.so /usr/local/cuda-13.0/targets/x86_64-linux/lib/libnvJitLink.so /usr/local/cuda/targets/x86_64-linux/lib/libculibos.a || libBiCGSTAB_LIB.a
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/DirectSolver.dir/link.d
-  FLAGS = -g
-  LINK_FLAGS = -L/usr/local/cuda/lib64 -Wl,--dependency-file=CMakeFiles/DirectSolver.dir/link.d
-  LINK_LIBRARIES = libBiCGSTAB_LIB.a  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcudart.so  -ldl  /usr/lib/x86_64-linux-gnu/librt.a  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusolver.so  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublas.so  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libculibos.a  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcublasLt.so  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libcusparse.so  /usr/local/cuda-13.0/targets/x86_64-linux/lib/libnvJitLink.so  /usr/local/cuda/targets/x86_64-linux/lib/libculibos.a  -lcudadevrt  -lcudart_static  -lrt  -lpthread  -ldl
-  LINK_PATH = -L/usr/local/cuda/targets/x86_64-linux/lib/stubs
-  OBJECT_DIR = CMakeFiles/DirectSolver.dir
-  POST_BUILD = :
-  PRE_LINK = :
-  TARGET_FILE = DirectSolver
-  TARGET_PDB = DirectSolver.dbg
+  TARGET_FILE = testMethods
+  TARGET_PDB = testMethods.dbg
 
 
 #############################################
 # Utility command for edit_cache
 
 build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /home/dov/Documents/TelAvivU/cmake-build-debug && /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+  COMMAND = cd /home/dov/Documents/CudaBanded/TelAvivU/cmake-build-debug && /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -398,7 +314,7 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /home/dov/Documents/TelAvivU/cmake-build-debug && /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/bin/cmake --regenerate-during-build -S/home/dov/Documents/TelAvivU -B/home/dov/Documents/TelAvivU/cmake-build-debug
+  COMMAND = cd /home/dov/Documents/CudaBanded/TelAvivU/cmake-build-debug && /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/bin/cmake --regenerate-during-build -S/home/dov/Documents/CudaBanded/TelAvivU -B/home/dov/Documents/CudaBanded/TelAvivU/cmake-build-debug
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -408,17 +324,15 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 # =============================================================================
 # Target aliases.
 
-build BiCGSTAB_LIB: phony libBiCGSTAB_LIB.a
-
 # =============================================================================
 # Folder targets.
 
 # =============================================================================
 
 #############################################
-# Folder: /home/dov/Documents/TelAvivU/cmake-build-debug
+# Folder: /home/dov/Documents/CudaBanded/TelAvivU/cmake-build-debug
 
-build all: phony libBiCGSTAB_LIB.a BiCGSTAB EigenDecomp DirectSolver
+build all: phony testMethods
 
 # =============================================================================
 # Built-in targets
@@ -427,14 +341,14 @@ build all: phony libBiCGSTAB_LIB.a BiCGSTAB EigenDecomp DirectSolver
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja /home/dov/Documents/TelAvivU/cmake-build-debug/cmake_install.cmake: RERUN_CMAKE | /home/dov/Documents/TelAvivU/CMakeLists.txt /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCUDAInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCXXInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCommonLanguageInclude.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeGenericSystem.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeInitializeConfigs.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeLanguageInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInitialize.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CheckCXXSourceCompiles.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CheckIncludeFileCXX.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CheckLibraryExists.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/CMakeCommonCompilerMacros.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-CXX.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/NVIDIA-CUDA.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/NVIDIA.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindCUDAToolkit.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindPackageHandleStandardArgs.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindPackageMessage.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindThreads.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCXXLinkerInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCommonLinkerInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CheckSourceCompiles.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU-CXX.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/GNU.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU-CXX.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU-CXX.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-Initialize.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-NVIDIA-CUDA.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/4.0.2/CMakeCUDACompiler.cmake CMakeFiles/4.0.2/CMakeCXXCompiler.cmake CMakeFiles/4.0.2/CMakeSystem.cmake
+build build.ninja /home/dov/Documents/CudaBanded/TelAvivU/cmake-build-debug/cmake_install.cmake: RERUN_CMAKE | /home/dov/Documents/CudaBanded/TelAvivU/CMakeLists.txt /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCUDAInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCXXInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCommonLanguageInclude.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeGenericSystem.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeInitializeConfigs.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeLanguageInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInitialize.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/CMakeCommonCompilerMacros.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-CXX.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/NVIDIA-CUDA.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/NVIDIA.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU-CXX.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-Initialize.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-NVIDIA-CUDA.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/4.0.2/CMakeCUDACompiler.cmake CMakeFiles/4.0.2/CMakeCXXCompiler.cmake CMakeFiles/4.0.2/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build /home/dov/Documents/TelAvivU/CMakeLists.txt /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCUDAInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCXXInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCommonLanguageInclude.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeGenericSystem.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeInitializeConfigs.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeLanguageInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInitialize.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CheckCXXSourceCompiles.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CheckIncludeFileCXX.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CheckLibraryExists.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/CMakeCommonCompilerMacros.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-CXX.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/NVIDIA-CUDA.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/NVIDIA.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindCUDAToolkit.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindPackageHandleStandardArgs.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindPackageMessage.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindThreads.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCXXLinkerInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCommonLinkerInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CheckSourceCompiles.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU-CXX.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/GNU.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU-CXX.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU-CXX.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-Initialize.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-NVIDIA-CUDA.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/4.0.2/CMakeCUDACompiler.cmake CMakeFiles/4.0.2/CMakeCXXCompiler.cmake CMakeFiles/4.0.2/CMakeSystem.cmake: phony
+build /home/dov/Documents/CudaBanded/TelAvivU/CMakeLists.txt /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCUDAInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCXXInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCommonLanguageInclude.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeGenericSystem.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeInitializeConfigs.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeLanguageInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInformation.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInitialize.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/CMakeCommonCompilerMacros.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-CXX.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/NVIDIA-CUDA.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/NVIDIA.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU-CXX.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-Initialize.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-NVIDIA-CUDA.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux.cmake /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/4.0.2/CMakeCUDACompiler.cmake CMakeFiles/4.0.2/CMakeCXXCompiler.cmake CMakeFiles/4.0.2/CMakeSystem.cmake: phony
 
 
 #############################################

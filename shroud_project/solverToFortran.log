@@ -1,8 +1,8 @@
 Read yaml solverToFortran.yaml
 library C wrappers
-namespace poisson_gpu
+namespace FortranBindings
 library Fortran wrappers
-namespace poisson_gpu
-Close wrapfpoisson_gpu.f
-Close utilpoisson_gpu.cpp
-Close typespoisson_gpu.h
+namespace FortranBindings
+Close wrapffortranbindings.f
+Close utilFortranBindings.cpp
+Close typesFortranBindings.h
