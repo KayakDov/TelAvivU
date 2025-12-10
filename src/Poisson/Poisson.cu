@@ -4,7 +4,7 @@
 #include <iostream>
 #include <optional>
 
-#include "../deviceArrays/headers/GridDim.cuh"
+#include "../deviceArrays/headers/GridDim.hpp"
 #include "deviceArrays/headers/Streamable.h"
 
 

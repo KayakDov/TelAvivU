@@ -14,6 +14,80 @@
 #############################################
 # Rule for compiling CUDA files.
 
+rule CUDA_COMPILER__CudaBandedLib_unscanned_Debug
+  depfile = $DEP_FILE
+  deps = gcc
+  command = ${LAUNCHER}${CODE_CHECK}/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler -ccbin=/usr/bin/gcc $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -x cu -c $in -o $out
+  description = Building CUDA object $out
+
+
+#############################################
+# Rule for compiling CXX files.
+
+rule CXX_COMPILER__CudaBandedLib_unscanned_Debug
+  depfile = $DEP_FILE
+  deps = gcc
+  command = ${LAUNCHER}${CODE_CHECK}/usr/bin/g++ $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  description = Building CXX object $out
+
+
+#############################################
+# Rule for generating Fortran dependencies.
+
+rule Fortran_PREPROCESS_SCAN__CudaBandedLib_Debug
+  depfile = $DEP_FILE
+  command = /usr/bin/gfortran -cpp $DEFINES $INCLUDES $FLAGS -E $in -o $out && /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/bin/cmake -E cmake_ninja_depends --tdi=CMakeFiles/CudaBandedLib.dir/FortranDependInfo.json --lang=Fortran --src=$out --out=$out --dep=$DEP_FILE --obj=$OBJ_FILE --ddi=$DYNDEP_INTERMEDIATE_FILE --src-orig=$in
+  description = Building Fortran preprocessed $out
+
+
+#############################################
+# Rule for generating Fortran dependencies on non-preprocessed files.
+
+rule Fortran_SCAN__CudaBandedLib_Debug
+  depfile = $DEP_FILE
+  command = /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/bin/cmake -E cmake_ninja_depends --tdi=CMakeFiles/CudaBandedLib.dir/FortranDependInfo.json --lang=Fortran --src=$in --out=$out --dep=$DEP_FILE --obj=$OBJ_FILE --ddi=$out
+  description = Generating Fortran dependencies for $in
+
+
+#############################################
+# Rule to generate ninja dyndep files for Fortran.
+
+rule Fortran_DYNDEP__CudaBandedLib_Debug
+  command = /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/bin/cmake -E cmake_ninja_dyndep --tdi=CMakeFiles/CudaBandedLib.dir/FortranDependInfo.json --lang=Fortran --dd=$out @$out.rsp
+  description = Generating Fortran dyndep file $out
+  rspfile = $out.rsp
+  rspfile_content = $in
+  restat = 1
+
+
+#############################################
+# Rule for compiling Fortran files.
+
+rule Fortran_COMPILER__CudaBandedLib_scanned_Debug
+  command = ${LAUNCHER}${CODE_CHECK}/usr/bin/gfortran $INCLUDES $FLAGS -c $in -o $out
+  description = Building Fortran object $out
+
+
+#############################################
+# Rule for compiling Fortran files.
+
+rule Fortran_COMPILER__CudaBandedLib_unscanned_Debug
+  command = ${LAUNCHER}${CODE_CHECK}/usr/bin/gfortran $DEFINES $INCLUDES $FLAGS -c $in -o $out
+  description = Building Fortran object $out
+
+
+#############################################
+# Rule for linking CXX static library.
+
+rule CXX_STATIC_LIBRARY_LINKER__CudaBandedLib_Debug
+  command = $PRE_LINK && /opt/CLion-2025.2.5/clion-2025.2.5/bin/cmake/linux/x64/bin/cmake -E rm -f $TARGET_FILE && /usr/bin/ar qc $TARGET_FILE $LINK_FLAGS $in && /usr/bin/ranlib $TARGET_FILE && $POST_BUILD
+  description = Linking CXX static library $TARGET_FILE
+  restat = $RESTAT
+
+
+#############################################
+# Rule for compiling CUDA files.
+
 rule CUDA_COMPILER__testMethods_unscanned_Debug
   depfile = $DEP_FILE
   deps = gcc

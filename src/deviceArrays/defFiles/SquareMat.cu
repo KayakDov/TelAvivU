@@ -8,7 +8,7 @@
 #include "../headers/Singleton.h"
 #include "../headers/Vec.h"
 #include "../headers/BandedMat.h"
-#include "../headers/GridDim.cuh"
+#include "../headers/GridDim.hpp"
 
 
 template<typename T>

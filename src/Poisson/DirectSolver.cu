@@ -179,3 +179,6 @@ void testPoisson(const size_t height, size_t width, size_t depth, Handle& hand) 
 void testPoisson(size_t dim, Handle& hand) {
     testPoisson(dim, dim, dim, hand);
 }
+
+template class DirectSolver<float>;
+template class DirectSolver<double>;

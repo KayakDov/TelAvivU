@@ -5,9 +5,6 @@
 #ifndef BICGSTAB_DEVICEDATA_CUH
 #define BICGSTAB_DEVICEDATA_CUH
 
-#include "../headers/GridDim.cuh"
-#include <cstddef> // For size_t
-
 #include "deviceArrays/headers/KernelSupport.cuh"
 
 class DenseInd;

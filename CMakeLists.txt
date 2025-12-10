@@ -6,13 +6,16 @@ set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
 set(CMAKE_CUDA_HOST_COMPILER /usr/bin/gcc)
 set(CMAKE_CUDA_ARCHITECTURES 86)
 
-project(CudaBanded LANGUAGES CXX CUDA)
+project(CudaBanded LANGUAGES CXX CUDA Fortran)
 
 # Standards
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+set(CMAKE_Fortran_STANDARD 2008)
+set(CMAKE_Fortran_STANDARD_REQUIRED ON)
+
 
 # Include directories
 include_directories(
@@ -20,6 +23,7 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/src/deviceArrays/headers
         ${CMAKE_CURRENT_SOURCE_DIR}/src/BiCGSTAB
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Poisson
+        ${CMAKE_CURRENT_SOURCE_DIR}/shroud_project
         /usr/local/cuda/include
 )
 
@@ -31,14 +35,29 @@ file(GLOB_RECURSE ALL_SRC
 
 # Remove all possible main files except testMethods.cu
 list(FILTER ALL_SRC EXCLUDE REGEX ".*/main\\.cu$")
-list(FILTER ALL_SRC EXCLUDE REGEX ".*/RunDirectSolver\\.cu$")
 
 # Explicitly add the main file
 set(MAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/src/testMethods.cu")
 
+# Collect Shroud wrapper C++ files
+set(SHROUD_CPPf
+        ${CMAKE_CURRENT_SOURCE_DIR}/shroud_project/wrapFortranBindings.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/shroud_project/utilFortranBindings.cpp
+)
+
+set(FORTRAN_WRAPPER
+        shroud_project/wrapffortranbindings.f90
+)
+
+add_library(CudaBandedLib STATIC
+        ${ALL_SRC}
+        ${SHROUD_CPPf}
+        ${FORTRAN_WRAPPER}
+)
 
 add_executable(testMethods
         ${ALL_SRC}
+        shroud_project/wrapFortranBindings.cpp
 )
 
 
@@ -55,7 +74,6 @@ target_link_libraries(testMethods PRIVATE
         cuda
 )
 
-# Optional compiler flags
-target_compile_options(testMethods PRIVATE
-        $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr>
+target_link_libraries(testMethods PRIVATE
+        CudaBandedLib
 )

@@ -23,7 +23,7 @@ __device__ inline size_t idy(){return blockIdx.y * blockDim.y + threadIdx.y;}
 class GridInd2d {
 public:
     size_t row, col;
-    __device__ GridInd2d(size_t row, size_t col);
+    __device__ inline GridInd2d(size_t row, size_t col):row(row), col(col){}
 
     /**
      * The index of the thread.
@@ -39,26 +39,29 @@ public:
     /**
      * The thread index transposed.  Should be used when the kernel prep is transposed.
      */
-    __device__ GridInd2dT(): GridInd2d(idx(), idy()){}
+    __device__ inline GridInd2dT(): GridInd2d(idx(), idy()){}
 };
 
 class GridInd3d : public GridInd2d{
 public:
     size_t layer;
-    __device__ GridInd3d(size_t row, size_t col, size_t layer);
+    __device__ inline GridInd3d(size_t row, size_t col, size_t layer): GridInd2d(row, col), layer(layer) {
+    }
     __device__ inline GridInd3d(): GridInd2d(), layer(blockIdx.z * blockDim.z + threadIdx.z){}
 };
 
 class GridDim {
 public:
     const size_t rows, cols, layers, layerSize;
-    __host__ __device__ GridDim(size_t height, size_t width, size_t depth);
+    __host__ __device__ inline  GridDim(size_t height, size_t width, size_t depth): cols(width), rows(height), layers(depth), layerSize(rows * cols) {}
 
     /**
      *
      * @return The number of points in the grid.
      */
-    __host__ __device__ [[nodiscard]] size_t size() const;
+    __host__ __device__ [[nodiscard]] inline size_t size() const {
+        return layers * layerSize;
+    }
 
     /**
      * The flat index for the row, column, and height.  This does not account for leading dimension.
@@ -67,23 +70,31 @@ public:
      * @param layer
      * @return
      */
-    __device__ size_t operator()(size_t row, size_t col, size_t layer) const;
+    __device__ size_t inline operator()(size_t row, size_t col, size_t layer) const{
+        return layer * rows + col * rows * layers + row;
+    }
 
-    __device__ [[nodiscard]] GridInd3d operator[](size_t idx) const;
+    __device__ [[nodiscard]] inline GridInd3d operator[](size_t idx) const{
+        return {idx % rows, (idx / rows) % cols, idx/(layerSize)};
+    }
 
     /**
      * The flat index of this GridInd.
      * @param ind
      * @return
      */
-    __device__ [[nodiscard]] size_t operator[](const GridInd3d& ind) const;
+    __device__ [[nodiscard]] size_t inline operator[](const GridInd3d& ind) const{
+        return this->operator()(ind.row, ind.col, ind.layer);
+    }
 
 
     /**
      *
      * @return kernel threading for every node of this grid.
      */
-    [[nodiscard]]KernelPrep kernelPrep() const;
+    [[nodiscard]]KernelPrep inline kernelPrep() const{
+        return {cols, rows, layers};
+    }
 
 };
 
@@ -93,7 +104,9 @@ public:
  * @param dim
  * @return
  */
-__device__ bool operator<(const GridInd3d& ind, const GridDim& dim);
+__device__ bool inline operator<(const GridInd3d& ind, const GridDim& dim){
+    return ind.row < dim.rows && ind.col < dim.cols && ind.layer < dim.layers;
+}
 
 /**
  * Are the indices outside the dimensions (inclusive).
@@ -101,7 +114,9 @@ __device__ bool operator<(const GridInd3d& ind, const GridDim& dim);
  * @param dim
  * @return
  */
-__device__ bool operator>=(const GridInd3d& ind, const GridDim& dim);
+__device__ bool inline operator>=(const GridInd3d& ind, const GridDim& dim){
+    return !(ind < dim);
+}
 
 
 #endif //BICGSTAB_GRIDDIM_H
