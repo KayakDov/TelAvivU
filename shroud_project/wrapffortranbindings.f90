@@ -16,13 +16,12 @@ module fortranbindings_mod
 
     interface
 
-        subroutine c_solve_decomp_float(frontBackPtr, fbLd, &
-                leftRightPtr, lrLd, topBottomPtr, tbLd, fPtr, fStride, &
-                xPtr, xStride, height, width, depth, rowsXRowsPtr, &
-                rowsXRowsLd, colsXColsPtr, colsXColsLd, &
-                depthsXDepthsPtr, depthsXDepthsLd, maxDimX3Ptr, &
-                maxDimX3Ld) &
-                bind(C, name="FOR_solveDecomp_float")
+        subroutine solve_decomp_float(frontBackPtr, fbLd, leftRightPtr, &
+                lrLd, topBottomPtr, tbLd, fPtr, fStride, xPtr, xStride, &
+                height, width, depth, rowsXRowsPtr, rowsXRowsLd, &
+                colsXColsPtr, colsXColsLd, depthsXDepthsPtr, &
+                depthsXDepthsLd, maxDimX3Ptr, maxDimX3Ld) &
+                bind(C, name="FOR_solveDecompFloat")
             use iso_c_binding, only : C_SIZE_T
             implicit none
             integer(C_SIZE_T), value, intent(IN) :: frontBackPtr
@@ -46,15 +45,14 @@ module fortranbindings_mod
             integer(C_SIZE_T), value, intent(IN) :: depthsXDepthsLd
             integer(C_SIZE_T), value, intent(IN) :: maxDimX3Ptr
             integer(C_SIZE_T), value, intent(IN) :: maxDimX3Ld
-        end subroutine c_solve_decomp_float
+        end subroutine solve_decomp_float
 
-        subroutine c_solve_decomp_double(frontBackPtr, fbLd, &
-                leftRightPtr, lrLd, topBottomPtr, tbLd, fPtr, fStride, &
-                xPtr, xStride, height, width, depth, rowsXRowsPtr, &
-                rowsXRowsLd, colsXColsPtr, colsXColsLd, &
-                depthsXDepthsPtr, depthsXDepthsLd, maxDimX3Ptr, &
-                maxDimX3Ld) &
-                bind(C, name="FOR_solveDecomp_double")
+        subroutine solve_decomp_double(frontBackPtr, fbLd, leftRightPtr, &
+                lrLd, topBottomPtr, tbLd, fPtr, fStride, xPtr, xStride, &
+                height, width, depth, rowsXRowsPtr, rowsXRowsLd, &
+                colsXColsPtr, colsXColsLd, depthsXDepthsPtr, &
+                depthsXDepthsLd, maxDimX3Ptr, maxDimX3Ld) &
+                bind(C, name="FOR_solveDecompDouble")
             use iso_c_binding, only : C_SIZE_T
             implicit none
             integer(C_SIZE_T), value, intent(IN) :: frontBackPtr
@@ -78,7 +76,7 @@ module fortranbindings_mod
             integer(C_SIZE_T), value, intent(IN) :: depthsXDepthsLd
             integer(C_SIZE_T), value, intent(IN) :: maxDimX3Ptr
             integer(C_SIZE_T), value, intent(IN) :: maxDimX3Ld
-        end subroutine c_solve_decomp_double
+        end subroutine solve_decomp_double
 
         subroutine c_solve_bi_cgstab_float(APtr, aLd, indsPtrInt32_t, &
                 indsStride, numInds, bPtr, bStride, bSize, &
@@ -128,87 +126,10 @@ module fortranbindings_mod
         module procedure solve_bi_cgstab_double
     end interface solve_bi_cgstab
 
-    interface solve_decomp
-        module procedure solve_decomp_float
-        module procedure solve_decomp_double
-    end interface solve_decomp
-
     ! splicer begin additional_declarations
     ! splicer end additional_declarations
 
 contains
-
-    subroutine solve_decomp_float(frontBackPtr, fbLd, leftRightPtr, &
-            lrLd, topBottomPtr, tbLd, fPtr, fStride, xPtr, xStride, &
-            height, width, depth, rowsXRowsPtr, rowsXRowsLd, &
-            colsXColsPtr, colsXColsLd, depthsXDepthsPtr, &
-            depthsXDepthsLd, maxDimX3Ptr, maxDimX3Ld)
-        use iso_c_binding, only : C_SIZE_T
-        integer(C_SIZE_T), value, intent(IN) :: frontBackPtr
-        integer(C_SIZE_T), value, intent(IN) :: fbLd
-        integer(C_SIZE_T), value, intent(IN) :: leftRightPtr
-        integer(C_SIZE_T), value, intent(IN) :: lrLd
-        integer(C_SIZE_T), value, intent(IN) :: topBottomPtr
-        integer(C_SIZE_T), value, intent(IN) :: tbLd
-        integer(C_SIZE_T), value, intent(IN) :: fPtr
-        integer(C_SIZE_T), value, intent(IN) :: fStride
-        integer(C_SIZE_T), value, intent(IN) :: xPtr
-        integer(C_SIZE_T), value, intent(IN) :: xStride
-        integer(C_SIZE_T), value, intent(IN) :: height
-        integer(C_SIZE_T), value, intent(IN) :: width
-        integer(C_SIZE_T), value, intent(IN) :: depth
-        integer(C_SIZE_T), value, intent(IN) :: rowsXRowsPtr
-        integer(C_SIZE_T), value, intent(IN) :: rowsXRowsLd
-        integer(C_SIZE_T), value, intent(IN) :: colsXColsPtr
-        integer(C_SIZE_T), value, intent(IN) :: colsXColsLd
-        integer(C_SIZE_T), value, intent(IN) :: depthsXDepthsPtr
-        integer(C_SIZE_T), value, intent(IN) :: depthsXDepthsLd
-        integer(C_SIZE_T), value, intent(IN) :: maxDimX3Ptr
-        integer(C_SIZE_T), value, intent(IN) :: maxDimX3Ld
-        ! splicer begin function.solve_decomp_float
-        call c_solve_decomp_float(frontBackPtr, fbLd, leftRightPtr, &
-            lrLd, topBottomPtr, tbLd, fPtr, fStride, xPtr, xStride, &
-            height, width, depth, rowsXRowsPtr, rowsXRowsLd, &
-            colsXColsPtr, colsXColsLd, depthsXDepthsPtr, &
-            depthsXDepthsLd, maxDimX3Ptr, maxDimX3Ld)
-        ! splicer end function.solve_decomp_float
-    end subroutine solve_decomp_float
-
-    subroutine solve_decomp_double(frontBackPtr, fbLd, leftRightPtr, &
-            lrLd, topBottomPtr, tbLd, fPtr, fStride, xPtr, xStride, &
-            height, width, depth, rowsXRowsPtr, rowsXRowsLd, &
-            colsXColsPtr, colsXColsLd, depthsXDepthsPtr, &
-            depthsXDepthsLd, maxDimX3Ptr, maxDimX3Ld)
-        use iso_c_binding, only : C_SIZE_T
-        integer(C_SIZE_T), value, intent(IN) :: frontBackPtr
-        integer(C_SIZE_T), value, intent(IN) :: fbLd
-        integer(C_SIZE_T), value, intent(IN) :: leftRightPtr
-        integer(C_SIZE_T), value, intent(IN) :: lrLd
-        integer(C_SIZE_T), value, intent(IN) :: topBottomPtr
-        integer(C_SIZE_T), value, intent(IN) :: tbLd
-        integer(C_SIZE_T), value, intent(IN) :: fPtr
-        integer(C_SIZE_T), value, intent(IN) :: fStride
-        integer(C_SIZE_T), value, intent(IN) :: xPtr
-        integer(C_SIZE_T), value, intent(IN) :: xStride
-        integer(C_SIZE_T), value, intent(IN) :: height
-        integer(C_SIZE_T), value, intent(IN) :: width
-        integer(C_SIZE_T), value, intent(IN) :: depth
-        integer(C_SIZE_T), value, intent(IN) :: rowsXRowsPtr
-        integer(C_SIZE_T), value, intent(IN) :: rowsXRowsLd
-        integer(C_SIZE_T), value, intent(IN) :: colsXColsPtr
-        integer(C_SIZE_T), value, intent(IN) :: colsXColsLd
-        integer(C_SIZE_T), value, intent(IN) :: depthsXDepthsPtr
-        integer(C_SIZE_T), value, intent(IN) :: depthsXDepthsLd
-        integer(C_SIZE_T), value, intent(IN) :: maxDimX3Ptr
-        integer(C_SIZE_T), value, intent(IN) :: maxDimX3Ld
-        ! splicer begin function.solve_decomp_double
-        call c_solve_decomp_double(frontBackPtr, fbLd, leftRightPtr, &
-            lrLd, topBottomPtr, tbLd, fPtr, fStride, xPtr, xStride, &
-            height, width, depth, rowsXRowsPtr, rowsXRowsLd, &
-            colsXColsPtr, colsXColsLd, depthsXDepthsPtr, &
-            depthsXDepthsLd, maxDimX3Ptr, maxDimX3Ld)
-        ! splicer end function.solve_decomp_double
-    end subroutine solve_decomp_double
 
     subroutine solve_bi_cgstab_float(APtr, aLd, indsPtrInt32_t, &
             indsStride, numInds, bPtr, bStride, bSize, &

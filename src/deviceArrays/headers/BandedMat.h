@@ -36,8 +36,6 @@
 
 template<typename T>
 class BandedMat final : public Mat<T> {
-private:
-    const Vec<int32_t> _indices;
 
 protected:
     /**
@@ -51,6 +49,9 @@ protected:
     BandedMat(size_t rows, size_t cols, size_t ld, std::shared_ptr<T> ptr, const Vec<int32_t> &indices);
 
 public:
+
+    const Vec<int32_t> _indices;
+
     /**const
     * @brief Constructs a banded matrix by wrapping an existing dense matrix buffer.
     *

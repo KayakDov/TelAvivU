@@ -79,6 +79,142 @@ void solveDecomp(
 
 
 /**
+ * @brief Construct and immediately solve the Poisson problem.
+ *
+ * The constructor:
+ *   1. Builds eigenbases for Lx, Ly, Lz.
+ *   2. Applies forward transform to f to obtain f̃.
+ *   3. Solves diagonal system to obtain ũ.
+ *   4. Applies inverse transform to obtain x (the output).
+ *
+ * Orientation of the boundaries is as follows.  The front and back boundaries have there first row agains the top,
+ * and first column against the left.  The left and right boundaries each have their first row against the top, and
+ * first column against the back.  The top and bottom boundaries each have their first row against the back
+ * and first column against the left.
+ *
+ * Each pair of matrices that are stored together have the 2nd matrix of the pair stored beneath the first,
+ * so when thought of as a single matrix with two submatrices, the first half of each column belongs to the first
+ * sub matrix, and the second half of each column belongs to the second sub matrix.
+ *
+ * This constructor is meant to be run as a fortran method.
+ *
+ * @param frontBackPtr A pointer to the device front and back boundaries.  The back boundary matrix should be below the
+ * front boundary matrix.  This will not be changed.
+ * @param fbLd The leading dimension of the frontBack matrix.  The distance between the first element of each column.
+ * @param leftRightPtr This will not be changed.
+ * @param lrLd
+ * @param topBottomPtr this will not be changed.
+ * @param tbLd
+ * @param xPtr Output buffer for the solution. No padding is permitted.
+ * @param xStride The distance between elements of the output data.
+ * @param height Height of the grid.
+ * @param width Width of the grid.
+ * @param depth Depth of the grid.
+ * @param fPtr Right-hand-side of the Poisson equation (will be overwritten).  No padding is permitted.
+ * @param fStride The distance between elements of the f vector.
+ * @param rowsXRowsPtr A space to work in.  Will be changed.
+ * @param rowsXRowsLd
+ * @param colsXColsPtr A space to work in.  Will be changed.
+ * @param colsXColsLd
+ * @param depthsXDepthsPtr A space to work in.  Will be changed.
+ * @param depthsXDepthsLd
+ * @param maxDimX3Ptr A space to work in.  Will be changed.
+ * @param maxDimX3Ld
+ */
+void solveDecompFloat(
+    size_t frontBackPtr, const size_t fbLd,
+    size_t leftRightPtr, const size_t lrLd,
+    size_t topBottomPtr, const size_t tbLd,
+    size_t fPtr, const size_t fStride,
+    size_t xPtr, const size_t xStride,
+    const size_t height, const size_t width, const size_t depth,
+    size_t rowsXRowsPtr, const size_t rowsXRowsLd,
+    size_t colsXColsPtr, const size_t colsXColsLd,
+    size_t depthsXDepthsPtr, const size_t depthsXDepthsLd,
+    size_t maxDimX3Ptr, const size_t maxDimX3Ld
+) {
+    return solveDecomp<float>(
+         frontBackPtr, fbLd,
+         leftRightPtr, lrLd,
+         topBottomPtr, tbLd,
+         fPtr, fStride,
+         xPtr, xStride,
+         height, width, depth,
+         rowsXRowsPtr, rowsXRowsLd,
+         colsXColsPtr, colsXColsLd,
+         depthsXDepthsPtr, depthsXDepthsLd,
+         maxDimX3Ptr, maxDimX3Ld
+    );
+}
+/**
+ * @brief Construct and immediately solve the Poisson problem.
+ *
+ * The constructor:
+ *   1. Builds eigenbases for Lx, Ly, Lz.
+ *   2. Applies forward transform to f to obtain f̃.
+ *   3. Solves diagonal system to obtain ũ.
+ *   4. Applies inverse transform to obtain x (the output).
+ *
+ * Orientation of the boundaries is as follows.  The front and back boundaries have there first row agains the top,
+ * and first column against the left.  The left and right boundaries each have their first row against the top, and
+ * first column against the back.  The top and bottom boundaries each have their first row against the back
+ * and first column against the left.
+ *
+ * Each pair of matrices that are stored together have the 2nd matrix of the pair stored beneath the first,
+ * so when thought of as a single matrix with two submatrices, the first half of each column belongs to the first
+ * sub matrix, and the second half of each column belongs to the second sub matrix.
+ *
+ * This constructor is meant to be run as a fortran method.
+ *
+ * @param frontBackPtr A pointer to the device front and back boundaries.  The back boundary matrix should be below the
+ * front boundary matrix.  This will not be changed.
+ * @param fbLd The leading dimension of the frontBack matrix.  The distance between the first element of each column.
+ * @param leftRightPtr This will not be changed.
+ * @param lrLd
+ * @param topBottomPtr this will not be changed.
+ * @param tbLd
+ * @param xPtr Output buffer for the solution. No padding is permitted.
+ * @param xStride The distance between elements of the output data.
+ * @param height Height of the grid.
+ * @param width Width of the grid.
+ * @param depth Depth of the grid.
+ * @param fPtr Right-hand-side of the Poisson equation (will be overwritten).  No padding is permitted.
+ * @param fStride The distance between elements of the f vector.
+ * @param rowsXRowsPtr A space to work in.  Will be changed.
+ * @param rowsXRowsLd
+ * @param colsXColsPtr A space to work in.  Will be changed.
+ * @param colsXColsLd
+ * @param depthsXDepthsPtr A space to work in.  Will be changed.
+ * @param depthsXDepthsLd
+ * @param maxDimX3Ptr A space to work in.  Will be changed.
+ * @param maxDimX3Ld
+ */
+void solveDecompDouble(
+    size_t frontBackPtr, const size_t fbLd,
+    size_t leftRightPtr, const size_t lrLd,
+    size_t topBottomPtr, const size_t tbLd,
+    size_t fPtr, const size_t fStride,
+    size_t xPtr, const size_t xStride,
+    const size_t height, const size_t width, const size_t depth,
+    size_t rowsXRowsPtr, const size_t rowsXRowsLd,
+    size_t colsXColsPtr, const size_t colsXColsLd,
+    size_t depthsXDepthsPtr, const size_t depthsXDepthsLd,
+    size_t maxDimX3Ptr, const size_t maxDimX3Ld
+) {
+    return solveDecomp<double>(
+         frontBackPtr, fbLd,
+         leftRightPtr, lrLd,
+         topBottomPtr, tbLd,
+         fPtr, fStride,
+         xPtr, xStride,
+         height, width, depth,
+         rowsXRowsPtr, rowsXRowsLd,
+         colsXColsPtr, colsXColsLd,
+         depthsXDepthsPtr, depthsXDepthsLd,
+         maxDimX3Ptr, maxDimX3Ld
+    );
+}
+/**
  * Solves Ax = b
  * @param APtr The banded matrix.  Each column represents a diagonal of a sparse matrix.  Shorter diagonals will have
  * trailing padding, but never leading padding.  There should be as many columns as there are diagonals in the
@@ -116,5 +252,13 @@ void solveBiCGSTAB(
     Mat<T> preAlocatedMat = Mat<T>::create(bSize, 7, prealocatedLd, reinterpret_cast<T*>(prealocatedSizeX7Ptr));
     Vec<T> bVec = Vec<T>::create(bSize, bStride, reinterpret_cast<T*>(bPtr));
     const auto ABanded = BandedMat<T>::create(bSize, numInds, aLd, reinterpret_cast<T*>(APtr), reinterpret_cast<int32_t*>(indsPtrInt32_t), indsStride); //rows cols pointer VecIndices
+
+    Handle hand;
+    std::cout << "ABanded = \n" << GpuOut<T>(ABanded, hand) << std::endl;
+    std::cout << "indices = \n" << GpuOut<int32_t>(ABanded._indices, hand) << std::endl;
+    std::cout << "bVec = \n" << GpuOut<T>(bVec, hand) << std::endl;
+    std::cout << "prealocated = \n" << GpuOut<T>(preAlocatedMat, hand) << std::endl;
+
+
     BiCGSTAB<T>::solve(ABanded,bVec, &preAlocatedMat, tolerance, maxIterations);
 }

@@ -6,11 +6,10 @@
         ],
         "functions": [
             {
-                "<FUNCTION>": "solveDecomp  0 ****************************************",
-                "_overloaded": true,
+                "<FUNCTION>": "solveDecompFloat  0 ****************************************",
                 "ast": {
                     "declarator": {
-                        "name": "solveDecomp",
+                        "name": "solveDecompFloat",
                         "params": [
                             {
                                 "declarator": {
@@ -242,482 +241,11 @@
                     ],
                     "typemap_name": "void"
                 },
-                "cxx_template": {
-                    "T": [
-                        "float",
-                        "double"
-                    ]
-                },
-                "decl": "template<typename T>\nvoid solveDecomp(\n    size_t frontBackPtr, const size_t fbLd,\n    size_t leftRightPtr, const size_t lrLd,\n    size_t topBottomPtr, const size_t tbLd,\n    size_t fPtr, const size_t fStride,\n    size_t xPtr, const size_t xStride,\n    const size_t height, const size_t width, const size_t depth,\n    size_t rowsXRowsPtr, const size_t rowsXRowsLd,\n    size_t colsXColsPtr, const size_t colsXColsLd,\n    size_t depthsXDepthsPtr, const size_t depthsXDepthsLd,\n    size_t maxDimX3Ptr, const size_t maxDimX3Ld\n)\n",
-                "declgen": "void solveDecomp(size_t frontBackPtr, const size_t fbLd, size_t leftRightPtr, const size_t lrLd, size_t topBottomPtr, const size_t tbLd, size_t fPtr, const size_t fStride, size_t xPtr, const size_t xStride, const size_t height, const size_t width, const size_t depth, size_t rowsXRowsPtr, const size_t rowsXRowsLd, size_t colsXColsPtr, const size_t colsXColsLd, size_t depthsXDepthsPtr, const size_t depthsXDepthsLd, size_t maxDimX3Ptr, const size_t maxDimX3Ld)",
+                "decl": "void solveDecompFloat(\n    size_t frontBackPtr, const size_t fbLd,\n    size_t leftRightPtr, const size_t lrLd,\n    size_t topBottomPtr, const size_t tbLd,\n    size_t fPtr, const size_t fStride,\n    size_t xPtr, const size_t xStride,\n    const size_t height, const size_t width, const size_t depth,\n    size_t rowsXRowsPtr, const size_t rowsXRowsLd,\n    size_t colsXColsPtr, const size_t colsXColsLd,\n    size_t depthsXDepthsPtr, const size_t depthsXDepthsLd,\n    size_t maxDimX3Ptr, const size_t maxDimX3Ld\n)\n",
+                "declgen": "void solveDecompFloat(size_t frontBackPtr, const size_t fbLd, size_t leftRightPtr, const size_t lrLd, size_t topBottomPtr, const size_t tbLd, size_t fPtr, const size_t fStride, size_t xPtr, const size_t xStride, const size_t height, const size_t width, const size_t depth, size_t rowsXRowsPtr, const size_t rowsXRowsLd, size_t colsXColsPtr, const size_t colsXColsLd, size_t depthsXDepthsPtr, const size_t depthsXDepthsLd, size_t maxDimX3Ptr, const size_t maxDimX3Ld)",
                 "linenumber": 5,
-                "name": "solveDecomp",
+                "name": "solveDecompFloat",
                 "options": {},
-                "template_arguments": [
-                    {
-                        "asts": [
-                            {
-                                "specifier": [
-                                    "float"
-                                ],
-                                "typemap_name": "float"
-                            }
-                        ],
-                        "instantiation": "<float>"
-                    },
-                    {
-                        "asts": [
-                            {
-                                "specifier": [
-                                    "double"
-                                ],
-                                "typemap_name": "double"
-                            }
-                        ],
-                        "instantiation": "<double>"
-                    }
-                ],
-                "template_parameters": [
-                    "T"
-                ],
-                "wrap": {},
-                "zz_bind": {
-                    "share": {
-                        "+result": {
-                            "meta": {
-                                "abstract": "void",
-                                "intent": "subroutine"
-                            }
-                        },
-                        "colsXColsLd": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "colsXColsPtr": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "depth": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "depthsXDepthsLd": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "depthsXDepthsPtr": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "fPtr": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "fStride": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "fbLd": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "frontBackPtr": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "height": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "leftRightPtr": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "lrLd": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "maxDimX3Ld": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "maxDimX3Ptr": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "rowsXRowsLd": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "rowsXRowsPtr": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "tbLd": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "topBottomPtr": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "width": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "xPtr": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        },
-                        "xStride": {
-                            "meta": {
-                                "abstract": "native",
-                                "intent": "in",
-                                "value": true
-                            }
-                        }
-                    }
-                },
-                "zz_fmtdict": {
-                    "C_name_api": "solveDecomp",
-                    "F_name_api": "solve_decomp",
-                    "function_name": "solveDecomp"
-                }
-            },
-            {
-                "<FUNCTION>": "solveDecomp  2 ****************************************",
-                "_generated": "cxx_template",
-                "_generated_path": [
-                    "cxx_template"
-                ],
-                "_orig_node_index": 0,
-                "_overloaded": true,
-                "ast": {
-                    "declarator": {
-                        "name": "solveDecomp",
-                        "params": [
-                            {
-                                "declarator": {
-                                    "name": "frontBackPtr",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "const": true,
-                                "declarator": {
-                                    "name": "fbLd",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "declarator": {
-                                    "name": "leftRightPtr",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "const": true,
-                                "declarator": {
-                                    "name": "lrLd",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "declarator": {
-                                    "name": "topBottomPtr",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "const": true,
-                                "declarator": {
-                                    "name": "tbLd",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "declarator": {
-                                    "name": "fPtr",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "const": true,
-                                "declarator": {
-                                    "name": "fStride",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "declarator": {
-                                    "name": "xPtr",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "const": true,
-                                "declarator": {
-                                    "name": "xStride",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "const": true,
-                                "declarator": {
-                                    "name": "height",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "const": true,
-                                "declarator": {
-                                    "name": "width",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "const": true,
-                                "declarator": {
-                                    "name": "depth",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "declarator": {
-                                    "name": "rowsXRowsPtr",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "const": true,
-                                "declarator": {
-                                    "name": "rowsXRowsLd",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "declarator": {
-                                    "name": "colsXColsPtr",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "const": true,
-                                "declarator": {
-                                    "name": "colsXColsLd",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "declarator": {
-                                    "name": "depthsXDepthsPtr",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "const": true,
-                                "declarator": {
-                                    "name": "depthsXDepthsLd",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "declarator": {
-                                    "name": "maxDimX3Ptr",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            },
-                            {
-                                "const": true,
-                                "declarator": {
-                                    "name": "maxDimX3Ld",
-                                    "typemap_name": "size_t"
-                                },
-                                "specifier": [
-                                    "size_t"
-                                ],
-                                "typemap_name": "size_t"
-                            }
-                        ],
-                        "typemap_name": "void"
-                    },
-                    "specifier": [
-                        "void"
-                    ],
-                    "typemap_name": "void"
-                },
-                "decl": "template<typename T>\nvoid solveDecomp(\n    size_t frontBackPtr, const size_t fbLd,\n    size_t leftRightPtr, const size_t lrLd,\n    size_t topBottomPtr, const size_t tbLd,\n    size_t fPtr, const size_t fStride,\n    size_t xPtr, const size_t xStride,\n    const size_t height, const size_t width, const size_t depth,\n    size_t rowsXRowsPtr, const size_t rowsXRowsLd,\n    size_t colsXColsPtr, const size_t colsXColsLd,\n    size_t depthsXDepthsPtr, const size_t depthsXDepthsLd,\n    size_t maxDimX3Ptr, const size_t maxDimX3Ld\n)\n",
-                "declgen": "void solveDecomp(size_t frontBackPtr, const size_t fbLd, size_t leftRightPtr, const size_t lrLd, size_t topBottomPtr, const size_t tbLd, size_t fPtr, const size_t fStride, size_t xPtr, const size_t xStride, const size_t height, const size_t width, const size_t depth, size_t rowsXRowsPtr, const size_t rowsXRowsLd, size_t colsXColsPtr, const size_t colsXColsLd, size_t depthsXDepthsPtr, const size_t depthsXDepthsLd, size_t maxDimX3Ptr, const size_t maxDimX3Ld)",
-                "linenumber": 5,
-                "name": "solveDecomp",
-                "options": {},
-                "template_arguments": [
-                    {
-                        "asts": [
-                            {
-                                "specifier": [
-                                    "float"
-                                ],
-                                "typemap_name": "float"
-                            }
-                        ],
-                        "instantiation": "<float>"
-                    },
-                    {
-                        "asts": [
-                            {
-                                "specifier": [
-                                    "double"
-                                ],
-                                "typemap_name": "double"
-                            }
-                        ],
-                        "instantiation": "<double>"
-                    }
-                ],
-                "template_parameters": [
-                    "T"
-                ],
                 "wrap": {
                     "c": true,
                     "fortran": true
@@ -726,9 +254,9 @@
                     "c": {
                         "+result": {
                             "fmtdict": {
-                                "C_call_function": "solveDecomp<float>(\tfrontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld)",
+                                "C_call_function": "solveDecompFloat(\tfrontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld)",
                                 "C_call_list": "frontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld",
-                                "C_name": "FOR_solveDecomp_float",
+                                "C_name": "FOR_solveDecompFloat",
                                 "C_prototype": "size_t frontBackPtr,\t const size_t fbLd,\t size_t leftRightPtr,\t const size_t lrLd,\t size_t topBottomPtr,\t const size_t tbLd,\t size_t fPtr,\t const size_t fStride,\t size_t xPtr,\t const size_t xStride,\t const size_t height,\t const size_t width,\t const size_t depth,\t size_t rowsXRowsPtr,\t const size_t rowsXRowsLd,\t size_t colsXColsPtr,\t const size_t colsXColsLd,\t size_t depthsXDepthsPtr,\t const size_t depthsXDepthsLd,\t size_t maxDimX3Ptr,\t const size_t maxDimX3Ld",
                                 "C_return_type": "void",
                                 "i_name_function": "c_solve_decomp_float",
@@ -1396,9 +924,9 @@
                     "f": {
                         "+result": {
                             "fmtdict": {
-                                "C_call_function": "solveDecomp<float>(\tfrontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld)",
+                                "C_call_function": "solveDecompFloat(\tfrontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld)",
                                 "C_call_list": "frontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld",
-                                "C_name": "FOR_solveDecomp_float",
+                                "C_name": "FOR_solveDecompFloat",
                                 "C_prototype": "size_t frontBackPtr,\t const size_t fbLd,\t size_t leftRightPtr,\t const size_t lrLd,\t size_t topBottomPtr,\t const size_t tbLd,\t size_t fPtr,\t const size_t fStride,\t size_t xPtr,\t const size_t xStride,\t const size_t height,\t const size_t width,\t const size_t depth,\t size_t rowsXRowsPtr,\t const size_t rowsXRowsLd,\t size_t colsXColsPtr,\t const size_t colsXColsLd,\t size_t depthsXDepthsPtr,\t const size_t depthsXDepthsLd,\t size_t maxDimX3Ptr,\t const size_t maxDimX3Ld",
                                 "C_return_type": "void",
                                 "F_arg_c_call": "frontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld",
@@ -1406,7 +934,7 @@
                                 "F_subprogram": "subroutine",
                                 "f_call_function": "c_solve_decomp_float",
                                 "i_arguments": "frontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld",
-                                "i_name_function": "c_solve_decomp_float",
+                                "i_name_function": "solve_decomp_float",
                                 "i_subprogram": "subroutine",
                                 "stmt_name": "f_subroutine",
                                 "typemap_name": "void"
@@ -2415,11 +1943,10 @@
                     }
                 },
                 "zz_fmtdict": {
-                    "CXX_template": "<float>",
-                    "C_name_api": "solveDecomp",
-                    "F_name_api": "solve_decomp",
+                    "C_name_api": "solveDecompFloat",
+                    "F_name_api": "solve_decomp_float",
                     "F_name_function": "solve_decomp_float",
-                    "F_name_generic": "solve_decomp",
+                    "F_name_generic": "solve_decomp_float",
                     "F_name_impl": "solve_decomp_float",
                     "c_arglist": [
                         "c_var",
@@ -2469,21 +1996,14 @@
                         "maxDimX3Ptr",
                         "maxDimX3Ld"
                     ],
-                    "function_name": "solveDecomp",
-                    "template_suffix": "_float"
+                    "function_name": "solveDecompFloat"
                 }
             },
             {
-                "<FUNCTION>": "solveDecomp  3 ****************************************",
-                "_generated": "cxx_template",
-                "_generated_path": [
-                    "cxx_template"
-                ],
-                "_orig_node_index": 0,
-                "_overloaded": true,
+                "<FUNCTION>": "solveDecompDouble  1 ****************************************",
                 "ast": {
                     "declarator": {
-                        "name": "solveDecomp",
+                        "name": "solveDecompDouble",
                         "params": [
                             {
                                 "declarator": {
@@ -2715,42 +2235,11 @@
                     ],
                     "typemap_name": "void"
                 },
-                "decl": "template<typename T>\nvoid solveDecomp(\n    size_t frontBackPtr, const size_t fbLd,\n    size_t leftRightPtr, const size_t lrLd,\n    size_t topBottomPtr, const size_t tbLd,\n    size_t fPtr, const size_t fStride,\n    size_t xPtr, const size_t xStride,\n    const size_t height, const size_t width, const size_t depth,\n    size_t rowsXRowsPtr, const size_t rowsXRowsLd,\n    size_t colsXColsPtr, const size_t colsXColsLd,\n    size_t depthsXDepthsPtr, const size_t depthsXDepthsLd,\n    size_t maxDimX3Ptr, const size_t maxDimX3Ld\n)\n",
-                "declgen": "void solveDecomp(size_t frontBackPtr, const size_t fbLd, size_t leftRightPtr, const size_t lrLd, size_t topBottomPtr, const size_t tbLd, size_t fPtr, const size_t fStride, size_t xPtr, const size_t xStride, const size_t height, const size_t width, const size_t depth, size_t rowsXRowsPtr, const size_t rowsXRowsLd, size_t colsXColsPtr, const size_t colsXColsLd, size_t depthsXDepthsPtr, const size_t depthsXDepthsLd, size_t maxDimX3Ptr, const size_t maxDimX3Ld)",
-                "gen_headers_typedef": [
-                    "float",
-                    "double"
-                ],
-                "linenumber": 5,
-                "name": "solveDecomp",
+                "decl": "void solveDecompDouble(\n          size_t frontBackPtr, const size_t fbLd,\n          size_t leftRightPtr, const size_t lrLd,\n          size_t topBottomPtr, const size_t tbLd,\n          size_t fPtr, const size_t fStride,\n          size_t xPtr, const size_t xStride,\n          const size_t height, const size_t width, const size_t depth,\n          size_t rowsXRowsPtr, const size_t rowsXRowsLd,\n          size_t colsXColsPtr, const size_t colsXColsLd,\n          size_t depthsXDepthsPtr, const size_t depthsXDepthsLd,\n          size_t maxDimX3Ptr, const size_t maxDimX3Ld\n      )\n",
+                "declgen": "void solveDecompDouble(size_t frontBackPtr, const size_t fbLd, size_t leftRightPtr, const size_t lrLd, size_t topBottomPtr, const size_t tbLd, size_t fPtr, const size_t fStride, size_t xPtr, const size_t xStride, const size_t height, const size_t width, const size_t depth, size_t rowsXRowsPtr, const size_t rowsXRowsLd, size_t colsXColsPtr, const size_t colsXColsLd, size_t depthsXDepthsPtr, const size_t depthsXDepthsLd, size_t maxDimX3Ptr, const size_t maxDimX3Ld)",
+                "linenumber": 18,
+                "name": "solveDecompDouble",
                 "options": {},
-                "template_arguments": [
-                    {
-                        "asts": [
-                            {
-                                "specifier": [
-                                    "float"
-                                ],
-                                "typemap_name": "float"
-                            }
-                        ],
-                        "instantiation": "<float>"
-                    },
-                    {
-                        "asts": [
-                            {
-                                "specifier": [
-                                    "double"
-                                ],
-                                "typemap_name": "double"
-                            }
-                        ],
-                        "instantiation": "<double>"
-                    }
-                ],
-                "template_parameters": [
-                    "T"
-                ],
                 "wrap": {
                     "c": true,
                     "fortran": true
@@ -2759,9 +2248,9 @@
                     "c": {
                         "+result": {
                             "fmtdict": {
-                                "C_call_function": "solveDecomp<double>(\tfrontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld)",
+                                "C_call_function": "solveDecompDouble(\tfrontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld)",
                                 "C_call_list": "frontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld",
-                                "C_name": "FOR_solveDecomp_double",
+                                "C_name": "FOR_solveDecompDouble",
                                 "C_prototype": "size_t frontBackPtr,\t const size_t fbLd,\t size_t leftRightPtr,\t const size_t lrLd,\t size_t topBottomPtr,\t const size_t tbLd,\t size_t fPtr,\t const size_t fStride,\t size_t xPtr,\t const size_t xStride,\t const size_t height,\t const size_t width,\t const size_t depth,\t size_t rowsXRowsPtr,\t const size_t rowsXRowsLd,\t size_t colsXColsPtr,\t const size_t colsXColsLd,\t size_t depthsXDepthsPtr,\t const size_t depthsXDepthsLd,\t size_t maxDimX3Ptr,\t const size_t maxDimX3Ld",
                                 "C_return_type": "void",
                                 "i_name_function": "c_solve_decomp_double",
@@ -3429,9 +2918,9 @@
                     "f": {
                         "+result": {
                             "fmtdict": {
-                                "C_call_function": "solveDecomp<double>(\tfrontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld)",
+                                "C_call_function": "solveDecompDouble(\tfrontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld)",
                                 "C_call_list": "frontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld",
-                                "C_name": "FOR_solveDecomp_double",
+                                "C_name": "FOR_solveDecompDouble",
                                 "C_prototype": "size_t frontBackPtr,\t const size_t fbLd,\t size_t leftRightPtr,\t const size_t lrLd,\t size_t topBottomPtr,\t const size_t tbLd,\t size_t fPtr,\t const size_t fStride,\t size_t xPtr,\t const size_t xStride,\t const size_t height,\t const size_t width,\t const size_t depth,\t size_t rowsXRowsPtr,\t const size_t rowsXRowsLd,\t size_t colsXColsPtr,\t const size_t colsXColsLd,\t size_t depthsXDepthsPtr,\t const size_t depthsXDepthsLd,\t size_t maxDimX3Ptr,\t const size_t maxDimX3Ld",
                                 "C_return_type": "void",
                                 "F_arg_c_call": "frontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld",
@@ -3439,7 +2928,7 @@
                                 "F_subprogram": "subroutine",
                                 "f_call_function": "c_solve_decomp_double",
                                 "i_arguments": "frontBackPtr,\t fbLd,\t leftRightPtr,\t lrLd,\t topBottomPtr,\t tbLd,\t fPtr,\t fStride,\t xPtr,\t xStride,\t height,\t width,\t depth,\t rowsXRowsPtr,\t rowsXRowsLd,\t colsXColsPtr,\t colsXColsLd,\t depthsXDepthsPtr,\t depthsXDepthsLd,\t maxDimX3Ptr,\t maxDimX3Ld",
-                                "i_name_function": "c_solve_decomp_double",
+                                "i_name_function": "solve_decomp_double",
                                 "i_subprogram": "subroutine",
                                 "stmt_name": "f_subroutine",
                                 "typemap_name": "void"
@@ -4448,11 +3937,10 @@
                     }
                 },
                 "zz_fmtdict": {
-                    "CXX_template": "<double>",
-                    "C_name_api": "solveDecomp",
-                    "F_name_api": "solve_decomp",
+                    "C_name_api": "solveDecompDouble",
+                    "F_name_api": "solve_decomp_double",
                     "F_name_function": "solve_decomp_double",
-                    "F_name_generic": "solve_decomp",
+                    "F_name_generic": "solve_decomp_double",
                     "F_name_impl": "solve_decomp_double",
                     "c_arglist": [
                         "c_var",
@@ -4502,12 +3990,11 @@
                         "maxDimX3Ptr",
                         "maxDimX3Ld"
                     ],
-                    "function_name": "solveDecomp",
-                    "template_suffix": "_double"
+                    "function_name": "solveDecompDouble"
                 }
             },
             {
-                "<FUNCTION>": "solveBiCGSTAB  1 ****************************************",
+                "<FUNCTION>": "solveBiCGSTAB  2 ****************************************",
                 "_overloaded": true,
                 "ast": {
                     "declarator": {
@@ -4656,7 +4143,7 @@
                 "decl": "template<typename T>\nvoid solveBiCGSTAB(\n    size_t APtr,\n    const size_t aLd,\n    size_t indsPtrInt32_t,\n    const size_t indsStride,\n    const size_t numInds,\n    size_t bPtr,\n    const size_t bStride,\n    const size_t bSize,\n    size_t prealocatedSizeX7Ptr,\n    const size_t prealocatedLd,\n    size_t maxIterations,\n    T tolerance\n)\n",
                 "declgen": "void solveBiCGSTAB(size_t APtr, const size_t aLd, size_t indsPtrInt32_t, const size_t indsStride, const size_t numInds, size_t bPtr, const size_t bStride, const size_t bSize, size_t prealocatedSizeX7Ptr, const size_t prealocatedLd, size_t maxIterations, T tolerance)",
                 "have_template_args": true,
-                "linenumber": 24,
+                "linenumber": 31,
                 "name": "solveBiCGSTAB",
                 "options": {},
                 "template_arguments": [
@@ -4788,12 +4275,12 @@
                 }
             },
             {
-                "<FUNCTION>": "solveBiCGSTAB  4 ****************************************",
+                "<FUNCTION>": "solveBiCGSTAB  3 ****************************************",
                 "_generated": "cxx_template",
                 "_generated_path": [
                     "cxx_template"
                 ],
-                "_orig_node_index": 1,
+                "_orig_node_index": 2,
                 "_overloaded": true,
                 "ast": {
                     "declarator": {
@@ -4937,7 +4424,7 @@
                 "decl": "template<typename T>\nvoid solveBiCGSTAB(\n    size_t APtr,\n    const size_t aLd,\n    size_t indsPtrInt32_t,\n    const size_t indsStride,\n    const size_t numInds,\n    size_t bPtr,\n    const size_t bStride,\n    const size_t bSize,\n    size_t prealocatedSizeX7Ptr,\n    const size_t prealocatedLd,\n    size_t maxIterations,\n    T tolerance\n)\n",
                 "declgen": "void solveBiCGSTAB(size_t APtr, const size_t aLd, size_t indsPtrInt32_t, const size_t indsStride, const size_t numInds, size_t bPtr, const size_t bStride, const size_t bSize, size_t prealocatedSizeX7Ptr, const size_t prealocatedLd, size_t maxIterations, float tolerance)",
                 "have_template_args": true,
-                "linenumber": 24,
+                "linenumber": 31,
                 "name": "solveBiCGSTAB",
                 "options": {},
                 "template_arguments": [
@@ -6003,12 +5490,12 @@
                 }
             },
             {
-                "<FUNCTION>": "solveBiCGSTAB  5 ****************************************",
+                "<FUNCTION>": "solveBiCGSTAB  4 ****************************************",
                 "_generated": "cxx_template",
                 "_generated_path": [
                     "cxx_template"
                 ],
-                "_orig_node_index": 1,
+                "_orig_node_index": 2,
                 "_overloaded": true,
                 "ast": {
                     "declarator": {
@@ -6156,7 +5643,7 @@
                     "double"
                 ],
                 "have_template_args": true,
-                "linenumber": 24,
+                "linenumber": 31,
                 "name": "solveBiCGSTAB",
                 "options": {},
                 "template_arguments": [

@@ -3,8 +3,7 @@ cxx_header: "FortranBindings.hpp"
 
 declarations:
   - decl: |
-      template<typename T>
-      void solveDecomp(
+      void solveDecompFloat(
           size_t frontBackPtr, const size_t fbLd,
           size_t leftRightPtr, const size_t lrLd,
           size_t topBottomPtr, const size_t tbLd,
@@ -16,11 +15,19 @@ declarations:
           size_t depthsXDepthsPtr, const size_t depthsXDepthsLd,
           size_t maxDimX3Ptr, const size_t maxDimX3Ld
       )
-
-    cxx_template:
-      - instantiation: <float>
-      - instantiation: <double>
-
+  - decl: |
+      void solveDecompDouble(
+                size_t frontBackPtr, const size_t fbLd,
+                size_t leftRightPtr, const size_t lrLd,
+                size_t topBottomPtr, const size_t tbLd,
+                size_t fPtr, const size_t fStride,
+                size_t xPtr, const size_t xStride,
+                const size_t height, const size_t width, const size_t depth,
+                size_t rowsXRowsPtr, const size_t rowsXRowsLd,
+                size_t colsXColsPtr, const size_t colsXColsLd,
+                size_t depthsXDepthsPtr, const size_t depthsXDepthsLd,
+                size_t maxDimX3Ptr, const size_t maxDimX3Ld
+            )
   - decl: |
       template<typename T>
       void solveBiCGSTAB(

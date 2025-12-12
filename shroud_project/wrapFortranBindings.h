@@ -26,7 +26,7 @@ extern "C" {
 // splicer begin C_declarations
 // splicer end C_declarations
 
-void FOR_solveDecomp_float(size_t frontBackPtr, const size_t fbLd,
+void FOR_solveDecompFloat(size_t frontBackPtr, const size_t fbLd,
     size_t leftRightPtr, const size_t lrLd, size_t topBottomPtr,
     const size_t tbLd, size_t fPtr, const size_t fStride, size_t xPtr,
     const size_t xStride, const size_t height, const size_t width,
@@ -35,7 +35,7 @@ void FOR_solveDecomp_float(size_t frontBackPtr, const size_t fbLd,
     size_t depthsXDepthsPtr, const size_t depthsXDepthsLd,
     size_t maxDimX3Ptr, const size_t maxDimX3Ld);
 
-void FOR_solveDecomp_double(size_t frontBackPtr, const size_t fbLd,
+void FOR_solveDecompDouble(size_t frontBackPtr, const size_t fbLd,
     size_t leftRightPtr, const size_t lrLd, size_t topBottomPtr,
     const size_t tbLd, size_t fPtr, const size_t fStride, size_t xPtr,
     const size_t xStride, const size_t height, const size_t width,

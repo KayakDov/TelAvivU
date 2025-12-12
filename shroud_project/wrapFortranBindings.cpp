@@ -12,7 +12,7 @@ extern "C" {
 // splicer begin C_definitions
 // splicer end C_definitions
 
-void FOR_solveDecomp_float(size_t frontBackPtr, const size_t fbLd,
+void FOR_solveDecompFloat(size_t frontBackPtr, const size_t fbLd,
     size_t leftRightPtr, const size_t lrLd, size_t topBottomPtr,
     const size_t tbLd, size_t fPtr, const size_t fStride, size_t xPtr,
     const size_t xStride, const size_t height, const size_t width,
@@ -21,15 +21,15 @@ void FOR_solveDecomp_float(size_t frontBackPtr, const size_t fbLd,
     size_t depthsXDepthsPtr, const size_t depthsXDepthsLd,
     size_t maxDimX3Ptr, const size_t maxDimX3Ld)
 {
-    // splicer begin function.solveDecomp_float
-    solveDecomp<float>(frontBackPtr, fbLd, leftRightPtr, lrLd,
+    // splicer begin function.solveDecompFloat
+    solveDecompFloat(frontBackPtr, fbLd, leftRightPtr, lrLd,
         topBottomPtr, tbLd, fPtr, fStride, xPtr, xStride, height, width,
         depth, rowsXRowsPtr, rowsXRowsLd, colsXColsPtr, colsXColsLd,
         depthsXDepthsPtr, depthsXDepthsLd, maxDimX3Ptr, maxDimX3Ld);
-    // splicer end function.solveDecomp_float
+    // splicer end function.solveDecompFloat
 }
 
-void FOR_solveDecomp_double(size_t frontBackPtr, const size_t fbLd,
+void FOR_solveDecompDouble(size_t frontBackPtr, const size_t fbLd,
     size_t leftRightPtr, const size_t lrLd, size_t topBottomPtr,
     const size_t tbLd, size_t fPtr, const size_t fStride, size_t xPtr,
     const size_t xStride, const size_t height, const size_t width,
@@ -38,12 +38,12 @@ void FOR_solveDecomp_double(size_t frontBackPtr, const size_t fbLd,
     size_t depthsXDepthsPtr, const size_t depthsXDepthsLd,
     size_t maxDimX3Ptr, const size_t maxDimX3Ld)
 {
-    // splicer begin function.solveDecomp_double
-    solveDecomp<double>(frontBackPtr, fbLd, leftRightPtr, lrLd,
+    // splicer begin function.solveDecompDouble
+    solveDecompDouble(frontBackPtr, fbLd, leftRightPtr, lrLd,
         topBottomPtr, tbLd, fPtr, fStride, xPtr, xStride, height, width,
         depth, rowsXRowsPtr, rowsXRowsLd, colsXColsPtr, colsXColsLd,
         depthsXDepthsPtr, depthsXDepthsLd, maxDimX3Ptr, maxDimX3Ld);
-    // splicer end function.solveDecomp_double
+    // splicer end function.solveDecompDouble
 }
 
 void FOR_solveBiCGSTAB_float(size_t APtr, const size_t aLd,
