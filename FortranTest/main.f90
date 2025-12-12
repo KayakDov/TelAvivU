@@ -4,19 +4,8 @@ program test_bicgstab_device
     use fortranbindings_mod             ! <--- ADDED: Use the Shroud module
     implicit none
 
-
-    ! -------------------------------------------------
-    ! Band matrix:
-    !   [1 2
-    !    3 4
-    !    5 6]
-    !
-    ! Diagonal indices: [1, -1]
-    !
-    ! RHS b = [7, 8, 9]
-    ! -------------------------------------------------
     integer(C_SIZE_T), parameter :: n = 3
-    integer(C_SIZE_T), parameter :: numDiags = 2
+    integer(C_SIZE_T), parameter :: numDiags = 3
 
     real(c_double), device, allocatable, target :: A_d(:,:)
     integer(c_int32_t), device, allocatable, target :: inds_d(:)
@@ -50,12 +39,13 @@ program test_bicgstab_device
     ! Initialize test values on host
     ! -------------------------------
     A_d = reshape([1d0, 3d0, 5d0,   &
-            2d0, 4d0, 6d0],  &
+                   2d0, 5d0, 6d0,   &
+                   1d0, 2d0, 3d0],  &
             shape(A_d))
 
-    inds_d = [1_c_int, -1_c_int]
+    inds_d = [1_c_int, -1_c_int, 0_c_int]
 
-    b_d = [7d0, 8d0, 9d0]
+    b_d = [4d0, 12d0, 9d0]
 
     ! -------------------------------
     ! Get device pointer addresses
@@ -65,12 +55,10 @@ program test_bicgstab_device
     inds_addr = transfer(c_loc(inds_d), inds_addr)
     b_addr    = transfer(c_loc(b_d), b_addr)
     work_addr = transfer(c_loc(workspace_d), work_addr)
-    work_addr = transfer(pWork, work_addr)
 
     ! -------------------------------
     ! Call the C++ BiCGSTAB solver
     ! -------------------------------
-    ! CHANGED: Calling the correct Shroud-generated wrapper function
     call solve_bi_cgstab( &
             A_addr, aLd, &
             inds_addr, indsStride, numDiags, &

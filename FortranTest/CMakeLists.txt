@@ -9,8 +9,8 @@ project(FortranCudaProject LANGUAGES Fortran CXX)
 set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/mod)
 
 # Paths to Shroud wrapper + static C++ library
-set(SHROUD_WRAPF "${CMAKE_SOURCE_DIR}~/Documents/CudaBanded/TelAvivU/shroud_project/wrapffortranbindings.f90")
-set(CUDA_LIB "${CMAKE_SOURCE_DIR}/../TelAvivU/cmake-build-debug/libCudaBandedLib.a")
+set(SHROUD_WRAPF "${CMAKE_SOURCE_DIR}/../shroud_project/wrapffortranbindings.f90")
+set(CUDA_LIB "${CMAKE_SOURCE_DIR}/../cmake-build-debug/libCudaBandedLib.a")
 
 if(NOT EXISTS "${SHROUD_WRAPF}")
     message(FATAL_ERROR "Cannot find Shroud wrapper: ${SHROUD_WRAPF}")

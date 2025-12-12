@@ -78,7 +78,7 @@ void BandedMat<T>::bandedMult(
     const Singleton<T> beta,
     bool transpose
 ) const {
-    if (this->_cols > 32) throw std::invalid_argument("height must be <= 32 for this kernel");
+    if (this->_cols > 32) throw std::invalid_argument("width must be <= 32 for this kernel");
 
     std::unique_ptr<Handle> temp_hand_ptr;
     Handle *h = Handle::_get_or_create_handle(handle, temp_hand_ptr);

@@ -121,7 +121,7 @@ void solveDecomp(
  * @param maxDimX3Ptr A space to work in.  Will be changed.
  * @param maxDimX3Ld
  */
-void solveDecompFloat(
+void inline solveDecompFloat(
     size_t frontBackPtr, const size_t fbLd,
     size_t leftRightPtr, const size_t lrLd,
     size_t topBottomPtr, const size_t tbLd,
@@ -189,7 +189,7 @@ void solveDecompFloat(
  * @param maxDimX3Ptr A space to work in.  Will be changed.
  * @param maxDimX3Ld
  */
-void solveDecompDouble(
+void inline solveDecompDouble(
     size_t frontBackPtr, const size_t fbLd,
     size_t leftRightPtr, const size_t lrLd,
     size_t topBottomPtr, const size_t tbLd,
@@ -253,12 +253,11 @@ void solveBiCGSTAB(
     Vec<T> bVec = Vec<T>::create(bSize, bStride, reinterpret_cast<T*>(bPtr));
     const auto ABanded = BandedMat<T>::create(bSize, numInds, aLd, reinterpret_cast<T*>(APtr), reinterpret_cast<int32_t*>(indsPtrInt32_t), indsStride); //rows cols pointer VecIndices
 
-    Handle hand;
-    std::cout << "ABanded = \n" << GpuOut<T>(ABanded, hand) << std::endl;
-    std::cout << "indices = \n" << GpuOut<int32_t>(ABanded._indices, hand) << std::endl;
-    std::cout << "bVec = \n" << GpuOut<T>(bVec, hand) << std::endl;
-    std::cout << "prealocated = \n" << GpuOut<T>(preAlocatedMat, hand) << std::endl;
-
+    // Handle hand;
+    // std::cout << "ABanded = \n" << GpuOut<T>(ABanded, hand) << std::endl;
+    // std::cout << "indices = \n" << GpuOut<int32_t>(ABanded._indices, hand) << std::endl;
+    // std::cout << "bVec = \n" << GpuOut<T>(bVec, hand) << std::endl;
+    // std::cout << "prealocated = \n" << GpuOut<T>(preAlocatedMat, hand) << std::endl;
 
     BiCGSTAB<T>::solve(ABanded,bVec, &preAlocatedMat, tolerance, maxIterations);
 }
