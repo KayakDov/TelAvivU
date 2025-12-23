@@ -58,7 +58,7 @@ void EigenDecompSolver<T>::eigenL(size_t i, cudaStream_t stream) {
 template<typename T>
 void EigenDecompSolver<T>::setUTilde(const Tensor<T> &f,
                                      Tensor<T> &u,
-                                     Handle &hand) {
+                                     Handle &hand) const{
     KernelPrep kp = f.kernelPrep();
     setUTildeKernel<T><<<kp.numBlocks, kp.threadsPerBlock, 0, hand>>>(
         u.toKernel3d(),
@@ -75,7 +75,7 @@ void EigenDecompSolver<T>::multE(size_t i,
                                  Mat<T> &dst1,
                                  size_t stride,
                                  Handle &hand,
-                                 size_t batchCount) {
+                                 size_t batchCount) const{
     Mat<T>::batchMult(
         transpose ? a1 : eVecs[i], transpose ? stride : 0,
         transpose ? eVecs[i] : a1, transpose ? 0 : stride,
@@ -87,22 +87,22 @@ void EigenDecompSolver<T>::multE(size_t i,
 }
 
 template<typename T>
-void EigenDecompSolver<T>::multEX(const Mat<T> &src, Mat<T> &dst, Handle &hand, bool transposeE) {
+void EigenDecompSolver<T>::multEX(const Mat<T> &src, Mat<T> &dst, Handle &hand, bool transposeE) const{
     multE(0, transposeE, true, src, dst, src._rows, hand, this->dim.layers);
 }
 
 template<typename T>
-void EigenDecompSolver<T>::multEY(const Mat<T> &src, Mat<T> &dst, Handle &hand, bool transposeE) {
+void EigenDecompSolver<T>::multEY(const Mat<T> &src, Mat<T> &dst, Handle &hand, bool transposeE) const{
     multE(1, transposeE, false, src, dst, src._rows, hand, this->dim.layers);
 }
 
 template<typename T>
-void EigenDecompSolver<T>::multEZ(const Mat<T> &src, Mat<T> &dst, Handle &hand, bool transposeE) {
+void EigenDecompSolver<T>::multEZ(const Mat<T> &src, Mat<T> &dst, Handle &hand, bool transposeE) const{
     multE(2, transposeE, true, src, dst, this->dim.layers * this->dim.rows, hand, this->dim.cols);
 }
 
 template<typename T>
-void EigenDecompSolver<T>::multiplyEF(Handle &hand, Tensor<T> &src, Tensor<T> &dst, bool transposeE) {
+void EigenDecompSolver<T>::multiplyEF(Handle &hand, Tensor<T> &src, Tensor<T> &dst, bool transposeE) const{
     auto xF = src.layerRowCol(0), dx1 = dst.layerRowCol(0),
             yF = dst.layerRowCol(0), dyF = src.layerRowCol(0),
             zS = src.layerColDepth(0), dzS = dst.layerColDepth(0);
@@ -119,32 +119,34 @@ void EigenDecompSolver<T>::multiplyEF(Handle &hand, Tensor<T> &src, Tensor<T> &d
 }
 
 template<typename T>
-EigenDecompSolver<T>::EigenDecompSolver(const CubeBoundary<T> &boundary,
-                                        Vec<T> &x, Vec<T> &f,
+EigenDecompSolver<T>::EigenDecompSolver(Vec<T> &x, Vec<T> &b,
                                         SquareMat<T> &rowsXRows, SquareMat<T> &colsXCols, SquareMat<T> &depthsXDepths,
                                         Mat<T> &maxDimX3,
-                                        std::array<Handle, 3> &hand3)
-    : Poisson<T>(boundary, f, hand3[2]),
+                                        std::array<Handle, 3> &hand3):
+    dim(rowsXRows._rows, colsXCols._cols, depthsXDepths._rows),
       eVecs({rowsXRows, colsXCols, depthsXDepths}),
       eVals(maxDimX3) {
+
     Event doneEigen[2]{};
     for (size_t i = 0; i < 2; i++) {
         eigenL(i, hand3[i]);
         doneEigen[i].record(hand3[i]);
     }
     eigenL(2, hand3[2]);
-
-    auto fT = f.tensor(this->dim.rows, this->dim.layers);
-    auto fTd = x.tensor(this->dim.rows, this->dim.layers);
-
     doneEigen[0].wait(hand3[2]);
     doneEigen[1].wait(hand3[2]);
-    multiplyEF(hand3[2], fT, fTd, true);
+}
 
-    setUTilde(fTd, fT, hand3[2]);
+template<typename T>
+void EigenDecompSolver<T>::solve(Vec<T> &x, Vec<T> &b, Handle &hand) const {
+    auto bT = b.tensor(dim.rows, dim.layers);
+    auto xT = x.tensor(dim.rows, dim.layers);
 
-    auto xT = x.tensor(this->dim.rows, this->dim.layers);
-    multiplyEF(hand3[2], fT, xT, false);
+    multiplyEF(hand, bT, xT, true);
+
+    setUTilde(xT, bT, hand);
+
+    multiplyEF(hand, bT, xT, false);
 }
 
 /**

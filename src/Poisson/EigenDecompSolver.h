@@ -4,7 +4,7 @@
 #include "deviceArrays/headers/Mat.h"
 #include "deviceArrays/headers/SquareMat.h"
 #include "deviceArrays/headers/Vec.h"
-#include "Poisson.h"
+#include "PoissonRHS.h"
 #include "deviceArrays/headers/Streamable.h"
 
 #include <array>
@@ -31,8 +31,9 @@
  * @tparam T Floating-point type (float or double).
  */
 template<typename T>
-class EigenDecompSolver : public Poisson<T> {
+class EigenDecompSolver {
 private:
+    GridDim dim;
     /**
      * @brief Eigenvector matrices for the three 1-D Laplacians.
      *
@@ -66,7 +67,7 @@ private:
      * @param u  Output solution in eigen-space.
      * @param hand CUDA cuBLAS/cusolver handle.
      */
-    void setUTilde(const Tensor<T> &f, Tensor<T> &u, Handle &hand);
+    void setUTilde(const Tensor<T> &f, Tensor<T> &u, Handle &hand) const;
 
     /**
      * @brief Multiply using E_i or E_iᵀ batched across layers.
@@ -83,16 +84,16 @@ private:
      */
     void multE(size_t i, bool transposeEigen, bool transpose,
                const Mat<T> &a1, Mat<T> &dst1, size_t stride,
-               Handle &hand, size_t batchCount);
+               Handle &hand, size_t batchCount) const;
 
     /** @brief Apply E_x or E_xᵀ across all z-layers. */
-    void multEX(const Mat<T> &src, Mat<T> &dst, Handle &hand, bool transposeE);
+    void multEX(const Mat<T> &src, Mat<T> &dst, Handle &hand, bool transposeE) const;
 
     /** @brief Apply E_y or E_yᵀ across all z-layers. */
-    void multEY(const Mat<T> &src, Mat<T> &dst, Handle &hand, bool transposeE);
+    void multEY(const Mat<T> &src, Mat<T> &dst, Handle &hand, bool transposeE) const;
 
     /** @brief Apply E_z or E_zᵀ across all x-y slices. */
-    void multEZ(const Mat<T> &src, Mat<T> &dst, Handle &hand, bool transposeE);
+    void multEZ(const Mat<T> &src, Mat<T> &dst, Handle &hand, bool transposeE) const;
 
     /**
      * @brief Apply full transform:
@@ -106,30 +107,40 @@ private:
      * @param transposeE Whether to apply Eᵀ instead of E.
      */
     void multiplyEF(Handle &hand, Tensor<T> &src,
-                    Tensor<T> &dst, bool transposeE);
+                    Tensor<T> &dst, bool transposeE) const;
 
 public:
     /**
      * @brief Construct and immediately solve the Poisson problem.
      *
-     * The constructor:
-     *   1. Builds eigenbases for Lx, Ly, Lz.
-     *   2. Applies forward transform to f to obtain f̃.
-     *   3. Solves diagonal system to obtain ũ.
-     *   4. Applies inverse transform to obtain x (the output).
+     * Builds eigenbases for Lx, Ly, Lz, Where L is the left hand side matrix you'd use for solving the Poisson equation.
+     * It's a banded matrix with 7 diagonals, etc...
+     *
+     * A must be the standard second-difference (Toeplitz) discrete Laplacian on a uniform grid with homogeneous Dirichlet boundary conditions.
      *
      * @param boundary Boundary conditions for the grid.
-     * @param x Output buffer for the solution.
-     * @param f Right-hand-side vector (will be overwritten).
+
      * @param rowsXRows A space to work in.
      * @param colsXCols A space to work in.
      * @param depthsXDepths A space to work in.
      * @param maxDimX3 A space to work in.
      * @param hand 3 CUDA cuBLAS/cusolver handles.
      */
-    EigenDecompSolver(const CubeBoundary<T> &boundary, Vec<T> &x, Vec<T> &f, SquareMat<T> &rowsXRows,
+    EigenDecompSolver(Vec<T> &x, Vec<T> &b, SquareMat<T> &rowsXRows,
                       SquareMat<T> &colsXCols, SquareMat<T> &depthsXDepths, Mat<T> &maxDimX3,
-                      std::array<Handle, 3>& hand3);
+                      std::array<Handle, 3> &hand3);
+
+    /**
+     * Solves for A x = b
+     *
+     *   2. Applies forward transform to f to obtain f̃.
+     *   3. Solves diagonal system to obtain ũ.
+     *   4. Applies inverse transform to obtain x (the output).
+     * @param x Output buffer for the solution.
+     * @param b Right-hand-side vector (will be overwritten).
+     * @param hand
+     */
+    void solve(Vec<T> &x, Vec<T> &b, Handle &hand) const;
 };
 
 

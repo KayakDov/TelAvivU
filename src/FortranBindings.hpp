@@ -73,7 +73,8 @@ void solveDecomp(
     auto maxDimX3Mat = Mat<T>::create(n, 3, depthsXDepthsLd, reinterpret_cast<T*>(maxDimX3Ptr));
 
     cudaDeviceSynchronize();
-    EigenDecompSolver(cb, xVec, fVec, yMat, xMat, zMat, maxDimX3Mat, hands);
+    PoissonRHS<T> poisson(cb, fVec, hands[2]);
+    EigenDecompSolver(xVec, fVec, yMat, xMat, zMat, maxDimX3Mat, hands);
     cudaDeviceSynchronize();
 }
 

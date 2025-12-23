@@ -2,7 +2,7 @@
 #ifndef CUDABANDED_DIRECTSOLVER_CUH
 #define CUDABANDED_DIRECTSOLVER_CUH
 
-#include "Poisson.h"
+#include "PoissonRHS.h"
 #include "deviceArrays/headers/BandedMat.h"
 #include "BiCGSTAB/BiCGSTAB.cuh"
 
@@ -20,7 +20,7 @@ struct AdjacencyInd {
 };
 
 template <typename T>
-class DirectSolver : public Poisson<T> {
+class DirectSolver : public PoissonRHS<T> {
 
 public:
 

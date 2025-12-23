@@ -125,7 +125,7 @@ void  DirectSolver<T>::loadMapRowToDiag(Vec<int32_t> diags, const cudaStream_t s
 
 template <typename T>
 DirectSolver<T>::DirectSolver(const CubeBoundary<T>& boundary, Vec<T>& f, Mat<T>& preAlocatedForBandedA, Vec<int32_t>& prealocatedForIndices, cudaStream_t stream):
-        Poisson<T>(boundary, f, stream),
+        PoissonRHS<T>(boundary, f, stream),
         here(0, 0),
         up(1, -1),
         down(2, 1),

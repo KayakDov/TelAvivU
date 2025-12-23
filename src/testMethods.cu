@@ -31,7 +31,8 @@ void benchMarkEigenDecompSolver(size_t height, size_t width, size_t depth, std::
     cudaDeviceSynchronize();
 
     TimePoint start = std::chrono::steady_clock::now();
-    EigenDecompSolver<double> fdm(boundary, x, f, eX, eY, eZ, vals, hand3);
+    PoissonRHS<double> poisson(boundary, f, hand3[2]);
+    EigenDecompSolver<double> fdm(x, f, eX, eY, eZ, vals, hand3);
     cudaDeviceSynchronize();
     TimePoint end = std::chrono::steady_clock::now();
 

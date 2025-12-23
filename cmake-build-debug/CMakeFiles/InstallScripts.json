@@ -1,7 +1,7 @@
 {
 	"InstallScripts" : 
 	[
-		"/home/dov/Documents/CudaBanded/TelAvivU/cmake-build-debug/cmake_install.cmake"
+		"/home/usr/Documents/TelAvivU/cmake-build-debug/cmake_install.cmake"
 	],
 	"Parallel" : false
 }
