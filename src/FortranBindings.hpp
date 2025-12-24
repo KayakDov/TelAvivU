@@ -1,7 +1,7 @@
 #include <chrono>
 
-#include "Poisson/EigenDecompSolver.h"
-#include "BiCGSTAB/BiCGSTAB.cuh"
+#include "solvers/EigenDecompSolver.h"
+#include "solvers/BiCGSTAB.cuh"
 
 /**
  * @brief Construct and immediately solve the Poisson problem.
@@ -60,17 +60,20 @@ void solveDecomp(
     size_t maxDimX3Ptr, const size_t maxDimX3Ld
 ) {
     const size_t n = height * width * depth;
-    auto frontBackMat = Mat<T>::create(2*height, width, fbLd, reinterpret_cast<T*>(frontBackPtr));
-    auto leftRightMat = Mat<T>::create(2*height, depth, lrLd, reinterpret_cast<T*>(leftRightPtr));
-    auto topBottomMat = Mat<T>::create(2*depth, width, tbLd, reinterpret_cast<T*>(topBottomPtr));
-    const CubeBoundary cb(frontBackMat, leftRightMat, topBottomMat);
+
+    const CubeBoundary cb = CubeBoundary<T>::create(
+        reinterpret_cast<T *>(frontBackPtr), fbLd,
+        reinterpret_cast<T *>(leftRightPtr), lrLd,
+        reinterpret_cast<T *>(topBottomPtr), tbLd,
+        height, width, depth
+    );
     std::array<Handle, 3> hands{};
-    auto xVec = Vec<T>::create(n, xStride, reinterpret_cast<T*>(xPtr));
-    auto fVec = Vec<T>::create(n, fStride, reinterpret_cast<T*>(fPtr));
-    auto xMat = SquareMat<T>::create(width, colsXColsLd, reinterpret_cast<T*>(colsXColsPtr));
-    auto yMat = SquareMat<T>::create(height, rowsXRowsLd, reinterpret_cast<T*>(rowsXRowsPtr));
-    auto zMat = SquareMat<T>::create(depth, depthsXDepthsLd, reinterpret_cast<T*>(depthsXDepthsPtr));
-    auto maxDimX3Mat = Mat<T>::create(n, 3, depthsXDepthsLd, reinterpret_cast<T*>(maxDimX3Ptr));
+    auto xVec = Vec<T>::create(n, xStride, reinterpret_cast<T *>(xPtr));
+    auto fVec = Vec<T>::create(n, fStride, reinterpret_cast<T *>(fPtr));
+    auto xMat = SquareMat<T>::create(width, colsXColsLd, reinterpret_cast<T *>(colsXColsPtr));
+    auto yMat = SquareMat<T>::create(height, rowsXRowsLd, reinterpret_cast<T *>(rowsXRowsPtr));
+    auto zMat = SquareMat<T>::create(depth, depthsXDepthsLd, reinterpret_cast<T *>(depthsXDepthsPtr));
+    auto maxDimX3Mat = Mat<T>::create(n, 3, depthsXDepthsLd, reinterpret_cast<T *>(maxDimX3Ptr));
 
     cudaDeviceSynchronize();
     PoissonRHS<T> poisson(cb, fVec, hands[2]);
@@ -135,18 +138,19 @@ void inline solveDecompFloat(
     size_t maxDimX3Ptr, const size_t maxDimX3Ld
 ) {
     return solveDecomp<float>(
-         frontBackPtr, fbLd,
-         leftRightPtr, lrLd,
-         topBottomPtr, tbLd,
-         fPtr, fStride,
-         xPtr, xStride,
-         height, width, depth,
-         rowsXRowsPtr, rowsXRowsLd,
-         colsXColsPtr, colsXColsLd,
-         depthsXDepthsPtr, depthsXDepthsLd,
-         maxDimX3Ptr, maxDimX3Ld
+        frontBackPtr, fbLd,
+        leftRightPtr, lrLd,
+        topBottomPtr, tbLd,
+        fPtr, fStride,
+        xPtr, xStride,
+        height, width, depth,
+        rowsXRowsPtr, rowsXRowsLd,
+        colsXColsPtr, colsXColsLd,
+        depthsXDepthsPtr, depthsXDepthsLd,
+        maxDimX3Ptr, maxDimX3Ld
     );
 }
+
 /**
  * @brief Construct and immediately solve the Poisson problem.
  *
@@ -203,18 +207,19 @@ void inline solveDecompDouble(
     size_t maxDimX3Ptr, const size_t maxDimX3Ld
 ) {
     return solveDecomp<double>(
-         frontBackPtr, fbLd,
-         leftRightPtr, lrLd,
-         topBottomPtr, tbLd,
-         fPtr, fStride,
-         xPtr, xStride,
-         height, width, depth,
-         rowsXRowsPtr, rowsXRowsLd,
-         colsXColsPtr, colsXColsLd,
-         depthsXDepthsPtr, depthsXDepthsLd,
-         maxDimX3Ptr, maxDimX3Ld
+        frontBackPtr, fbLd,
+        leftRightPtr, lrLd,
+        topBottomPtr, tbLd,
+        fPtr, fStride,
+        xPtr, xStride,
+        height, width, depth,
+        rowsXRowsPtr, rowsXRowsLd,
+        colsXColsPtr, colsXColsLd,
+        depthsXDepthsPtr, depthsXDepthsLd,
+        maxDimX3Ptr, maxDimX3Ld
     );
 }
+
 /**
  * Solves Ax = b
  * @param APtr The banded matrix.  Each column represents a diagonal of a sparse matrix.  Shorter diagonals will have
@@ -250,9 +255,11 @@ void solveBiCGSTAB(
     size_t maxIterations,
     T tolerance
 ) {
-    Mat<T> preAlocatedMat = Mat<T>::create(bSize, 7, prealocatedLd, reinterpret_cast<T*>(prealocatedSizeX7Ptr));
-    Vec<T> bVec = Vec<T>::create(bSize, bStride, reinterpret_cast<T*>(bPtr));
-    const auto ABanded = BandedMat<T>::create(bSize, numInds, aLd, reinterpret_cast<T*>(APtr), reinterpret_cast<int32_t*>(indsPtrInt32_t), indsStride); //rows cols pointer VecIndices
+    Mat<T> preAlocatedMat = Mat<T>::create(bSize, 7, prealocatedLd, reinterpret_cast<T *>(prealocatedSizeX7Ptr));
+    Vec<T> bVec = Vec<T>::create(bSize, bStride, reinterpret_cast<T *>(bPtr));
+    const auto ABanded = BandedMat<T>::create(bSize, numInds, aLd, reinterpret_cast<T *>(APtr),
+                                              reinterpret_cast<int32_t *>(indsPtrInt32_t),
+                                              indsStride); //rows cols pointer VecIndices
 
     // Handle hand;
     // std::cout << "ABanded = \n" << GpuOut<T>(ABanded, hand) << std::endl;
@@ -260,5 +267,5 @@ void solveBiCGSTAB(
     // std::cout << "bVec = \n" << GpuOut<T>(bVec, hand) << std::endl;
     // std::cout << "prealocated = \n" << GpuOut<T>(preAlocatedMat, hand) << std::endl;
 
-    BiCGSTAB<T>::solve(ABanded,bVec, &preAlocatedMat, tolerance, maxIterations);
+    BiCGSTAB<T>::solve(ABanded, bVec, &preAlocatedMat, tolerance, maxIterations);
 }

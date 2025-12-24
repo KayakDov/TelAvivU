@@ -49,59 +49,11 @@ cmake_ninja_workdir = /home/usr/Documents/TelAvivU/cmake-build-debug/
 
 build cmake_object_order_depends_target_CudaBandedLib: phony || .
 
-build CMakeFiles/CudaBandedLib.dir/src/BiCGSTAB/BiCGSTAB.cu.o: CUDA_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/BiCGSTAB/BiCGSTAB.cu || cmake_object_order_depends_target_CudaBandedLib
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/BiCGSTAB/BiCGSTAB.cu.o.d
-  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
-  OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
-  OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/BiCGSTAB
-
-build CMakeFiles/CudaBandedLib.dir/src/BiCGSTAB/Event.cu.o: CUDA_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/BiCGSTAB/Event.cu || cmake_object_order_depends_target_CudaBandedLib
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/BiCGSTAB/Event.cu.o.d
-  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
-  OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
-  OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/BiCGSTAB
-
-build CMakeFiles/CudaBandedLib.dir/src/Poisson/CubeBoundary.cu.o: CUDA_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/Poisson/CubeBoundary.cu || cmake_object_order_depends_target_CudaBandedLib
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/Poisson/CubeBoundary.cu.o.d
-  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
-  OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
-  OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/Poisson
-
-build CMakeFiles/CudaBandedLib.dir/src/Poisson/DirectSolver.cu.o: CUDA_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/Poisson/DirectSolver.cu || cmake_object_order_depends_target_CudaBandedLib
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/Poisson/DirectSolver.cu.o.d
-  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
-  OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
-  OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/Poisson
-
-build CMakeFiles/CudaBandedLib.dir/src/Poisson/EigenDecompSolver.cu.o: CUDA_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/Poisson/EigenDecompSolver.cu || cmake_object_order_depends_target_CudaBandedLib
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/Poisson/EigenDecompSolver.cu.o.d
-  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
-  OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
-  OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/Poisson
-
-build CMakeFiles/CudaBandedLib.dir/src/Poisson/PoissonRHS.cu.o: CUDA_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/Poisson/PoissonRHS.cu || cmake_object_order_depends_target_CudaBandedLib
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/Poisson/PoissonRHS.cu.o.d
-  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
-  OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
-  OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/Poisson
-
 build CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o: CUDA_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/deviceArrays/defFiles/BandedMatrix.cu || cmake_object_order_depends_target_CudaBandedLib
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles
 
@@ -109,7 +61,7 @@ build CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/DeviceData.cu.o: CU
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/DeviceData.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles
 
@@ -117,7 +69,7 @@ build CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o: 
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles
 
@@ -125,7 +77,7 @@ build CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/GpuArray.cu.o: CUDA
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/GpuArray.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles
 
@@ -133,7 +85,7 @@ build CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/KernelPrep.cu.o: CU
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/KernelPrep.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles
 
@@ -141,7 +93,7 @@ build CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Mat.cu.o: CUDA_COMP
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Mat.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles
 
@@ -149,7 +101,7 @@ build CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Singleton.cu.o: CUD
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Singleton.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles
 
@@ -157,7 +109,7 @@ build CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/SquareMat.cu.o: CUD
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/SquareMat.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles
 
@@ -165,7 +117,7 @@ build CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Streamable.cpp.o: C
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Streamable.cpp.o.d
   FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles
 
@@ -173,7 +125,7 @@ build CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Tensor.cu.o: CUDA_C
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Tensor.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles
 
@@ -181,7 +133,7 @@ build CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Vec.cu.o: CUDA_COMP
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Vec.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles
 
@@ -189,7 +141,7 @@ build CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/handle.cu.o: CUDA_C
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/handle.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles
 
@@ -197,15 +149,71 @@ build CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/streamHelper.cpp.o:
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/streamHelper.cpp.o.d
   FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/CudaBandedLib.dir/src/poisson/CubeBoundary.cu.o: CUDA_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/poisson/CubeBoundary.cu || cmake_object_order_depends_target_CudaBandedLib
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/poisson/CubeBoundary.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
+  OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/poisson
+
+build CMakeFiles/CudaBandedLib.dir/src/poisson/DirectSolver.cu.o: CUDA_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/poisson/DirectSolver.cu || cmake_object_order_depends_target_CudaBandedLib
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/poisson/DirectSolver.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
+  OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/poisson
+
+build CMakeFiles/CudaBandedLib.dir/src/poisson/PoissonLHS.cpp.o: CXX_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/poisson/PoissonLHS.cpp || cmake_object_order_depends_target_CudaBandedLib
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/poisson/PoissonLHS.cpp.o.d
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
+  OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/poisson
+
+build CMakeFiles/CudaBandedLib.dir/src/poisson/PoissonRHS.cu.o: CUDA_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/poisson/PoissonRHS.cu || cmake_object_order_depends_target_CudaBandedLib
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/poisson/PoissonRHS.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
+  OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/poisson
+
+build CMakeFiles/CudaBandedLib.dir/src/solvers/BiCGSTAB.cu.o: CUDA_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB.cu || cmake_object_order_depends_target_CudaBandedLib
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/solvers/BiCGSTAB.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
+  OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/solvers
+
+build CMakeFiles/CudaBandedLib.dir/src/solvers/EigenDecompSolver.cu.o: CUDA_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/solvers/EigenDecompSolver.cu || cmake_object_order_depends_target_CudaBandedLib
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/solvers/EigenDecompSolver.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
+  OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/solvers
+
+build CMakeFiles/CudaBandedLib.dir/src/solvers/Event.cu.o: CUDA_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/solvers/Event.cu || cmake_object_order_depends_target_CudaBandedLib
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/solvers/Event.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
+  OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src/solvers
 
 build CMakeFiles/CudaBandedLib.dir/src/testMethods.cu.o: CUDA_COMPILER__CudaBandedLib_unscanned_Debug /home/usr/Documents/TelAvivU/src/testMethods.cu || cmake_object_order_depends_target_CudaBandedLib
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/src/testMethods.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/src
 
@@ -213,7 +221,7 @@ build CMakeFiles/CudaBandedLib.dir/shroud_project/wrapFortranBindings.cpp.o: CXX
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/shroud_project/wrapFortranBindings.cpp.o.d
   FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/shroud_project
 
@@ -221,7 +229,7 @@ build CMakeFiles/CudaBandedLib.dir/shroud_project/utilFortranBindings.cpp.o: CXX
   CONFIG = Debug
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/shroud_project/utilFortranBindings.cpp.o.d
   FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/shroud_project
 
@@ -229,13 +237,13 @@ build CMakeFiles/CudaBandedLib.dir/shroud_project/wrapffortranbindings.f90-pp.f9
   DEP_FILE = CMakeFiles/CudaBandedLib.dir/shroud_project/wrapffortranbindings.f90-pp.f90.d
   DYNDEP_INTERMEDIATE_FILE = CMakeFiles/CudaBandedLib.dir/shroud_project/wrapffortranbindings.f90.o.ddi
   FLAGS = -fdiagnostics-color=always
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJ_FILE = CMakeFiles/CudaBandedLib.dir/shroud_project/wrapffortranbindings.f90.o
 
 build CMakeFiles/CudaBandedLib.dir/shroud_project/wrapffortranbindings.f90.o: Fortran_COMPILER__CudaBandedLib_scanned_Debug CMakeFiles/CudaBandedLib.dir/shroud_project/wrapffortranbindings.f90-pp.f90 || CMakeFiles/CudaBandedLib.dir/Fortran.dd
   CONFIG = Debug
   FLAGS = -fdiagnostics-color=always -fpreprocessed
-  INCLUDES = -I/home/usr/Documents/TelAvivU/shroud_project -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/shroud_project -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
   OBJECT_FILE_DIR = CMakeFiles/CudaBandedLib.dir/shroud_project
   dyndep = CMakeFiles/CudaBandedLib.dir/Fortran.dd
@@ -250,7 +258,7 @@ build CMakeFiles/CudaBandedLib.dir/Fortran.dd | CMakeFiles/CudaBandedLib.dir/For
 #############################################
 # Link the static library libCudaBandedLib.a
 
-build libCudaBandedLib.a: CXX_STATIC_LIBRARY_LINKER__CudaBandedLib_Debug CMakeFiles/CudaBandedLib.dir/src/BiCGSTAB/BiCGSTAB.cu.o CMakeFiles/CudaBandedLib.dir/src/BiCGSTAB/Event.cu.o CMakeFiles/CudaBandedLib.dir/src/Poisson/CubeBoundary.cu.o CMakeFiles/CudaBandedLib.dir/src/Poisson/DirectSolver.cu.o CMakeFiles/CudaBandedLib.dir/src/Poisson/EigenDecompSolver.cu.o CMakeFiles/CudaBandedLib.dir/src/Poisson/PoissonRHS.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/DeviceData.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/GpuArray.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/KernelPrep.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Mat.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Singleton.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/SquareMat.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Streamable.cpp.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Tensor.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Vec.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/handle.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/streamHelper.cpp.o CMakeFiles/CudaBandedLib.dir/src/testMethods.cu.o CMakeFiles/CudaBandedLib.dir/shroud_project/wrapFortranBindings.cpp.o CMakeFiles/CudaBandedLib.dir/shroud_project/utilFortranBindings.cpp.o CMakeFiles/CudaBandedLib.dir/shroud_project/wrapffortranbindings.f90.o
+build libCudaBandedLib.a: CXX_STATIC_LIBRARY_LINKER__CudaBandedLib_Debug CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/DeviceData.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/GpuArray.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/KernelPrep.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Mat.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Singleton.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/SquareMat.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Streamable.cpp.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Tensor.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/Vec.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/handle.cu.o CMakeFiles/CudaBandedLib.dir/src/deviceArrays/defFiles/streamHelper.cpp.o CMakeFiles/CudaBandedLib.dir/src/poisson/CubeBoundary.cu.o CMakeFiles/CudaBandedLib.dir/src/poisson/DirectSolver.cu.o CMakeFiles/CudaBandedLib.dir/src/poisson/PoissonLHS.cpp.o CMakeFiles/CudaBandedLib.dir/src/poisson/PoissonRHS.cu.o CMakeFiles/CudaBandedLib.dir/src/solvers/BiCGSTAB.cu.o CMakeFiles/CudaBandedLib.dir/src/solvers/EigenDecompSolver.cu.o CMakeFiles/CudaBandedLib.dir/src/solvers/Event.cu.o CMakeFiles/CudaBandedLib.dir/src/testMethods.cu.o CMakeFiles/CudaBandedLib.dir/shroud_project/wrapFortranBindings.cpp.o CMakeFiles/CudaBandedLib.dir/shroud_project/utilFortranBindings.cpp.o CMakeFiles/CudaBandedLib.dir/shroud_project/wrapffortranbindings.f90.o
   CONFIG = Debug
   LANGUAGE_COMPILE_FLAGS = -g
   OBJECT_DIR = CMakeFiles/CudaBandedLib.dir
@@ -268,59 +276,11 @@ build libCudaBandedLib.a: CXX_STATIC_LIBRARY_LINKER__CudaBandedLib_Debug CMakeFi
 
 build cmake_object_order_depends_target_testMethods: phony || cmake_object_order_depends_target_CudaBandedLib
 
-build CMakeFiles/testMethods.dir/src/BiCGSTAB/BiCGSTAB.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/BiCGSTAB/BiCGSTAB.cu || cmake_object_order_depends_target_testMethods
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/testMethods.dir/src/BiCGSTAB/BiCGSTAB.cu.o.d
-  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
-  OBJECT_DIR = CMakeFiles/testMethods.dir
-  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/BiCGSTAB
-
-build CMakeFiles/testMethods.dir/src/BiCGSTAB/Event.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/BiCGSTAB/Event.cu || cmake_object_order_depends_target_testMethods
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/testMethods.dir/src/BiCGSTAB/Event.cu.o.d
-  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
-  OBJECT_DIR = CMakeFiles/testMethods.dir
-  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/BiCGSTAB
-
-build CMakeFiles/testMethods.dir/src/Poisson/CubeBoundary.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/Poisson/CubeBoundary.cu || cmake_object_order_depends_target_testMethods
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/testMethods.dir/src/Poisson/CubeBoundary.cu.o.d
-  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
-  OBJECT_DIR = CMakeFiles/testMethods.dir
-  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/Poisson
-
-build CMakeFiles/testMethods.dir/src/Poisson/DirectSolver.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/Poisson/DirectSolver.cu || cmake_object_order_depends_target_testMethods
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/testMethods.dir/src/Poisson/DirectSolver.cu.o.d
-  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
-  OBJECT_DIR = CMakeFiles/testMethods.dir
-  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/Poisson
-
-build CMakeFiles/testMethods.dir/src/Poisson/EigenDecompSolver.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/Poisson/EigenDecompSolver.cu || cmake_object_order_depends_target_testMethods
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/testMethods.dir/src/Poisson/EigenDecompSolver.cu.o.d
-  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
-  OBJECT_DIR = CMakeFiles/testMethods.dir
-  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/Poisson
-
-build CMakeFiles/testMethods.dir/src/Poisson/PoissonRHS.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/Poisson/PoissonRHS.cu || cmake_object_order_depends_target_testMethods
-  CONFIG = Debug
-  DEP_FILE = CMakeFiles/testMethods.dir/src/Poisson/PoissonRHS.cu.o.d
-  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
-  OBJECT_DIR = CMakeFiles/testMethods.dir
-  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/Poisson
-
 build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/deviceArrays/defFiles/BandedMatrix.cu || cmake_object_order_depends_target_testMethods
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
 
@@ -328,7 +288,7 @@ build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceData.cu.o: CUDA
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceData.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
 
@@ -336,7 +296,7 @@ build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o: CU
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
 
@@ -344,7 +304,7 @@ build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/GpuArray.cu.o: CUDA_C
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/GpuArray.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
 
@@ -352,7 +312,7 @@ build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/KernelPrep.cu.o: CUDA
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/KernelPrep.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
 
@@ -360,7 +320,7 @@ build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Mat.cu.o: CUDA_COMPIL
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Mat.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
 
@@ -368,7 +328,7 @@ build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Singleton.cu.o: CUDA_
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Singleton.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
 
@@ -376,7 +336,7 @@ build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/SquareMat.cu.o: CUDA_
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/SquareMat.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
 
@@ -384,7 +344,7 @@ build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Streamable.cpp.o: CXX
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Streamable.cpp.o.d
   FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
 
@@ -392,7 +352,7 @@ build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Tensor.cu.o: CUDA_COM
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Tensor.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
 
@@ -400,7 +360,7 @@ build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Vec.cu.o: CUDA_COMPIL
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Vec.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
 
@@ -408,7 +368,7 @@ build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/handle.cu.o: CUDA_COM
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/handle.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
 
@@ -416,15 +376,71 @@ build CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/streamHelper.cpp.o: C
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/streamHelper.cpp.o.d
   FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/deviceArrays/defFiles
+
+build CMakeFiles/testMethods.dir/src/poisson/CubeBoundary.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/poisson/CubeBoundary.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/poisson/CubeBoundary.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/poisson
+
+build CMakeFiles/testMethods.dir/src/poisson/DirectSolver.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/poisson/DirectSolver.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/poisson/DirectSolver.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/poisson
+
+build CMakeFiles/testMethods.dir/src/poisson/PoissonLHS.cpp.o: CXX_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/poisson/PoissonLHS.cpp || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/poisson/PoissonLHS.cpp.o.d
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/poisson
+
+build CMakeFiles/testMethods.dir/src/poisson/PoissonRHS.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/poisson/PoissonRHS.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/poisson/PoissonRHS.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/poisson
+
+build CMakeFiles/testMethods.dir/src/solvers/BiCGSTAB.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/solvers/BiCGSTAB.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/solvers
+
+build CMakeFiles/testMethods.dir/src/solvers/EigenDecompSolver.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/solvers/EigenDecompSolver.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/solvers/EigenDecompSolver.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/solvers
+
+build CMakeFiles/testMethods.dir/src/solvers/Event.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/solvers/Event.cu || cmake_object_order_depends_target_testMethods
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/testMethods.dir/src/solvers/Event.cu.o.d
+  FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  OBJECT_DIR = CMakeFiles/testMethods.dir
+  OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src/solvers
 
 build CMakeFiles/testMethods.dir/src/testMethods.cu.o: CUDA_COMPILER__testMethods_unscanned_Debug /home/usr/Documents/TelAvivU/src/testMethods.cu || cmake_object_order_depends_target_testMethods
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/src/testMethods.cu.o.d
   FLAGS = -g -std=c++17 "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/src
 
@@ -432,7 +448,7 @@ build CMakeFiles/testMethods.dir/shroud_project/wrapFortranBindings.cpp.o: CXX_C
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/shroud_project/wrapFortranBindings.cpp.o.d
   FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/Poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
+  INCLUDES = -I/home/usr/Documents/TelAvivU/src -I/home/usr/Documents/TelAvivU/src/deviceArrays/headers -I/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB -I/home/usr/Documents/TelAvivU/src/poisson -I/home/usr/Documents/TelAvivU/shroud_project -I/usr/local/cuda/include
   OBJECT_DIR = CMakeFiles/testMethods.dir
   OBJECT_FILE_DIR = CMakeFiles/testMethods.dir/shroud_project
 
@@ -444,7 +460,7 @@ build CMakeFiles/testMethods.dir/shroud_project/wrapFortranBindings.cpp.o: CXX_C
 #############################################
 # Link the executable CMakeFiles/testMethods.dir/cmake_device_link.o
 
-build CMakeFiles/testMethods.dir/cmake_device_link.o: CXX_EXECUTABLE_DEVICE_LINKER__testMethods_Debug CMakeFiles/testMethods.dir/src/BiCGSTAB/BiCGSTAB.cu.o CMakeFiles/testMethods.dir/src/BiCGSTAB/Event.cu.o CMakeFiles/testMethods.dir/src/Poisson/CubeBoundary.cu.o CMakeFiles/testMethods.dir/src/Poisson/DirectSolver.cu.o CMakeFiles/testMethods.dir/src/Poisson/EigenDecompSolver.cu.o CMakeFiles/testMethods.dir/src/Poisson/PoissonRHS.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceData.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/GpuArray.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/KernelPrep.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Mat.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Singleton.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/SquareMat.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Streamable.cpp.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Tensor.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Vec.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/handle.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/streamHelper.cpp.o CMakeFiles/testMethods.dir/src/testMethods.cu.o CMakeFiles/testMethods.dir/shroud_project/wrapFortranBindings.cpp.o | libCudaBandedLib.a || libCudaBandedLib.a
+build CMakeFiles/testMethods.dir/cmake_device_link.o: CXX_EXECUTABLE_DEVICE_LINKER__testMethods_Debug CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceData.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/GpuArray.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/KernelPrep.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Mat.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Singleton.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/SquareMat.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Streamable.cpp.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Tensor.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Vec.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/handle.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/streamHelper.cpp.o CMakeFiles/testMethods.dir/src/poisson/CubeBoundary.cu.o CMakeFiles/testMethods.dir/src/poisson/DirectSolver.cu.o CMakeFiles/testMethods.dir/src/poisson/PoissonLHS.cpp.o CMakeFiles/testMethods.dir/src/poisson/PoissonRHS.cu.o CMakeFiles/testMethods.dir/src/solvers/BiCGSTAB.cu.o CMakeFiles/testMethods.dir/src/solvers/EigenDecompSolver.cu.o CMakeFiles/testMethods.dir/src/solvers/Event.cu.o CMakeFiles/testMethods.dir/src/testMethods.cu.o CMakeFiles/testMethods.dir/shroud_project/wrapFortranBindings.cpp.o | libCudaBandedLib.a || libCudaBandedLib.a
   LANGUAGE_COMPILE_FLAGS = -g "--generate-code=arch=compute_86,code=[compute_86,sm_86]"
   LINK_LIBRARIES = -lcublas -lcusolver -lcuda libCudaBandedLib.a -lgfortran -lquadmath -lcudadevrt -lcudart_static -lrt -lpthread -ldl
   LINK_PATH = -L/usr/local/cuda/targets/x86_64-linux/lib/stubs  -L/usr/local/cuda/targets/x86_64-linux/lib
@@ -458,7 +474,7 @@ build CMakeFiles/testMethods.dir/cmake_device_link.o: CXX_EXECUTABLE_DEVICE_LINK
 #############################################
 # Link the executable testMethods
 
-build testMethods: CXX_EXECUTABLE_LINKER__testMethods_Debug CMakeFiles/testMethods.dir/src/BiCGSTAB/BiCGSTAB.cu.o CMakeFiles/testMethods.dir/src/BiCGSTAB/Event.cu.o CMakeFiles/testMethods.dir/src/Poisson/CubeBoundary.cu.o CMakeFiles/testMethods.dir/src/Poisson/DirectSolver.cu.o CMakeFiles/testMethods.dir/src/Poisson/EigenDecompSolver.cu.o CMakeFiles/testMethods.dir/src/Poisson/PoissonRHS.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceData.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/GpuArray.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/KernelPrep.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Mat.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Singleton.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/SquareMat.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Streamable.cpp.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Tensor.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Vec.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/handle.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/streamHelper.cpp.o CMakeFiles/testMethods.dir/src/testMethods.cu.o CMakeFiles/testMethods.dir/shroud_project/wrapFortranBindings.cpp.o CMakeFiles/testMethods.dir/cmake_device_link.o | libCudaBandedLib.a || libCudaBandedLib.a
+build testMethods: CXX_EXECUTABLE_LINKER__testMethods_Debug CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/BandedMatrix.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceData.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/DeviceMemory.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/GpuArray.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/KernelPrep.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Mat.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Singleton.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/SquareMat.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Streamable.cpp.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Tensor.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/Vec.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/handle.cu.o CMakeFiles/testMethods.dir/src/deviceArrays/defFiles/streamHelper.cpp.o CMakeFiles/testMethods.dir/src/poisson/CubeBoundary.cu.o CMakeFiles/testMethods.dir/src/poisson/DirectSolver.cu.o CMakeFiles/testMethods.dir/src/poisson/PoissonLHS.cpp.o CMakeFiles/testMethods.dir/src/poisson/PoissonRHS.cu.o CMakeFiles/testMethods.dir/src/solvers/BiCGSTAB.cu.o CMakeFiles/testMethods.dir/src/solvers/EigenDecompSolver.cu.o CMakeFiles/testMethods.dir/src/solvers/Event.cu.o CMakeFiles/testMethods.dir/src/testMethods.cu.o CMakeFiles/testMethods.dir/shroud_project/wrapFortranBindings.cpp.o CMakeFiles/testMethods.dir/cmake_device_link.o | libCudaBandedLib.a || libCudaBandedLib.a
   CONFIG = Debug
   DEP_FILE = CMakeFiles/testMethods.dir/link.d
   FLAGS = -g

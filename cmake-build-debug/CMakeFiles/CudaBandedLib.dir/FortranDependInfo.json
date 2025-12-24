@@ -16,8 +16,8 @@
 	[
 		"/home/usr/Documents/TelAvivU/src",
 		"/home/usr/Documents/TelAvivU/src/deviceArrays/headers",
-		"/home/usr/Documents/TelAvivU/src/BiCGSTAB",
-		"/home/usr/Documents/TelAvivU/src/Poisson",
+		"/home/usr/Documents/TelAvivU/src/solvers/BiCGSTAB",
+		"/home/usr/Documents/TelAvivU/src/poisson",
 		"/home/usr/Documents/TelAvivU/shroud_project",
 		"/usr/local/cuda/include"
 	],

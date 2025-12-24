@@ -21,8 +21,8 @@ set(CMAKE_Fortran_STANDARD_REQUIRED ON)
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/src/deviceArrays/headers
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/BiCGSTAB
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Poisson
+        src/solvers/BiCGSTAB
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/poisson
         ${CMAKE_CURRENT_SOURCE_DIR}/shroud_project
         /usr/local/cuda/include
 )
@@ -47,6 +47,8 @@ set(SHROUD_CPPf
 
 set(FORTRAN_WRAPPER
         shroud_project/wrapffortranbindings.f90
+        src/poisson/ToeplitzLaplacian.cpp
+        src/poisson/ToeplitzLaplacian.h
 )
 
 add_library(CudaBandedLib STATIC
