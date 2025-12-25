@@ -119,22 +119,21 @@ void EigenDecompSolver<T>::multiplyEF(Handle &hand, Tensor<T> &src, Tensor<T> &d
 }
 
 template<typename T>
-EigenDecompSolver<T>::EigenDecompSolver(Vec<T> &x, Vec<T> &b,
-                                        SquareMat<T> &rowsXRows, SquareMat<T> &colsXCols, SquareMat<T> &depthsXDepths,
+EigenDecompSolver<T>::EigenDecompSolver(SquareMat<T> &rowsXRows, SquareMat<T> &colsXCols, SquareMat<T> &depthsXDepths,
                                         Mat<T> &maxDimX3,
                                         std::array<Handle, 3> &hand3):
     dim(rowsXRows._rows, colsXCols._cols, depthsXDepths._rows),
       eVecs({rowsXRows, colsXCols, depthsXDepths}),
       eVals(maxDimX3) {
 
-    // Event doneEigen[2]{};
+    Event doneEigen[2]{};
     for (size_t i = 0; i < 2; i++) {
         eigenL(i, hand3[i + 1]);
-        // doneEigen[i].record(hand3[i + 1]);
+        doneEigen[i].record(hand3[i + 1]);
     }
     eigenL(2, hand3[0]);
-//     doneEigen[0].wait(hand3[0]);
-//     doneEigen[1].wait(hand3[0]);
+     doneEigen[0].wait(hand3[0]);
+     doneEigen[1].wait(hand3[0]);
 }
 
 template<typename T>

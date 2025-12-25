@@ -77,7 +77,7 @@ void solveDecomp(
 
     cudaDeviceSynchronize();
     PoissonRHS<T> poisson(cb, fVec, hands[2]);
-    EigenDecompSolver(xVec, fVec, yMat, xMat, zMat, maxDimX3Mat, hands);
+    EigenDecompSolver(yMat, xMat, zMat, maxDimX3Mat, hands).solve(xVec, fVec, hands[0]);
     cudaDeviceSynchronize();
 }
 

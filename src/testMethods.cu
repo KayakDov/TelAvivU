@@ -66,19 +66,30 @@ void testEigenDecompNoPoisson() {
 
     std::cout << "inds = \n" << GpuOut(A._indices, hand) << std::endl;
 
-    Vec<T> b = Vec<T>::create(dim.size());
+    auto b = Vec<T>::create(dim.size());
+    auto x = Vec<T>::create(dim.size());
 
     std::vector<T> hostB = {1, 2, 3, 4, 5, 6, 7, 8};
 
     b.set(hostB.data(), hand);
 
-    BiCGSTAB<T>::solve(A, b);
+    std::cout << "b = " << GpuOut(b, hand) << std::endl;
 
+    // BiCGSTAB<T>::solve(A, b);
 
+    auto rowsMat = SquareMat<T>::create(dim.rows);
+    auto colsMat = SquareMat<T>::create(dim.cols);
+    auto layersMat = SquareMat<T>::create(dim.layers);
+    auto valsMat = Mat<T>::create(dim.size(), 3);
 
+    cudaDeviceSynchronize();
+    std::array<Handle, 3> hand3{};
 
+    EigenDecompSolver<T> eds(rowsMat, colsMat, layersMat, valsMat, hand3);
 
-    std::cout << "x = " << GpuOut(b, hand) << std::endl;
+    eds.solve(x, b, hand3[0]);
+
+    std::cout << "x = " << GpuOut(x, hand) << std::endl;
 
 }
 

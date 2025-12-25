@@ -126,8 +126,7 @@ public:
      * @param maxDimX3 A space to work in.
      * @param hand 3 CUDA cuBLAS/cusolver handles.
      */
-    EigenDecompSolver(Vec<T> &x, Vec<T> &b, SquareMat<T> &rowsXRows,
-                      SquareMat<T> &colsXCols, SquareMat<T> &depthsXDepths, Mat<T> &maxDimX3,
+    EigenDecompSolver(SquareMat<T> &rowsXRows, SquareMat<T> &colsXCols, SquareMat<T> &depthsXDepths, Mat<T> &maxDimX3,
                       std::array<Handle, 3> &hand3);
 
     /**
