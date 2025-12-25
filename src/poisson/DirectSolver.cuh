@@ -6,43 +6,14 @@
 #include "deviceArrays/headers/BandedMat.h"
 #include "solvers/BiCGSTAB.cuh"
 
-constexpr  size_t numDiagonals = 7;
-
-struct AdjacencyInd {
-    /**
-     * The column in the banded matrix.
-     */
-    const size_t col;
-    /**
-     * The index of the diagonal that is held by that column.
-     */
-    const int32_t diag;
-    __device__ __host__ AdjacencyInd(const size_t col, const int32_t diag) : col(col), diag(diag) {
-    }
-};
 
 template <typename T>
 class DirectSolver : public PoissonRHS<T> {
 
-public:
-
-    const std::array<AdjacencyInd, numDiagonals> adjInds;//here, up, down, left, right, back, front;
 
 private:
     const BandedMat<T> A;
 
-    /**
-     * @brief Launch kernel that assembles A in banded/dense storage.
-     *
-     * @param numInds The number of indices.
-     * @param mindices device pointer to the int32_t offsets array (length numNonZeroDiags).
-     * @param handle contains the stream to run on.
-     * @param preAlocatedForA Provide prealocated memory here to be written to, numDiagonals x _b.size().
-     * @param dim
-     */
-    static BandedMat<T> setA(cudaStream_t &stream, Mat<T> &preAlocatedForA, Vec<int32_t> &preAlocatedForIndices, const GridDim& dim, const std::array<AdjacencyInd, numDiagonals> adjInds);
-
-    static void loadMapRowToDiag(Vec<int32_t> diags, const std::array<AdjacencyInd, numDiagonals> adjInds, const cudaStream_t stream) ;
 public:
     /**
     * @brief Constructs the PoissonFDM solver object.

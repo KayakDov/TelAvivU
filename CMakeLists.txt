@@ -47,8 +47,8 @@ set(SHROUD_CPPf
 
 set(FORTRAN_WRAPPER
         shroud_project/wrapffortranbindings.f90
-        src/poisson/ToeplitzLaplacian.cpp
-        src/poisson/ToeplitzLaplacian.h
+        src/poisson/ToeplitzLaplacian.cu
+        src/poisson/ToeplitzLaplacian.cuh
 )
 
 add_library(CudaBandedLib STATIC

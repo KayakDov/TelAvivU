@@ -35,7 +35,7 @@
  */
 
 template<typename T>
-class BandedMat final : public Mat<T> {
+class BandedMat : public Mat<T> {
 
 protected:
     /**

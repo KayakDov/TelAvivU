@@ -127,14 +127,14 @@ EigenDecompSolver<T>::EigenDecompSolver(Vec<T> &x, Vec<T> &b,
       eVecs({rowsXRows, colsXCols, depthsXDepths}),
       eVals(maxDimX3) {
 
-    Event doneEigen[2]{};
+    // Event doneEigen[2]{};
     for (size_t i = 0; i < 2; i++) {
         eigenL(i, hand3[i + 1]);
-        doneEigen[i].record(hand3[i + 1]);
+        // doneEigen[i].record(hand3[i + 1]);
     }
     eigenL(2, hand3[0]);
-    doneEigen[0].wait(hand3[0]);
-    doneEigen[1].wait(hand3[0]);
+//     doneEigen[0].wait(hand3[0]);
+//     doneEigen[1].wait(hand3[0]);
 }
 
 template<typename T>
