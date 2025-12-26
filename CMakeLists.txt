@@ -49,6 +49,8 @@ set(FORTRAN_WRAPPER
         shroud_project/wrapffortranbindings.f90
         src/poisson/ToeplitzLaplacian.cu
         src/poisson/ToeplitzLaplacian.cuh
+        src/math/Real3d.cpp
+        src/math/Real3d.h
 )
 
 add_library(CudaBandedLib STATIC

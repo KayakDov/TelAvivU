@@ -1,0 +1,21 @@
+//
+// Created by usr on 12/26/25.
+//
+
+#include "Real3d.h"
+
+#include <stdexcept>
+
+Real3d::Real3d(double x, double y, double z) : x(x), y(y), z(z) {
+}
+
+double &Real3d::operator[](size_t i) {
+    switch (i) {
+        case 0: return x;
+        case 1: return y;
+        case 2: return z;
+            default: throw std::out_of_range("index out of range");
+    }
+}
+
+const Real3d Real3d::ZERO(0, 0, 0);

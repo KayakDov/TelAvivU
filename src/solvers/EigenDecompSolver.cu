@@ -18,11 +18,11 @@ __global__ void eigenMatLKernel(DeviceData2d<T> eVecs) {
 }
 
 template<typename T>
-__global__ void eigenValLKernel(DeviceData1d<T> eVals) {
+__global__ void eigenValLKernel(DeviceData1d<T> eVals, T delta) {
     const size_t idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < eVals.cols) {
         T s = std::sin((idx + 1) * PI<T> / (2 * (eVals.cols + 1)));
-        eVals[idx] = -4 * s * s;
+        eVals[idx] = -4 * s * s / (delta * delta);
     }
 }
 
@@ -44,7 +44,7 @@ __global__ void setUTildeKernel(DeviceData3d<T> uTilde,
 // ============================================================================
 
 template<typename T>
-void EigenDecompSolver<T>::eigenL(size_t i, cudaStream_t stream) {
+void EigenDecompSolver<T>::eigenL(size_t i, double delta, cudaStream_t stream) {
     KernelPrep kpVec = eVecs[i].kernelPrep();
     eigenMatLKernel<T><<<kpVec.numBlocks, kpVec.threadsPerBlock, 0, stream>>>(
         eVecs[i].toKernel2d());
@@ -52,7 +52,9 @@ void EigenDecompSolver<T>::eigenL(size_t i, cudaStream_t stream) {
     size_t n = eVecs[i]._cols;
     KernelPrep kpVal(n);
     eigenValLKernel<T><<<kpVal.numBlocks, kpVal.threadsPerBlock, 0, stream>>>(
-        eVals.col(i).subVec(0, n, 1).toKernel1d());
+        eVals.col(i).subVec(0, n, 1).toKernel1d(),
+        delta
+        );
 }
 
 template<typename T>
@@ -121,19 +123,23 @@ void EigenDecompSolver<T>::multiplyEF(Handle &hand, Tensor<T> &src, Tensor<T> &d
 template<typename T>
 EigenDecompSolver<T>::EigenDecompSolver(SquareMat<T> &rowsXRows, SquareMat<T> &colsXCols, SquareMat<T> &depthsXDepths,
                                         Mat<T> &maxDimX3,
-                                        std::array<Handle, 3> &hand3):
+                                        std::array<Handle, 3> &hand3,
+                                        Real3d delta):
     dim(rowsXRows._rows, colsXCols._cols, depthsXDepths._rows),
       eVecs({rowsXRows, colsXCols, depthsXDepths}),
       eVals(maxDimX3) {
 
     Event doneEigen[2]{};
-    for (size_t i = 0; i < 2; i++) {
-        eigenL(i, hand3[i + 1]);
-        doneEigen[i].record(hand3[i + 1]);
-    }
-    eigenL(2, hand3[0]);
-     doneEigen[0].wait(hand3[0]);
-     doneEigen[1].wait(hand3[0]);
+
+    eigenL(0, delta.y, hand3[1]);
+    doneEigen[0].record(hand3[1]);
+
+    eigenL(1, delta.x, hand3[2]);
+    doneEigen[1].record(hand3[2]);
+
+    eigenL(2, delta.z, hand3[0]);
+    doneEigen[0].wait(hand3[0]);
+    doneEigen[1].wait(hand3[0]);
 }
 
 template<typename T>

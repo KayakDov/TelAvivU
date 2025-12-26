@@ -10,6 +10,8 @@
 #include <array>
 #include <cstddef>
 
+#include "math/Real3d.h"
+
 /**
  * @brief Direct Poisson solver using eigen-decomposition (Fast Diagonalization Method).
  *
@@ -58,7 +60,7 @@ private:
      * @param i Index (0=x, 1=y, 2=z).
      * @param stream CUDA stream to execute kernels on.
      */
-    void eigenL(size_t i, cudaStream_t stream);
+    void eigenL(size_t idouble, double delta, cudaStream_t stream);
 
     /**
      * @brief Compute ũ = f̃ / (λ_x + λ_y + λ_z).
@@ -124,10 +126,11 @@ public:
      * @param colsXCols A space to work in.
      * @param depthsXDepths A space to work in.
      * @param maxDimX3 A space to work in.
+     * @param delta the distance between grid points
      * @param hand 3 CUDA cuBLAS/cusolver handles.
      */
-    EigenDecompSolver(SquareMat<T> &rowsXRows, SquareMat<T> &colsXCols, SquareMat<T> &depthsXDepths, Mat<T> &maxDimX3,
-                      std::array<Handle, 3> &hand3);
+    EigenDecompSolver(SquareMat<T> &rowsXRows, SquareMat<T> &colsXCols, SquareMat<T> &depthsXDepths, Mat<T> &maxDimX3
+        , std::array<Handle, 3> &hand3, Real3d delta = Real3d(1, 1, 1));
 
     /**
      * Solves for A x = b
