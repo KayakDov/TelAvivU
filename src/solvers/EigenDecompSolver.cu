@@ -126,15 +126,15 @@ EigenDecompSolver<T>::EigenDecompSolver(SquareMat<T> &rowsXRows, SquareMat<T> &c
                                         std::array<Handle, 3> &hand3,
                                         Real3d delta):
     dim(rowsXRows._rows, colsXCols._cols, depthsXDepths._rows),
-      eVecs({rowsXRows, colsXCols, depthsXDepths}),
+      eVecs({colsXCols, rowsXRows, depthsXDepths}),
       eVals(maxDimX3) {
 
     Event doneEigen[2]{};
 
-    eigenL(0, delta.y, hand3[1]);
+    eigenL(0, delta.x, hand3[1]);
     doneEigen[0].record(hand3[1]);
 
-    eigenL(1, delta.x, hand3[2]);
+    eigenL(1, delta.y, hand3[2]);
     doneEigen[1].record(hand3[2]);
 
     eigenL(2, delta.z, hand3[0]);

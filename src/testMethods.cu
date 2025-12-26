@@ -56,7 +56,7 @@ void testEigenDecompNoPoisson() {
 
     Handle hand;
 
-    GridDim dim(2, 2, 2);
+    GridDim dim(2, 3, 2);
     auto preA = Mat<T>::create(dim.size(), 7);
     auto preInds = Vec<int32_t>::create(7);
 
@@ -69,7 +69,7 @@ void testEigenDecompNoPoisson() {
     auto b = Vec<T>::create(dim.size());
     auto x = Vec<T>::create(dim.size());
 
-    std::vector<T> hostB = {1, 2, 3, 4, 5, 6, 7, 8};
+    std::vector<T> hostB = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
     b.set(hostB.data(), hand);
 
@@ -89,8 +89,20 @@ void testEigenDecompNoPoisson() {
 
     eds.solve(x, b, hand3[0]);
 
-    std::cout << "x = " << GpuOut(x, hand) << std::endl;
-
+    std::cout << "x = \n" << GpuOut(x, hand) << std::endl;
+    std::cout << -241.0/238 << ", " << -145.0/119 << ", " << -339.0/238 << ", " << -194.0/119 << std::endl;
+    //x_1=(-241)/238
+    // x_2=(-145)/119
+    // x_3=(-339)/238
+    // x_4=(-194)/119
+    // x_5=(-579)/238
+    // x_6=(-635)/238
+    // x_7=(-691)/238
+    // x_8=(-747)/238
+    // x_9=(-717)/238
+    // x_10=(-383)/119
+    // x_11=(-815)/238
+    // x_12=(-432)/119
 }
 
 /**

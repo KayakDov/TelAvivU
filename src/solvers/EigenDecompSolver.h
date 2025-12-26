@@ -43,7 +43,7 @@ private:
      * eVecs[1] = eigenvectors of L_y
      * eVecs[2] = eigenvectors of L_z
      */
-    std::array<SquareMat<T>, 3> eVecs;
+    std::array<SquareMat<T>, 3> eVecs;//stored x, y, z which is cols, rows, layers
 
     /**
      * @brief Eigenvalues matrix.
