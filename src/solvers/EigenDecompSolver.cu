@@ -78,7 +78,7 @@ void EigenDecompSolver2d<T>::setUTilde(const Mat<T> &f, Mat<T> &u, Handle &hand)
     setUTildeKernel2d<T><<<kp.numBlocks, kp.threadsPerBlock, 0, hand>>>(
         u.toKernel2d(),
         this->eVals.toKernel2d(),
-        f.toKernel3d());
+        f.toKernel2d());
 }
 
 
@@ -188,13 +188,13 @@ void EigenDecompSolver2d<T>::solve(Vec<T> &x, Vec<T> &b, Handle &hand) const {
     auto bM = b.matrix(this->dim.rows);
     auto xM = x.matrix(this->dim.rows);
 
-    bM.mult(this->eVecs[0], xM, &hand, &Singleton<T>::ONE, Singleton<T>::ZERO, false, false);
-    this->eVecs[1].mult(xM, bM, &hand, &Singleton<T>::ONE, Singleton<T>::ZERO, true, false);
+    bM.mult(this->eVecs[0], &xM, &hand, &Singleton<T>::ONE, &Singleton<T>::ZERO, false, false);
+    this->eVecs[1].mult(xM, &bM, &hand, &Singleton<T>::ONE, &Singleton<T>::ZERO, true, false);
 
     setUTilde(bM, xM, hand);
 
-    this->eVecs[1].mult(xM, bM, &hand, &Singleton<T>::ONE, Singleton<T>::ZERO, false, false);
-    bM.mult(this->eVecs[0], xM, &hand, &Singleton<T>::ONE, Singleton<T>::ZERO, false, true);
+    this->eVecs[1].mult(xM, &bM, &hand, &Singleton<T>::ONE, &Singleton<T>::ZERO, false, false);
+    bM.mult(this->eVecs[0], &xM, &hand, &Singleton<T>::ONE, &Singleton<T>::ZERO, false, true);
 }
 
 template class EigenDecompSolver<double>;
