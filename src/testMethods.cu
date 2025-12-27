@@ -33,7 +33,7 @@ void benchMarkEigenDecompSolver(size_t height, size_t width, size_t depth, std::
 
     TimePoint start = std::chrono::steady_clock::now();
     PoissonRHS<double> poisson(boundary, f, hand3[0]);
-    EigenDecompSolver<double> fdm(x, f, eX, eY, eZ, vals, hand3);
+    EigenDecompSolver3d<double> fdm(x, f, eX, eY, eZ, vals, hand3);
     fdm.solve(x, f, hand3[0]);
     cudaDeviceSynchronize();
     TimePoint end = std::chrono::steady_clock::now();
@@ -85,7 +85,7 @@ void testEigenDecompNoPoisson() {
     cudaDeviceSynchronize();
     std::array<Handle, 3> hand3{};
 
-    EigenDecompSolver<T> eds(rowsMat, colsMat, layersMat, valsMat, hand3);
+    EigenDecompSolver3d<T> eds(rowsMat, colsMat, layersMat, valsMat, hand3);
 
     eds.solve(x, b, hand3[0]);
 

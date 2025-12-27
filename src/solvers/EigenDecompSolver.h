@@ -9,6 +9,7 @@
 
 #include <array>
 #include <cstddef>
+#include <vector>
 
 #include "math/Real3d.h"
 
@@ -34,7 +35,7 @@
  */
 template<typename T>
 class EigenDecompSolver {
-private:
+protected:
     GridDim dim;
     /**
      * @brief Eigenvector matrices for the three 1-D Laplacians.
@@ -43,7 +44,7 @@ private:
      * eVecs[1] = eigenvectors of L_y
      * eVecs[2] = eigenvectors of L_z
      */
-    std::array<SquareMat<T>, 3> eVecs;//stored x, y, z which is cols, rows, layers
+    std::vector<SquareMat<T>> eVecs;//stored x, y, z which is cols, rows, layers
 
     /**
      * @brief Eigenvalues matrix.
@@ -61,6 +62,81 @@ private:
      * @param stream CUDA stream to execute kernels on.
      */
     void eigenL(size_t idouble, double delta, cudaStream_t stream);
+
+
+public:
+    virtual ~EigenDecompSolver() = default;
+
+    /**
+     * @brief Construct and immediately solve the Poisson problem.
+     *
+     * Builds eigenbases for Lx, Ly, Lz, Where L is the left hand side matrix you'd use for solving the Poisson equation.
+     * It's a banded matrix with 7 diagonals, etc...
+     *
+     * A must be the standard second-difference (Toeplitz) discrete Laplacian on a uniform grid with homogeneous Dirichlet boundary conditions.
+     *
+     * @param boundary Boundary conditions for the grid.
+
+     * @param rowsXRows A space to work in.
+     * @param colsXCols A space to work in.
+     * @param depthsXDepths A space to work in.
+     * @param maxDimX3 A space to work in.
+     * @param delta the distance between grid points
+     * @param hand 3 CUDA cuBLAS/cusolver handles.
+     */
+    EigenDecompSolver(std::vector<SquareMat<T>> eMats, Mat<T> &maxDimX2Or3);
+
+    /**
+     * Solves for A x = b
+     *
+     *   2. Applies forward transform to f to obtain f̃.
+     *   3. Solves diagonal system to obtain ũ.
+     *   4. Applies inverse transform to obtain x (the output).
+     * @param x Output buffer for the solution.
+     * @param b Right-hand-side vector (will be overwritten).
+     * @param hand
+     */
+    virtual void solve(Vec<T> &x, Vec<T> &b, Handle &hand) const = 0;
+};
+
+template<typename T>
+class EigenDecompSolver2d: public EigenDecompSolver<T> {
+private:
+    /**
+     * @brief Compute ũ = f̃ / (λ_x + λ_y + λ_z).
+     *
+     * @param f  Input in eigen-space.
+     * @param u  Output solution in eigen-space.
+     * @param hand CUDA cuBLAS/cusolver handle.
+     */
+    void setUTilde(const Mat<T> &f, Mat<T> &u, Handle &hand) const;
+public:
+    EigenDecompSolver2d(SquareMat<T> &rowsXRows, SquareMat<T> &colsXCols, Mat<T> &maxDimX2, std::array<Handle, 2> &hand2, Real2d delta = Real2d(1, 1));
+    void solve(Vec<T> &x, Vec<T> &b, Handle &hand) const;
+};
+
+template<typename T>
+class EigenDecompSolver3d: public EigenDecompSolver<T> {
+public:
+
+    /**
+     * @brief Apply full transform:
+     *        f → E_zᵀ E_yᵀ E_xᵀ f    (forward)
+     *        or
+     *        u ← E_x E_y E_z ũ      (inverse)
+     *
+     * @param hand CUDA handle.
+     * @param src Input 3D tensor.   Will be overwritten.
+     * @param dst Output 3D tensor.
+     * @param transposeE Whether to apply Eᵀ instead of E.
+     */
+    void multiplyEF(Handle &hand, Tensor<T> &src, Tensor<T> &dst, bool transposeE) const;
+
+    EigenDecompSolver3d(SquareMat<T> &rowsXRows, SquareMat<T> &colsXCols, SquareMat<T> &depthsXDepths, Mat<T> &maxDimX3
+                        , std::array<Handle, 3> &hand3, Real3d delta = Real3d(1, 1, 1));
+
+    void solve(Vec<T> &x, Vec<T> &b, Handle &hand) const;
+
 
     /**
      * @brief Compute ũ = f̃ / (λ_x + λ_y + λ_z).
@@ -97,53 +173,8 @@ private:
     /** @brief Apply E_z or E_zᵀ across all x-y slices. */
     void multEZ(const Mat<T> &src, Mat<T> &dst, Handle &hand, bool transposeE) const;
 
-    /**
-     * @brief Apply full transform:
-     *        f → E_zᵀ E_yᵀ E_xᵀ f    (forward)
-     *        or
-     *        u ← E_x E_y E_z ũ      (inverse)
-     *
-     * @param hand CUDA handle.
-     * @param src Input 3D tensor.   Will be overwritten.
-     * @param dst Output 3D tensor.
-     * @param transposeE Whether to apply Eᵀ instead of E.
-     */
-    void multiplyEF(Handle &hand, Tensor<T> &src,
-                    Tensor<T> &dst, bool transposeE) const;
-
-public:
-    /**
-     * @brief Construct and immediately solve the Poisson problem.
-     *
-     * Builds eigenbases for Lx, Ly, Lz, Where L is the left hand side matrix you'd use for solving the Poisson equation.
-     * It's a banded matrix with 7 diagonals, etc...
-     *
-     * A must be the standard second-difference (Toeplitz) discrete Laplacian on a uniform grid with homogeneous Dirichlet boundary conditions.
-     *
-     * @param boundary Boundary conditions for the grid.
-
-     * @param rowsXRows A space to work in.
-     * @param colsXCols A space to work in.
-     * @param depthsXDepths A space to work in.
-     * @param maxDimX3 A space to work in.
-     * @param delta the distance between grid points
-     * @param hand 3 CUDA cuBLAS/cusolver handles.
-     */
-    EigenDecompSolver(SquareMat<T> &rowsXRows, SquareMat<T> &colsXCols, SquareMat<T> &depthsXDepths, Mat<T> &maxDimX3
-        , std::array<Handle, 3> &hand3, Real3d delta = Real3d(1, 1, 1));
-
-    /**
-     * Solves for A x = b
-     *
-     *   2. Applies forward transform to f to obtain f̃.
-     *   3. Solves diagonal system to obtain ũ.
-     *   4. Applies inverse transform to obtain x (the output).
-     * @param x Output buffer for the solution.
-     * @param b Right-hand-side vector (will be overwritten).
-     * @param hand
-     */
-    void solve(Vec<T> &x, Vec<T> &b, Handle &hand) const;
 };
+
 
 
 #endif // EIGENDECOMPSOLVER_H

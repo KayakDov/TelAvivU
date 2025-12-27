@@ -19,3 +19,6 @@ double &Real3d::operator[](size_t i) {
 }
 
 const Real3d Real3d::ZERO(0, 0, 0);
+
+Real2d::Real2d(double x, double y): Real3d(x, y, 0) {
+}

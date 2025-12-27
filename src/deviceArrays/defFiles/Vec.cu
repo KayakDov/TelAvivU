@@ -360,6 +360,11 @@ Tensor<T> Vec<T>::tensor(size_t height, size_t layers) {
 }
 
 template<typename T>
+Mat<T> Vec<T>::matrix(size_t height) {
+    return Mat<T>(height, size()/height, height, this->_ptr);
+}
+
+template<typename T>
 DeviceData1d<T> Vec<T>::toKernel1d() {
     return DeviceData1d<T>(this->size(), this->_ld, this->_ptr.get());
 }

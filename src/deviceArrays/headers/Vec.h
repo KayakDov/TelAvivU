@@ -261,6 +261,13 @@ public:
      */
     [[nodiscard]] Tensor<T> tensor(size_t height, size_t layers);
 
+    /**
+     * The data in this vector reorganized as a matrix.
+     * @param height The height of the matrix created. This should be a divisor of size.
+     * @return A matrix containing the data in this vector.
+     */
+    [[nodiscard]] Mat<T> matrix(size_t height);
+
     [[nodiscard]] DeviceData1d<T> toKernel1d();
 
     [[nodiscard]] DeviceData1d<T> toKernel1d() const;

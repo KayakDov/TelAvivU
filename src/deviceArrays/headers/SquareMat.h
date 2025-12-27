@@ -125,6 +125,11 @@ public:
     void solve(Vec<T> &b, Handle *handle = nullptr, Singleton<int32_t> *info = nullptr, Vec<T> *workspace = nullptr, Vec<int32_t> *
                        rowSwaps = nullptr);
 
+    /**
+     * A square matrix that is 0x0.
+     */
+    static const SquareMat<T> SIZE_ZERO;
+
 };
 
 #endif //BICGSTAB_SQUAREMAT_H

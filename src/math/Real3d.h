@@ -14,5 +14,11 @@ class Real3d {
     static const Real3d ZERO;
 };
 
+class Real2d: public Real3d {
+
+    public:
+    Real2d(double x, double y);
+};
+
 
 #endif //CUDABANDED_REAL3D_H

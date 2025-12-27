@@ -204,6 +204,9 @@ void SquareMat<T>::solve(Vec<T> &b, Handle *handle, Singleton<int32_t> *info, Ve
     solve(mat, handle, info, workspace, rowSwaps);
 }
 
+template<typename T>
+const SquareMat<T> SquareMat<T>::SIZE_ZERO = SquareMat<T>::create(0);
+
 template class SquareMat<float>;
 template class SquareMat<double>;
 template class SquareMat<unsigned long>;
